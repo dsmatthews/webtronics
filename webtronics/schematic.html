@@ -1,0 +1,277 @@
+<html>
+<head>
+
+<script type="text/javascript" src="./script/prototype.js"></script>
+<script type="text/javascript" src="./script/schematic.js"></script>
+<script type="text/javascript" src="./script/chipmaker.js"></script>
+<script type="text/javascript" src="./script/gui.js"></script>
+  <style>
+  body        { font-family:verdana,arial; font-size:10pt; }
+  div *       { vertical-align: middle; }
+  div img     { padding:2px; border:2px solid grey;}
+  </style>
+</head>
+
+<body onload="schematic();setsize();" onresize="setsize()" oncontextmenu="return false;">
+
+<!--
+toolbar
+-->
+
+<div  id="toolbar" style="width:auto; height:40; background-color:#C0C0C0;">
+	<img id="fopen" title="open file" src="./buttons/open.png" onclick="setMode('fopen','Selection');returnsvg();"/>
+	<img id='chipbox' title="make chips" src="./buttons/icbut.png" onclick="setMode('chipbox','Selection');$('chips').show();"/>
+	<img id="partsbox" title="get parts" src="./buttons/disc.png" onclick="setMode('partsbox','Selection');$('parts').show();"/>
+	<img id="zoom"  title="zoom image" onclick="c.zoom();" src="./buttons/zoom.png"/>
+	<img id="select" title="Select shapes" onclick="setMode('select', 'Selection');" src="./buttons/select.png" />
+	<img id="rotate" title ="rotate parts" onclick="c.rotate();" src="./buttons/rotate.png" />
+	<img id="line" title="Draw wires"  onclick="setMode('line', 'Line');" src="./buttons/wire.png" />
+	<img id="text" title="add text" onclick="setMode('select','Selection');$('addtext').show();" src="./buttons/text.png" />
+	<img  id="delete" title="Delete selected shape" onclick="c.deleteSelection();" src="./buttons/delete.png" />
+	<img  id="save" title="Save the file" onclick="showMarkup();" src="./buttons/save.png" />
+</div>
+<!--
+display area
+-->
+
+  <div id="diagram" style="width:auto;height:500;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
+  </div>
+
+<!--
+status bar
+-->
+  
+ <div id="status" style="width:auto;height:20 ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
+
+ <!--
+parts box
+-->
+
+<div id="parts"
+   style="display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+      background-color:#c0c0c0; 
+      padding: 5px;">
+ <form >
+<select id="part" size="10"  onchange="changeimage(this.value)">
+	<option value="./symbols/npn.svg"  >npn bjt</option>
+	<option value="./symbols/pnp.svg" >pnp bjt</option>
+	<option  value="./symbols/njfet.svg" >njfet </option>
+	<option  value="./symbols/pjfet.svg" >pjfet</option>
+	<option  value="./symbols/capacitor.svg" >capacitor</option>
+	<option  value="./symbols/resistor.svg" >resistor</option>
+	<option  value="./symbols/coil.svg" >inductor</option>
+	<option  value="./symbols/battery.svg" >battery</option>
+	<option  value="./symbols/gnd.svg" >ground</option>
+	<option  value="./symbols/positive.svg" >positive</option>
+	<option  value="./symbols/diode.svg" >diode</option>
+	<option  value="./symbols/nopb.svg" >nopb</option>
+	<option  value="./symbols/transformer.svg" >transformer</option>
+	<option  value="./symbols/vresistor.svg" >variable resistor</option>
+	<option  value="./symbols/tapcoil.svg" >tapped inductor</option>
+	<option  value="./symbols/phototrans.svg" >phototransistor</option>
+	<option  value="./symbols/photodiode.svg" >photodiode</option>
+	<option  value="./symbols/photo-res.svg" >photo resistor</option>
+	<option  value="./symbols/zener.svg" >zener diode</option>
+	<option  value="./symbols/crystal.svg" >crystal</option>
+	<option  value="./symbols/led.svg" >led</option>
+	<option  value="./symbols/spst-switch.svg" >spst switch</option>
+	<option  value="./symbols/op-amp.svg" >op-amp</option>
+	<option  value="./symbols/scr.svg" >scr</option>
+	<option  value="./symbols/spst-relay.svg" >spst-relay</option>
+	<option  value="./symbols/speaker.svg" >speaker</option>
+
+</select>
+</form>
+<embed   id="partdisplay"  style="padding:5px; margin-bottom:5px; background-color:#ffffff; border:1px solid black;"  src="./symbols/gnd.svg" width="60" height="60" />	
+<br>
+<img  id="getpart" onclick="returnpart(document.getElementById('part').value);" src="./buttons/ok.png" />
+<img  onclick="$('parts').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+</div>
+<!--
+open files
+-->
+<div id="openfile" 
+   style="display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+      background-color:#c0c0c0; 
+      padding: 5px;">
+
+<form>
+<input type="file" id="openfile_selector" />
+<img  onclick="$('openfile').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+ </form>
+
+</div>
+
+
+<!--
+make chips
+-->
+
+<div id="chips"
+style="display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+      background-color:#c0c0c0; 
+      padding: 5px;">
+  <div id="chipdisplay"  style="width:300px; height:300px; border:1px solid black; background-color:#ffffff;" >
+  </div>
+	<form  >
+<br>
+	<select name="vert" onchange="drawchip(hor.value,this.value);">
+		<option value=1>1</option>
+		<option value=2>2</option>
+		<option value=3>3</option>
+		<option value=4>4</option>
+		<option value=5>5</option>
+		<option value=6>6</option>
+		<option value=7>7</option>
+		<option value=8>8</option>
+		<option value=9>9</option>
+		<option value=10>10</option>
+		<option value=11>11</option>
+		<option value=12>12</option>
+		<option value=13>13</option>
+		<option value=14>14</option>
+		<option value=15>15</option>
+		<option value=16>16</option>
+		<option value=17>17</option>
+		<option value=18>18</option>
+		<option value=19>19</option>
+		<option value=20>20</option>
+		<option value=21>21</option>
+		<option value=22>22</option>
+		<option value=23>23</option>
+		<option value=24>24</option>
+		<option value=25>25</option>
+		<option value=26>26</option>
+		<option value=27>27</option>
+		<option value=28>28</option>
+		<option value=29>29</option>
+		<option value=30>30</option>
+		<option value=31>31</option>
+		<option value=32>32</option>
+		<option value=33>33</option>
+		<option value=34>34</option>
+		<option value=35>35</option>
+		<option value=36>36</option>
+		<option value=37>37</option>
+		<option value=38>38</option>
+		<option value=39>39</option>
+		<option value=40>40</option>
+		<option value=41>41</option>
+		<option value=42>42</option>
+		<option value=43>43</option>
+		<option value=44>44</option>
+		<option value=45>45</option>
+		<option value=46>46</option>
+		<option value=47>47</option>
+		<option value=48>48</option>
+		<option value=49>49</option>
+		<option value=50>50</option>
+	</select>
+	<select name="hor" onchange="drawchip(this.value,vert.value);" >
+		<option value=0>0</option>
+		<option value=4>4</option>
+		<option value=5>5</option>
+		<option value=6>6</option>
+		<option value=7>7</option>
+		<option value=8>8</option>
+		<option value=9>9</option>
+		<option value=10>10</option>
+		<option value=11>11</option>
+		<option value=12>12</option>
+		<option value=13>13</option>
+		<option value=14>14</option>
+		<option value=15>15</option>
+		<option value=16>16</option>
+		<option value=17>17</option>
+		<option value=18>18</option>
+		<option value=19>19</option>
+		<option value=20>20</option>
+		<option value=21>21</option>
+		<option value=22>22</option>
+		<option value=23>23</option>
+		<option value=24>24</option>
+		<option value=25>25</option>
+		<option value=26>26</option>
+		<option value=27>27</option>
+		<option value=28>28</option>
+		<option value=29>29</option>
+		<option value=30>30</option>
+		<option value=31>31</option>
+		<option value=32>32</option>
+		<option value=33>33</option>
+		<option value=34>34</option>
+		<option value=35>35</option>
+		<option value=36>36</option>
+		<option value=37>37</option>
+		<option value=38>38</option>
+		<option value=39>39</option>
+		<option value=40>40</option>
+		<option value=41>41</option>
+		<option value=42>42</option>
+		<option value=43>43</option>
+		<option value=44>44</option>
+		<option value=45>45</option>
+		<option value=46>46</option>
+		<option value=47>47</option>
+		<option value=48>48</option>
+		<option value=49>49</option>
+		<option value=50>50</option>
+	</select>
+<img  id="use" onclick="returnchip();" src="./buttons/ok.png" />
+<img  onclick="$('chips').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+ </form>
+
+</div>
+
+<!--
+add text
+ -->
+
+<div id="addtext" 
+ style="display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+      background-color:#c0c0c0; 
+      padding: 5px;">
+<form>
+<textarea cols="50" rows="4" id="comment"></textarea>
+<!--<input type="text" size="50" name="address" />address</br>-->
+<img  id="use" onclick="c.createtext($('comment').value);$('addtext').hide();" src="./buttons/ok.png" /> 
+
+<img  onclick="$('addtext').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+</form>
+</div>
+<!--
+add code text
+ -->
+
+<div id="opentext" 
+ style="display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+      background-color:#c0c0c0; 
+      padding: 5px;">
+
+<textarea cols="50" rows="4" id="svgcode"></textarea>
+<img  id='opentext_ok' src="./buttons/ok.png" /> 
+<img  onclick="$('opentext').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+</div>
+</body>
+</html>
+
