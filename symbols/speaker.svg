@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="50.81818"
+   height="30.091328"
+   id="svg4119">
+  <defs
+     id="defs4121" />
+  <g
+     transform="matrix(1,0,0,0.9706471,-2.1617591e-8,1.4676428e-2)"
+     id="Speaker">
+    <rect
+       width="30"
+       height="9.0629358"
+       x="10.5"
+       y="10.782949"
+       id="rect4127"
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1.01500762px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       d="M 10.954546,10.608661 C 9.409091,10.085799 0.5,0.6742871 0.5,0.6742871 L 50.318182,0.5 L 40.136364,10.957236"
+       id="path4129"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.01500762px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       d="M 10.633434,20.379502 L 10.633434,30.953156"
+       id="path4133"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.01500762px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       d="M 40.366566,20.419654 L 40.366566,30.96424"
+       id="path4135"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.06455946px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="20"
+   height="20.112738"
+   id="svg2160">
+  <defs
+     id="defs2162" />
+  <g
+     id="V">
+    <rect
+       width="20"
+       height="20"
+       rx="0"
+       ry="0"
+       x="0"
+       y="0"
+       id="rect2162"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       d="M 9.8453557,0.75155132 L 9.7889861,20.02609"
+       id="path3694"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.96246952px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       d="M 6.8984095,6.0400567 L 9.776679,0.65836743 L 13.116155,5.9214675"
+       id="path5089"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.97851717px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <text
+       x="11.216797"
+       y="11.523438"
+       id="text5095"
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"><tspan
+         x="11.216797"
+         y="11.523438"
+         id="tspan5097">+</tspan></text>
+  </g>
+</svg>
