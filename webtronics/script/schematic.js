@@ -677,7 +677,8 @@ Schematic.prototype.onDrag = function(event) {
 
 
 Schematic.prototype.getgroup =function(elem){
-		var newelem=this.svgRoot.appendChild(elem);
+		var newelem=document.importNode(elem,true);
+		this.svgRoot.appendChild(newelem);
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,0,0)')
 		this.select(newelem);
 //		this.drag=1;
@@ -690,7 +691,8 @@ ch=elem.childNodes;
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 		if(ch[i-1].tagName=='line'||ch[i-1].tagName=='text'||ch[i-1].tagName=='g'){
-			this.svgRoot.appendChild(ch[i-1]);
+			var newelem=document.importNode(ch[i-1],true);
+			this.svgRoot.appendChild(newelem);
 		}
 	}
 
