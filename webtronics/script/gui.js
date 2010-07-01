@@ -37,13 +37,14 @@
 	function setsize(){
 	
 	var buffer=20;
-	var realsize=window.innerHeight	- parseInt($('toolbar').style.height)-parseInt($('status').style.height)-buffer ;
+	var realsize=window.innerHeight-$('toolbar').offsetHeight-$('status').offsetHeight-buffer;
+	//alert(parseInt($('toolbar').offsetHeight));
 	//	$('diagram').width=window.screen.availWidth-buffer;
-	$('diagram').style.height = realsize;
+	$('diagram').style.height = realsize+'px';
 	}
 
   function showMarkup() {
-	var str='<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
+	var str='<?xml version="1.0"?>';
 	str	+='<!--Created by webtronics 0.1-->';
 	str	+=	c.getMarkup();
 	var w=window.open("data:image/svg+xml;base64," + Utils.encode64(str) );
