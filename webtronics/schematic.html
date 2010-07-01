@@ -1,3 +1,5 @@
+<!DOCTYPE HTML>
+<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"-->
 <html>
 <head>
 
@@ -17,8 +19,7 @@
 <!--
 toolbar
 -->
-
-<div  id="toolbar" style="width:auto; height:40; background-color:#C0C0C0;">
+<div  id="toolbar" style="width:auto; height:auto; background-color:#C0C0C0;">
 	<img id="fopen" title="open file" src="./buttons/open.png" onclick="setMode('fopen','Selection');returnsvg();"/>
 	<img id='chipbox' title="make chips" src="./buttons/icbut.png" onclick="setMode('chipbox','Selection');$('chips').show();"/>
 	<img id="partsbox" title="get parts" src="./buttons/disc.png" onclick="setMode('partsbox','Selection');$('parts').show();"/>
@@ -34,14 +35,14 @@ toolbar
 display area
 -->
 
-  <div id="diagram" style="width:auto;height:500;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
+  <div id="diagram" style="width:auto;height:auto;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
   </div>
 
 <!--
 status bar
 -->
   
- <div id="status" style="width:auto;height:20 ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
+ <div id="status" style="width:auto;height:auto ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
 
  <!--
 parts box
