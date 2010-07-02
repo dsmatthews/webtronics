@@ -88,16 +88,8 @@ Schematic.prototype.init = function(elem) {
 }
 
 Schematic.prototype.parseMatrix=function(group){
-	regex = new RegExp(/-?\d+/g);
-		var matrix=Object();
-var str = group.getAttributeNS(null,"transform");
-	matrix.a=regex.exec(str)-0;
-	matrix.b=regex.exec(str)-0;
-	matrix.c=regex.exec(str)-0;
-	matrix.d=regex.exec(str)-0;
-	matrix.e=regex.exec(str)-0;
-	matrix.f=regex.exec(str)-0;
-	return matrix;	
+
+return group.getTransformToElement(this.svgRoot);
 };
 
 
@@ -105,28 +97,15 @@ Schematic.prototype.rotate=function(){
 if(this.selected.length>1||!this.selected[0])return;
 if(this.selected[0].tagName!='g')return;
 	var matrix=this.parseMatrix(this.selected[0]);
-	if(matrix.b==0&&matrix.c==0)
-		{
-			matrix.b=matrix.a;
-			matrix.c=matrix.d*-1;
-			matrix.a=0;
-			matrix.d=0;
-		}
-/*if matrix is 90 degrees*/
-	else
-		{
-			matrix.a=matrix.b*-1;
-			matrix.d=matrix.c;
-			matrix.b=0;
-			matrix.c=0;
-		}
-	
-	if(this.selected[0].getAttributeNS(null,'id')=='Q'||this.selected[0].getAttributeNS(null,'id')=='opamp'){
-		if(matrix.b==-1){
-			matrix.c=matrix.c*-1;
+	matrix=matrix.rotate(90);
+
+	if(this.selected[0].id=='Q'||this.selected[0].id=='opamp'){
+		if(matrix.b<0){
+matrix.c=matrix.c*-1;
+//			matrix=matrix.flipX();
 		}
 	}
-
+	
 	this.selected[0].setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.removeTracker();
 	this.showTracker(this.selected[0]);		
@@ -242,7 +221,7 @@ Schematic.prototype.move = function(shape, x, y) {
 		if(matrix.a==0&&matrix.b==0&&matrix.c==0&&matrix.d==0){
 		shape.setAttributeNS(null,'transform','matrix(1,0,0,1,'+x+','+y	+')');
 		}
-		else shape.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+x+','+y+')');
+		else shape.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	}
 	else {
 		shape.setAttributeNS(null, 'x', x);
@@ -281,47 +260,48 @@ Schematic.prototype.tracker = function(elem) {
 		if(elem.tagName=='g'){
 /*get all child element x+width y+height because firefox doesn't get group boxes right*/
 				
+
 				for(var i= elem.childNodes.length;i>0;i--){
 					if(elem.childNodes[i-1].nodeType==1){
 						var chbox=elem.childNodes[i-1].getBBox();
-						if ((chbox.x+chbox.width)>box.width)box.width=chbox.x+chbox.width;
-						if ((chbox.y+chbox.height)>box.height)box.height=chbox.y+chbox.height;
-
+						box.x=Math.min(box.x,chbox.x);
+						box.y=Math.min(box.y,chbox.y);
+						box.width=Math.max(chbox.x+chbox.width,box.width);
+						box.height=Math.max(chbox.y+chbox.height,box.height);
 						}	
 					}
 
-			var matrix=Object();
-			matrix=this.parseMatrix(elem);
-			rect.x=matrix.e;
-			rect.y=matrix.f;
+			var matrix=this.parseMatrix(elem);
+/*gets corrected bounding box*/
+			var tleft=this.svgRoot.createSVGPoint();
+			var bright=this.svgRoot.createSVGPoint();
+			var bleft=this.svgRoot.createSVGPoint();
+			var tright=this.svgRoot.createSVGPoint();
+			tleft.x=box.x;
+			tleft.y=box.y;
+			tleft=tleft.matrixTransform(matrix);
 
-			if(matrix.a==-1){
-			rect.x= matrix.e-box.width;
+			tright.x=box.x+box.width;
+			tright.y=box.y;
+			tright=tright.matrixTransform(matrix);
+
+			bleft.x=box.x;
+			bleft.y=box.y+box.height;
+			bleft=bleft.matrixTransform(matrix);
+
+			bright.x=box.x+box.width;
+			bright.y=box.y+box.height;
+			bright=bright.matrixTransform(matrix);
 			
-			}
-			if(matrix.b==-1){
-			rect.y = matrix.f-box.width;
+	
 
-			}
-			if(matrix.c==-1){
-			rect.x= matrix.e-box.height;
+			rect.x=Math.min(tleft.x,bright.x,bleft.x,tright.x);
+			rect.y=Math.min(tleft.y,bright.y,bleft.y,tright.y);
+			rect.width=Math.max(tleft.x,bright.x,bleft.x,tright.x)-rect.x;			
+			rect.height=Math.max(tleft.y,bright.y,bleft.y,tright.y)-rect.y;			
 
-			}
 
-			if(matrix.d==-1){
-			rect.y= matrix.f-box.height;
 
-			}
-
-			if(matrix.b==0&&matrix.c==0){
-				rect.width=box.width;
-				rect.height=box.height;
-			}
-
-			else{
-				rect.width=box.height;
-				rect.height=box.width;
-			}
 		}
 		else{
 			rect.x=box.x-1;
@@ -574,12 +554,7 @@ Schematic.prototype.onMouseDown = function(event){
   return false;
 };
 
-Schematic.prototype.createMenu=function(x,y){
-	$('rotatemenu').style.display="block";
-	$('rotatemenu').style.top=x;
-	$('rotatemenu').style.left="block";
-	$('rotatemenu').style.display="block";
-};
+
 
 Schematic.prototype.dragSelection=function(x ,y){
 	var floating=document.getElementById('floating');
@@ -690,9 +665,10 @@ Schematic.prototype.getfile =function(elem){
 ch=elem.childNodes;
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
-		if(ch[i-1].tagName=='line'||ch[i-1].tagName=='text'||ch[i-1].tagName=='g'){
-			var newelem=document.importNode(ch[i-1],true);
+		if(ch[i-1].tagName=='circle'||ch[i-1].tagName=='line'||ch[i-1].tagName=='text'||ch[i-1].tagName=='g'){
+			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
+			this.select(newelem);
 		}
 	}
 
