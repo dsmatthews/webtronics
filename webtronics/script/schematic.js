@@ -81,15 +81,18 @@ Schematic.prototype.zoom = function(){
 
 
 Schematic.prototype.init = function(elem) {
-  this.container = elem;
-  this.container.style.MozUserSelect = 'none';
-  this.svgRoot = this.container.ownerDocument.createElementNS(svgNamespace, "svg");
-  this.container.appendChild(this.svgRoot);
-}
+
+	this.container = elem;
+	this.container.style.MozUserSelect = 'none';
+	this.svgRoot = this.container.ownerDocument.createElementNS(svgNamespace, "svg");
+	this.svgRoot.setAttribute('xmlns',svgNamespace);
+	this.container.appendChild(this.svgRoot);
+
+	}
 
 Schematic.prototype.parseMatrix=function(group){
 
-return group.getTransformToElement(this.svgRoot);
+	return group.getTransformToElement(this.svgRoot);
 };
 
 
@@ -275,30 +278,19 @@ Schematic.prototype.tracker = function(elem) {
 /*gets corrected bounding box*/
 			var tleft=this.svgRoot.createSVGPoint();
 			var bright=this.svgRoot.createSVGPoint();
-			var bleft=this.svgRoot.createSVGPoint();
-			var tright=this.svgRoot.createSVGPoint();
 			tleft.x=box.x;
 			tleft.y=box.y;
 			tleft=tleft.matrixTransform(matrix);
-
-			tright.x=box.x+box.width;
-			tright.y=box.y;
-			tright=tright.matrixTransform(matrix);
-
-			bleft.x=box.x;
-			bleft.y=box.y+box.height;
-			bleft=bleft.matrixTransform(matrix);
-
 			bright.x=box.x+box.width;
 			bright.y=box.y+box.height;
 			bright=bright.matrixTransform(matrix);
 			
 	
 
-			rect.x=Math.min(tleft.x,bright.x,bleft.x,tright.x);
-			rect.y=Math.min(tleft.y,bright.y,bleft.y,tright.y);
-			rect.width=Math.max(tleft.x,bright.x,bleft.x,tright.x)-rect.x;			
-			rect.height=Math.max(tleft.y,bright.y,bleft.y,tright.y)-rect.y;			
+			rect.x=Math.min(tleft.x,bright.x);
+			rect.y=Math.min(tleft.y,bright.y);
+			rect.width=Math.max(tleft.x,bright.x)-rect.x;			
+			rect.height=Math.max(tleft.y,bright.y)-rect.y;			
 
 
 
@@ -344,7 +336,7 @@ Schematic.prototype.removeTracker=function(){
 	if(tracker){
 		do{
 		this.remove(tracker);
-		tracker=this.container.ownerDocument.getElementById('tracker')
+		tracker=this.container.ownerDocument.getElementById('tracker');
 
 		}while(tracker)
 		
@@ -357,7 +349,12 @@ Schematic.prototype.getMarkup = function() {
 	this.svgRoot.removeAttributeNS(null,'viewBox');
 	this.svgRoot.removeAttributeNS(null,'width');
 	this.svgRoot.removeAttributeNS(null,'height');
- return (new XMLSerializer()).serializeToString(this.svgRoot);
+//	var p = new DOMParser();
+//	var doc=p.parseFromString((new XMLSerializer()).serializeToString(this.svgRoot),"text/xml");
+//	var svg=doc.getElementById('svg');
+//	svg.setAttribute('xmlns',svgNamespace);
+	return (new XMLSerializer()).serializeToString(this.svgRoot);
+
 };
 
 //**********************************************************************
