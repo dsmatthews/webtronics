@@ -471,7 +471,7 @@ Schematic.prototype.onMouseDown = function(event){
 	var x=0;
 	var y=0;
 	  
-	if (event.button==0){
+	if (Event.isLeftClick(event)){
 		if (this.mode == 'line') {
 			if(this.selected[0]){
 				if (this.selected[0].tagName=='line'){
@@ -560,7 +560,13 @@ Schematic.prototype.dragSelection=function(x ,y){
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 		}
-
+		var tracked=this.container.ownerDocument.getElementById('tracker');
+		do{
+			if(tracked){
+				floating.appendChild(tracked);
+				tracked=this.container.ownerDocument.getElementById('tracker');
+			}
+		}while(tracked);
 		floating.setAttributeNS(null, 'id', 'floating');
 	  this.svgRoot.appendChild(floating);
 	}
@@ -575,8 +581,12 @@ Schematic.prototype.dropSelection=function(){
 	for(var i=floating.childNodes.length;i>0;i--){
 		var point=this.parseXY(floating.childNodes[i-1]);
 		this.move(floating.childNodes[i-1],point.x + matrix.e,point.y +  matrix.f);
-		this.svgRoot.appendChild(floating.childNodes[i-1]);
+		if(floating.childNodes[i-1].id!='tracker'){
+			this.svgRoot.insertBefore(floating.childNodes[i-1],this.svgRoot.childNodes[0]);
 		
+		}
+		else this.svgRoot.appendChild(floating.childNodes[i-1]);
+
 	}
 	this.remove(floating);	
 };
@@ -622,7 +632,7 @@ Schematic.prototype.onDrag = function(event) {
 /*clicked inside bounds*/
 
 		if(this.drag){
-			this.removeTracker();			
+			//this.removeTracker();			
 			this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
 		}
 		else{
