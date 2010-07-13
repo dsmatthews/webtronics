@@ -13,10 +13,10 @@
 
 	}
 
-function drawchip(h,v){
+function drawchip(h,v,elem){
 	var svgNamespace = 'http://www.w3.org/2000/svg';
 	var svg;
-	var container =  document.getElementById("chipdisplay");
+	var container =  elem;
  	var svgRoot = container.getElementsByTagName("svg")[0];
 	if(!svgRoot){
 		svgRoot=container.ownerDocument.createElementNS(svgNamespace, "svg");
@@ -48,34 +48,7 @@ function drawchip(h,v){
   svg.setAttributeNS(null, 'height', v*10+10);
   svg.setAttributeNS(null, 'style',"fill:white;stroke:#000000;stroke-width:2px;");
   chipG.appendChild(svg);
-	for(var x=20;x<h*10+20;x+=10){
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
-		svg.setAttributeNS(null, 'x1',x );
-		svg.setAttributeNS(null, 'y1', 0);
-		svg.setAttributeNS(null, 'x2', x);
-		svg.setAttributeNS(null, 'y2', 10);
-		svg.setAttributeNS(null, 'stroke', 'black');
-		svg.setAttributeNS(null, 'stroke-width', 2);
-		chipG.appendChild(svg);
-			
-	/*	
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
-		svg.setAttributeNS(null, 'x', 50);
-		svg.setAttributeNS(null, 'y', 50);
-		svg.setAttributeNS(null, 'font-size', 12);
-		svg.appendChild(container.ownerDocument.createTextNode(pincount));
-		chipG.appendChild(svg);
-*/
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
-		svg.setAttributeNS(null, 'x1',x);
-		svg.setAttributeNS(null, 'y1',v*10+20);
-		svg.setAttributeNS(null, 'x2',x);
-		svg.setAttributeNS(null, 'y2',v*10+30);
-		svg.setAttributeNS(null, 'stroke', 'black');
-		svg.setAttributeNS(null, 'stroke-width', 2);
-
-		chipG.appendChild(svg);
-	}
+/*vertical pins*/
 	for(;y<(v*10+start+10);y+=10){
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
 		svg.setAttributeNS(null, 'x1',0 );
@@ -85,15 +58,102 @@ function drawchip(h,v){
 		svg.setAttributeNS(null, 'stroke', 'black');
 		svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
+/*
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg.setAttributeNS(null, 'x', 10);
+		svg.setAttributeNS(null, 'y', y);
+		svg.setAttributeNS(null, 'font-size', 8);
+		svg.appendChild(container.ownerDocument.createTextNode(pincount));
+		chipG.appendChild(svg);
+*/
+		pincount++;
+	}
+   y=20
+	start=10;
+	hor=h*10;
+
+	if(h==0)
+	{
+	hor=30;
+	y=10;
+	start=0;
+	}
+	for(var x=20;x<h*10+20;x+=10){
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
-		svg.setAttributeNS(null, 'x1',hor+20 );
-		svg.setAttributeNS(null, 'y1',y);
-		svg.setAttributeNS(null, 'x2',hor+30);
-		svg.setAttributeNS(null, 'y2',y);
+		svg.setAttributeNS(null, 'x1',x);
+		svg.setAttributeNS(null, 'y1',v*10+20);
+		svg.setAttributeNS(null, 'x2',x);
+		svg.setAttributeNS(null, 'y2',v*10+30);
 		svg.setAttributeNS(null, 'stroke', 'black');
 		svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
+/*
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg.setAttributeNS(null, 'x', x);
+		svg.setAttributeNS(null, 'y',v*10+20);
+		svg.setAttributeNS(null, 'font-size', 8);
+		svg.appendChild(container.ownerDocument.createTextNode(pincount));
+		chipG.appendChild(svg);
+*/
+		pincount++;
 	}
+   y=20
+	start=10;
+	hor=h*10;
+	if(h==0)
+	{
+	hor=30;
+	y=10;
+	start=0;
+	}
+	for(var y2=(v*10+start);y2>=y;y2-=10){
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg.setAttributeNS(null, 'x1',hor+20 );
+		svg.setAttributeNS(null, 'y1',y2);
+		svg.setAttributeNS(null, 'x2',hor+30);
+		svg.setAttributeNS(null, 'y2',y2);
+		svg.setAttributeNS(null, 'stroke', 'black');
+		svg.setAttributeNS(null, 'stroke-width', 2);
+		chipG.appendChild(svg);
+/*
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg.setAttributeNS(null, 'x', hor+20);
+		svg.setAttributeNS(null, 'y', y2);
+		svg.setAttributeNS(null, 'font-size', 8);
+		svg.appendChild(container.ownerDocument.createTextNode(pincount));
+		chipG.appendChild(svg);
+*/
+		pincount++;
+	}
+   y=20
+	start=10;
+	hor=h*10;
+	if(h==0)
+	{
+	hor=30;
+	y=10;
+	start=0;
+	}
+  for(var x=h*10+10;x>=20;x-=10){
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg.setAttributeNS(null, 'x1',x );
+		svg.setAttributeNS(null, 'y1', 0);
+		svg.setAttributeNS(null, 'x2', x);
+		svg.setAttributeNS(null, 'y2', 10);
+		svg.setAttributeNS(null, 'stroke', 'black');
+		svg.setAttributeNS(null, 'stroke-width', 2);
+		chipG.appendChild(svg);
+	/*
+		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg.setAttributeNS(null, 'x', x);
+		svg.setAttributeNS(null, 'y', 10);
+		svg.setAttributeNS(null, 'font-size', 8);
+		svg.appendChild(container.ownerDocument.createTextNode(pincount));
+		chipG.appendChild(svg);
+*/
+		pincount++;
+	}
+
 
 	svg=container.ownerDocument.createElementNS(svgNamespace,'circle');
   svg.setAttributeNS(null, 'cx', 20);
