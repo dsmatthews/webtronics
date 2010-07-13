@@ -95,7 +95,9 @@ return{
 				$('webtronics_open_file').hide();
 				}
 			}
-			else if((navigator.userAgent.toLowerCase().indexOf('firefox')>-1) &&window.FileList){
+			else if(((navigator.userAgent.toLowerCase().indexOf('firefox')>-1)||
+				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1))	
+				 &&window.FileList){
 
 			$('webtronics_open_file_selector').form.reset();
 			$('webtronics_open_file').show();
