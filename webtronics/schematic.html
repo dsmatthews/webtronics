@@ -14,41 +14,41 @@
   </style>
 </head>
 
-<body onload="schematic();setsize();" onresize="setsize()" oncontextmenu="return false;">
+<body id="webtronics_main_window" >
 
 <!--
 toolbar
 -->
-<div  id="toolbar" style="width:auto; height:auto; background-color:#C0C0C0;">
-	<img id="fopen" title="open file" src="./buttons/open.png" onclick="setMode('fopen','Selection');returnsvg();"/>
-	<img id='chipbox' title="make chips" src="./buttons/icbut.png" onclick="setMode('chipbox','Selection');$('chips').show();"/>
-	<img id="partsbox" title="get parts" src="./buttons/disc.png" onclick="setMode('partsbox','Selection');$('parts').show();"/>
-	<img id="zoom"  title="zoom image" onclick="c.zoom();" src="./buttons/zoom.png"/>
-	<img id="select" title="Select shapes" onclick="setMode('select', 'Selection');" src="./buttons/select.png" />
-	<img id="rotate" title ="rotate parts" onclick="c.rotate();" src="./buttons/rotate.png" />
-	<img id="line" title="Draw wires"  onclick="setMode('line', 'Line');" src="./buttons/wire.png" />
-	<img id="text" title="add text" onclick="setMode('select','Selection');$('addtext').show();" src="./buttons/text.png" />
-	<img  id="delete" title="Delete selected shape" onclick="c.deleteSelection();" src="./buttons/delete.png" />
-	<img  id="save" title="Save the file" onclick="showMarkup();" src="./buttons/save.png" />
+<div  id="webtronics_toolbar" style="width:auto; height:auto; background-color:#C0C0C0;">
+	<img id="webtronics_file_open" title="open file" src="./buttons/open.png" />
+	<img id='webtronics_chips_open' title="make chips" src="./buttons/icbut.png" />
+	<img id="webtronics_parts_open" title="get parts" src="./buttons/disc.png"/>
+	<img id="webtronics_zoom"  title="zoom image"  src="./buttons/zoom.png"/>
+	<img id="webtronics_select" title="Select shapes" src="./buttons/select.png" />
+	<img id="webtronics_rotate" title ="rotate parts" src="./buttons/rotate.png" />
+	<img id="webtronics_wire" title="Draw wires"  src="./buttons/wire.png" />
+	<img id="webtronics_text" title="add text"  src="./buttons/text.png" />
+	<img  id="webtronics_delete" title="Delete selected shape" src="./buttons/delete.png" />
+	<img  id="webtronics_save" title="Save the file" src="./buttons/save.png" />
 </div>
 <!--
 display area
 -->
 
-  <div id="diagram" style="width:auto;height:auto;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
+  <div id="webtronics_diagram_area" style="width:auto;height:auto;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
   </div>
 
 <!--
 status bar
 -->
   
- <div id="status" style="width:auto;height:auto ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
+ <div id="webtronics_status_bar" style="width:auto;height:auto ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
 
  <!--
 parts box
 -->
 
-<div id="parts"
+<div id="webtronics_parts_box"
    style="display:none; 
       position:absolute; 
       left:200px; 
@@ -57,7 +57,7 @@ parts box
       background-color:#c0c0c0; 
       padding: 5px;">
  <form >
-<select id="part" size="10"  onchange="changeimage(this.value)">
+<select id="webtronics_part" size="10">
 	<option value="./symbols/npn.svg"  >npn bjt</option>
 	<option value="./symbols/pnp.svg" >pnp bjt</option>
 	<option  value="./symbols/njfet.svg" >njfet </option>
@@ -87,15 +87,15 @@ parts box
 
 </select>
 </form>
-<embed   id="partdisplay"  style="padding:5px; margin-bottom:5px; background-color:#ffffff; border:1px solid black;"  src="./symbols/gnd.svg" width="60" height="60" />	
+<embed   id="webtronics_part_display"  style="padding:5px; margin-bottom:5px; background-color:#ffffff; border:1px solid black;"  src="./symbols/gnd.svg" width="60" height="60" />	
 <br>
-<img  id="getpart" onclick="returnpart(document.getElementById('part').value);" src="./buttons/ok.png" />
-<img  onclick="$('parts').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+<img  id="webtronics_part_ok" src="./buttons/ok.png" />
+<img  id="webtronics_part_cancel" src="./buttons/cancel.png" />
 </div>
 <!--
 open files
 -->
-<div id="openfile" 
+<div id="webtronics_open_file" 
    style="display:none; 
       position:absolute; 
       left:200px; 
@@ -105,8 +105,8 @@ open files
       padding: 5px;">
 
 <form>
-<input type="file" id="openfile_selector" />
-<img  onclick="$('openfile').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+<input type="file" id="webtronics_open_file_selector" />
+<img  id="webtronics_open_file_cancel" src="./buttons/cancel.png" />
  </form>
 
 </div>
@@ -116,7 +116,7 @@ open files
 make chips
 -->
 
-<div id="chips"
+<div id="webtronics_chips_box"
 style="display:none; 
       position:absolute; 
       left:200px; 
@@ -124,11 +124,11 @@ style="display:none;
       border-style: solid; 
       background-color:#c0c0c0; 
       padding: 5px;">
-  <div id="chipdisplay"  style="width:300px; height:300px; border:1px solid black; background-color:#ffffff;" >
+  <div id="webtronics_chip_display"  style="width:300px; height:300px; border:1px solid black; background-color:#ffffff;" >
   </div>
 	<form  >
 <br>
-	<select name="vert" onchange="drawchip(hor.value,this.value);">
+	<select id="webtronics_vert_pins">
 		<option value=1>1</option>
 		<option value=2>2</option>
 		<option value=3>3</option>
@@ -180,7 +180,7 @@ style="display:none;
 		<option value=49>49</option>
 		<option value=50>50</option>
 	</select>
-	<select name="hor" onchange="drawchip(this.value,vert.value);" >
+	<select id="webtronics_hor_pins" >
 		<option value=0>0</option>
 		<option value=4>4</option>
 		<option value=5>5</option>
@@ -230,8 +230,8 @@ style="display:none;
 		<option value=49>49</option>
 		<option value=50>50</option>
 	</select>
-<img  id="use" onclick="returnchip();" src="./buttons/ok.png" />
-<img  onclick="$('chips').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+<img  id="webtronics_chip_ok" src="./buttons/ok.png" />
+<img  id="webtronics_chip_cancel"  src="./buttons/cancel.png" />
  </form>
 
 </div>
@@ -240,7 +240,7 @@ style="display:none;
 add text
  -->
 
-<div id="addtext" 
+<div id="webtronics_add_text" 
  style="display:none; 
       position:absolute; 
       left:200px; 
@@ -249,18 +249,18 @@ add text
       background-color:#c0c0c0; 
       padding: 5px;">
 <form>
-<textarea cols="50" rows="4" id="comment"></textarea>
+<textarea cols="50" rows="4" id="webtronics_comment"></textarea>
 <!--<input type="text" size="50" name="address" />address</br>-->
-<img  id="use" onclick="c.createtext($('comment').value);$('addtext').hide();" src="./buttons/ok.png" /> 
+<img  id="webtronics_text_ok" " src="./buttons/ok.png" /> 
 
-<img  onclick="$('addtext').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+<img  id="webtronics_text_cancel" src="./buttons/cancel.png" />
 </form>
 </div>
 <!--
 add code text
  -->
 
-<div id="opentext" 
+<div id="webtronics_open_text" 
  style="display:none; 
       position:absolute; 
       left:200px; 
@@ -269,9 +269,9 @@ add code text
       background-color:#c0c0c0; 
       padding: 5px;">
 
-<textarea cols="50" rows="4" id="svgcode"></textarea>
-<img  id='opentext_ok' src="./buttons/ok.png" /> 
-<img  onclick="$('opentext').hide();setMode('select','Selection');" src="./buttons/cancel.png" />
+<textarea cols="50" rows="4" id="webtronics_svg_code"></textarea>
+<img  id="webtronics_open_text_ok" src="./buttons/ok.png" /> 
+<img  id="webtronics_open_text_cancel" src="./buttons/cancel.png" />
 </div>
 </body>
 </html>
