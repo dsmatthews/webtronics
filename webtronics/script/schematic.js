@@ -32,9 +32,10 @@
  2006-04-05 | Created
  --------------------------------------------------------------------------*/
 
-var svgNamespace = 'http://www.w3.org/2000/svg';
+
 
 function Schematic(elem) {
+	this.svgNs = 'http://www.w3.org/2000/svg';
   this.container = elem;
   this.grid = 10;
 	this.svgRoot = null;
@@ -84,8 +85,8 @@ Schematic.prototype.init = function(elem) {
 
 	this.container = elem;
 	this.container.style.MozUserSelect = 'none';
-	this.svgRoot = this.container.ownerDocument.createElementNS(svgNamespace, "svg");
-	this.svgRoot.setAttribute('xmlns',svgNamespace);
+	this.svgRoot = document.createElementNS(this.svgNs, "svg");
+	this.svgRoot.setAttribute('xmlns',this.svgNs);
 	this.container.appendChild(this.svgRoot);
 
 	}
@@ -117,23 +118,29 @@ matrix.c=matrix.c*-1;
 
 Schematic.prototype.createtext = function(str){
   var svg;
+	this.unselect();
+/*remove whitespace at beginning and end*/
+	str=str.replace(/(^\s*|\s*$)/g, "");
 	var lines=str.split('\n');
 	for(var i=0; i<lines.length;i++){
-		svg = this.container.ownerDocument.createElementNS(svgNamespace, 'text');
-		svg.setAttributeNS(null, 'x', 50);
-		svg.setAttributeNS(null, 'y', 50+(i*12));
-		svg.setAttributeNS(null, 'font-size', 12);
-		svg.appendChild(this.container.ownerDocument.createTextNode(lines[i]));
-		this.svgRoot.appendChild(svg);
-		this.select(svg);
+	/*don't make empty text nodes*/
+			svg = this.container.ownerDocument.createElementNS(this.svgNs, 'text');
+			svg.setAttributeNS(null, 'x', this.mouseDown.x);
+			svg.setAttributeNS(null, 'y', this.mouseDown.y+(i*12));
+			svg.setAttributeNS(null, 'font-size', 12);
+			svg.appendChild(this.container.ownerDocument.createTextNode(lines[i]));
+			this.svgRoot.appendChild(svg);
+			this.select(svg);
+		
 	}
+	this.drag=1;
 
 }
 Schematic.prototype.createline = function(lineColor,left, top,right,bottom){
   var svg;
 
 				
-  svg = this.container.ownerDocument.createElementNS(svgNamespace, 'line');
+  svg = document.createElementNS(this.svgNs, 'line');
 	
   svg.setAttributeNS(null, 'x1', left);
   svg.setAttributeNS(null, 'y1', top);
@@ -157,7 +164,7 @@ Schematic.prototype.createdot =function(lineColor,x,y){
   var svg;
 
 				
-  svg = this.container.ownerDocument.createElementNS(svgNamespace, 'circle');
+  svg = this.container.ownerDocument.createElementNS(this.svgNs, 'circle');
   svg.setAttributeNS(null, 'cx', x);
   svg.setAttributeNS(null, 'cy', y);
   svg.setAttributeNS(null, 'r', 3 );
@@ -207,7 +214,13 @@ Schematic.prototype.parseXY=function(elem){
 };
 
 Schematic.prototype.move = function(shape, x, y) {
-	var rect=shape.getBBox();
+	var rect;
+	try{
+		rect=shape.getBBox();
+	}
+	catch(e){
+		return
+	}
 	if (shape.tagName == 'line') {
 		shape.setAttributeNS(null, 'x1', x);
 		shape.setAttributeNS(null, 'y1', y);	
@@ -259,7 +272,13 @@ Schematic.prototype.resize = function(shape, fromX, fromY, toX, toY) {
 Schematic.prototype.tracker = function(elem) {
 	var rect=Object();
 	if(elem&&(elem.nodeType==1)){	
-		var box=elem.getBBox();
+		var box={x:0,y:0,width:0,height:0};
+		try{
+			box=elem.getBBox();
+		}
+		catch(e){
+			return box;
+		}
 		if(elem.tagName=='g'){
 /*get all child element x+width y+height because firefox doesn't get group boxes right*/
 				
@@ -317,7 +336,7 @@ Schematic.prototype.tracker = function(elem) {
 /*show a box around an element*/
 Schematic.prototype.showTracker = function(elem) {
 	var rect=this.tracker(elem);
-  tracked = document.createElementNS(svgNamespace, 'rect');
+  tracked = document.createElementNS(this.svgNs, 'rect');
   tracked.setAttributeNS(null, 'id', 'tracker');
 	tracked.setAttributeNS(null, 'x', rect.x);
  	tracked.setAttributeNS(null, 'y', rect.y);
@@ -332,11 +351,11 @@ Schematic.prototype.showTracker = function(elem) {
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
 	
-	var tracker=this.container.ownerDocument.getElementById('tracker')
+	var tracker=$('tracker')
 	if(tracker){
 		do{
 		this.remove(tracker);
-		tracker=this.container.ownerDocument.getElementById('tracker');
+		tracker=$('tracker');
 
 		}while(tracker)
 		
@@ -352,7 +371,7 @@ Schematic.prototype.getMarkup = function() {
 //	var p = new DOMParser();
 //	var doc=p.parseFromString((new XMLSerializer()).serializeToString(this.svgRoot),"text/xml");
 //	var svg=doc.getElementById('svg');
-//	svg.setAttribute('xmlns',svgNamespace);
+//	svg.setAttribute('xmlns',this.svgNs);
 	return (new XMLSerializer()).serializeToString(this.svgRoot);
 
 };
@@ -462,6 +481,7 @@ Schematic.prototype.onMouseOut = function(event){
 
 /*mousedown event handler*/
 Schematic.prototype.onMouseDown = function(event){
+if(!this.drag){
 	var offset = this.container.cumulativeOffset();
 	var soffset=this.container.cumulativeScrollOffset();
 	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0])/this.zoomRatio);
@@ -512,7 +532,7 @@ Schematic.prototype.onMouseDown = function(event){
 					this.selectionRect.y=this.mouseDown.y;
 					this.selectionRect.width=1;
 					this.selectionRect.height=1;
-				  selection = document.createElementNS(svgNamespace, 'rect');
+				  selection = document.createElementNS(this.svgNs, 'rect');
 					selection.setAttributeNS(null, 'id', 'selection');
 				  selection.setAttributeNS(null, 'x', realX );
  					selection.setAttributeNS(null, 'y', realY );
@@ -549,14 +569,15 @@ Schematic.prototype.onMouseDown = function(event){
 		
 	}	  
   return false;
+}
 };
 
 
 
 Schematic.prototype.dragSelection=function(x ,y){
-	var floating=document.getElementById('floating');
+	var floating=$('floating');
 	if(!floating){
-		floating = this.container.ownerDocument.createElementNS(svgNamespace, 'g');
+		floating = this.container.ownerDocument.createElementNS(this.svgNs, 'g');
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 		}
@@ -576,7 +597,7 @@ Schematic.prototype.dragSelection=function(x ,y){
 };
 
 Schematic.prototype.dropSelection=function(){
-	var floating=document.getElementById('floating');
+	var floating=$('floating');
 	var matrix=this.parseMatrix(floating);
 	for(var i=floating.childNodes.length;i>0;i--){
 		var point=this.parseXY(floating.childNodes[i-1]);
@@ -597,7 +618,7 @@ Schematic.prototype.onMouseUp = function(event) {
 
 
 if(this.mode=='select'){
-	var floating=document.getElementById('floating');
+	var floating=$('floating');
 	if(floating){
 		this.dropSelection();
 	}
@@ -606,7 +627,7 @@ if(this.mode=='select'){
 		this.getPart();
 	}
 		this.drag=0;	
-	var selection = document.getElementById('selection');
+	var selection = $('selection');
 	if (selection) {
     this.remove(selection);
 		this.selectionRect.x=0;
@@ -636,7 +657,7 @@ Schematic.prototype.onDrag = function(event) {
 			this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
 		}
 		else{
-		var selection = document.getElementById('selection');
+		var selection = $('selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
 			this.selectionRect.width=realX-this.selectionRect.x;
@@ -647,7 +668,7 @@ Schematic.prototype.onDrag = function(event) {
 		}
 	}
 
-	if (this.mode=='line')
+	else if (this.mode=='line')
 	{
 		if (this.selected[0]){
 			
@@ -659,20 +680,24 @@ Schematic.prototype.onDrag = function(event) {
 
 
 Schematic.prototype.getgroup =function(elem){
+		this.unselect();
 		var newelem=document.importNode(elem,true);
 		this.svgRoot.appendChild(newelem);
-		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,0,0)')
+		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')')
 		this.select(newelem);
-//		this.drag=1;
-//		this.dragSelection(0,0);
+		this.drag=1;
 		}
 
 Schematic.prototype.getfile =function(elem){
-
+this.unselect();
 ch=elem.childNodes;
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
-		if(ch[i-1].tagName=='circle'||ch[i-1].tagName=='line'||ch[i-1].tagName=='text'||ch[i-1].tagName=='g'){
+		/*get rid  of empty text*/
+		if(ch[i-1].tagName=='circle'||
+			ch[i-1].tagName=='line'||
+			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes())||
+			ch[i-1].tagName=='g'){
 			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
 			this.select(newelem);
