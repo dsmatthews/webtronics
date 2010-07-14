@@ -39,7 +39,6 @@ function Schematic(elem) {
   this.container = elem;
   this.grid = 10;
 	this.svgRoot = null;
-	this.Zoom =2000;
 	this.zoomRatio=1;
 	this.mode = '';
   this.lineColor = 'black';
@@ -47,11 +46,12 @@ function Schematic(elem) {
 /*array of nodes*/
   this.selected = Array();
 /*selecting rectangle*/
-  this.selectionRect = { x:0, y:0, width:0, height: 0 };
 	this.drag=0;	
+  this.selectionRect = { x:0, y:0, width:0, height: 0 };
 	this.mouseDown={x:0,y:0};
 	this.mouseAt={x:0,y:0};
 	this.lastclick={x:0,y:0};
+	this.viewoffset={x:0,y:0};
 	
 	this.init(this.container);
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
@@ -66,19 +66,51 @@ function Schematic(elem) {
 
 }
 
-
-Schematic.prototype.zoom = function(){
-
-
-  if(this.Zoom>=5000)this.Zoom=2000;
-	else this.Zoom+=200;
-  this.svgRoot.setAttributeNS(null,'width',2000);
-  this.svgRoot.setAttributeNS(null,'height',2000);
-  this.svgRoot.setAttributeNS(null,'viewBox','0 0 '+this.Zoom +' '+ this.Zoom );
-	this.zoomRatio=2000/this.Zoom;
+Schematic.prototype.zoomtorect = function(rect){
+	var maxv =Math.max(rect.width,rect.height)
+	this.zoomRatio=this.container.offsetWidth/maxv;
+	if(this.zoomRatio>8){
+		this.zoomRatio=1;
+		this.viewoffset.x=0;
+		this.viewoffset.y=0;
+		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ this.container.offsetWidth +' '+this.container.offsetWidth );
+		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
+		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
+ 	}
+	else{
+		this.viewoffset.x=rect.x*this.zoomRatio;
+		this.viewoffset.y=rect.y*this.zoomRatio;
+		var svgsize=this.tracker(this.svgRoot);
+		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
+		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
+		this.svgRoot.setAttributeNS(null,'viewBox',rect.x+' '+ rect.y +' '+ maxv +' '+maxv );
+	}
+//	alert((new XMLSerializer()).serializeToString(this.svgRoot));
 }
 	
+Schematic.prototype.setzoom=function(reset){
+	var svgsize=this.tracker(this.svgRoot);
 
+	if(this.zoomRatio<.5||this.zoomRatio>1||reset){
+		this.zoomRatio=1;
+		this.viewoffset.x=0;
+		this.viewoffset.y=0;
+		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ this.container.offsetWidth +' '+this.container.offsetWidth );
+		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
+		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
+ 	}
+	else{
+		this.zoomRatio-=.1;
+		this.viewoffset.x=0;
+		this.viewoffset.y=0;
+		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
+		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
+		var zoom=this.container.offsetWidth/this.zoomRatio;
+		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ zoom +' '+zoom );
+	}
+
+
+}
 
 
 Schematic.prototype.init = function(elem) {
@@ -87,13 +119,23 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
+	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
+	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 	this.container.appendChild(this.svgRoot);
 
 	}
 
 Schematic.prototype.parseMatrix=function(group){
+	var matrix={a:1,b:0,c:0,d:1,e:0,f:0};
 
-	return group.getTransformToElement(this.svgRoot);
+	try{
+		matrix=group.getTransformToElement(this.svgRoot);
+	}
+	catch(e){
+		return matrix;
+	}
+	return matrix;
+
 };
 
 
@@ -285,7 +327,7 @@ Schematic.prototype.tracker = function(elem) {
 
 				for(var i= elem.childNodes.length;i>0;i--){
 					if(elem.childNodes[i-1].nodeType==1){
-						var chbox=elem.childNodes[i-1].getBBox();
+						var chbox=this.tracker(elem.childNodes[i-1]);
 						box.x=Math.min(box.x,chbox.x);
 						box.y=Math.min(box.y,chbox.y);
 						box.width=Math.max(chbox.x+chbox.width,box.width);
@@ -337,7 +379,7 @@ Schematic.prototype.tracker = function(elem) {
 Schematic.prototype.showTracker = function(elem) {
 	var rect=this.tracker(elem);
   tracked = document.createElementNS(this.svgNs, 'rect');
-  tracked.setAttributeNS(null, 'id', 'tracker');
+  tracked.setAttributeNS(null, 'id', 'schematic_tracker');
 	tracked.setAttributeNS(null, 'x', rect.x);
  	tracked.setAttributeNS(null, 'y', rect.y);
   tracked.setAttributeNS(null, 'width', rect.width);
@@ -351,11 +393,11 @@ Schematic.prototype.showTracker = function(elem) {
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
 	
-	var tracker=$('tracker')
+	var tracker=$('schematic_tracker')
 	if(tracker){
 		do{
 		this.remove(tracker);
-		tracker=$('tracker');
+		tracker=$('schematic_tracker');
 
 		}while(tracker)
 		
@@ -365,14 +407,13 @@ Schematic.prototype.removeTracker=function(){
 
 Schematic.prototype.getMarkup = function() {
 	this.unselect();
-	this.svgRoot.removeAttributeNS(null,'viewBox');
-	this.svgRoot.removeAttributeNS(null,'width');
-	this.svgRoot.removeAttributeNS(null,'height');
-//	var p = new DOMParser();
-//	var doc=p.parseFromString((new XMLSerializer()).serializeToString(this.svgRoot),"text/xml");
-//	var svg=doc.getElementById('svg');
-//	svg.setAttribute('xmlns',this.svgNs);
-	return (new XMLSerializer()).serializeToString(this.svgRoot);
+	this.setzoom(true);
+	var svg=this.svgRoot.cloneNode(true);
+	var svgsize=this.tracker(this.svgRoot);
+	svg.removeAttributeNS(null,'viewBox');
+	svg.setAttributeNS(null,'width',svgsize.x+svgsize.width);
+	svg.setAttributeNS(null,'height',svgsize.y+svgsize.height);
+	return (new XMLSerializer()).serializeToString(svg);
 
 };
 
@@ -456,9 +497,9 @@ Schematic.prototype.getPart=function(){
 	for(var i=0;i<this.svgRoot.childNodes.length;i++){
 		var part=this.svgRoot.childNodes[i];
 		if(part.nodeType==1){
-			if(part.getAttributeNS(null,'id')!='tracker'&&
-				part.getAttributeNS(null,'id')!='selection'&&
-				part.getAttributeNS(null,'id')!='floating'){
+			if(part.id!='schematic_tracker'&&
+				part.id!='schematic_selection'&&
+				part.id!='schematic_floating'){
 		
 
 				var rect=this.tracker(part);
@@ -484,8 +525,8 @@ Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
 	var offset = this.container.cumulativeOffset();
 	var soffset=this.container.cumulativeScrollOffset();
-	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0])/this.zoomRatio);
-	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1])/this.zoomRatio);
+	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
+	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
 	this.mouseDown.x = Math.round(realX/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(realY/this.grid) * this.grid;
 	var x=0;
@@ -526,14 +567,14 @@ if(!this.drag){
 
 		}
 /*clicked on background  in select mode ,remove selection*/
-		if(this.mode=='select'){
+		if(this.mode=='select'||this.mode=='zoom'){
 			if (this.lastclick.x != this.mouseDown.x || this.lastclick.y != this.mouseDown.y){	
 					this.selectionRect.x=this.mouseDown.x;
 					this.selectionRect.y=this.mouseDown.y;
 					this.selectionRect.width=1;
 					this.selectionRect.height=1;
 				  selection = document.createElementNS(this.svgNs, 'rect');
-					selection.setAttributeNS(null, 'id', 'selection');
+					selection.setAttributeNS(null, 'id', 'schematic_selection');
 				  selection.setAttributeNS(null, 'x', realX );
  					selection.setAttributeNS(null, 'y', realY );
 					selection.setAttributeNS(null, 'width', 0);
@@ -575,20 +616,20 @@ if(!this.drag){
 
 
 Schematic.prototype.dragSelection=function(x ,y){
-	var floating=$('floating');
+	var floating=$('schematic_floating');
 	if(!floating){
 		floating = this.container.ownerDocument.createElementNS(this.svgNs, 'g');
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 		}
-		var tracked=this.container.ownerDocument.getElementById('tracker');
+		var tracked=this.container.ownerDocument.getElementById('schematic_tracker');
 		do{
 			if(tracked){
 				floating.appendChild(tracked);
-				tracked=this.container.ownerDocument.getElementById('tracker');
+				tracked=this.container.ownerDocument.getElementById('schematic_tracker');
 			}
 		}while(tracked);
-		floating.setAttributeNS(null, 'id', 'floating');
+		floating.setAttributeNS(null, 'id', 'schematic_floating');
 	  this.svgRoot.appendChild(floating);
 	}
 	floating.setAttributeNS(null,'transform','matrix(1,0,0,1,'+x+','+y+')');
@@ -597,12 +638,12 @@ Schematic.prototype.dragSelection=function(x ,y){
 };
 
 Schematic.prototype.dropSelection=function(){
-	var floating=$('floating');
+	var floating=$('schematic_floating');
 	var matrix=this.parseMatrix(floating);
 	for(var i=floating.childNodes.length;i>0;i--){
 		var point=this.parseXY(floating.childNodes[i-1]);
 		this.move(floating.childNodes[i-1],point.x + matrix.e,point.y +  matrix.f);
-		if(floating.childNodes[i-1].id!='tracker'){
+		if(floating.childNodes[i-1].id!='schematic_tracker'){
 			this.svgRoot.insertBefore(floating.childNodes[i-1],this.svgRoot.childNodes[0]);
 		
 		}
@@ -617,24 +658,39 @@ Schematic.prototype.dropSelection=function(){
 Schematic.prototype.onMouseUp = function(event) {
 
 
-if(this.mode=='select'){
-	var floating=$('floating');
-	if(floating){
-		this.dropSelection();
-	}
-	else{
+	if(this.mode=='select'){
+		var floating=$('schematic_floating');
+		if(floating){
+			this.dropSelection();
+		}
+		else{
+			this.unselect();
+			this.getPart();
+		}
+			this.drag=0;	
+		var selection = $('schematic_selection');
+		if (selection) {
+			this.remove(selection);
+			this.selectionRect.x=0;
+			this.selectionRect.y=0;
+			this.selectionRect.width=0;
+			this.selectionRect.height=0;
+		 }
+		}
+	
+	else	if(this.mode=='zoom'){
 		this.unselect();
-		this.getPart();
-	}
-		this.drag=0;	
-	var selection = $('selection');
-	if (selection) {
-    this.remove(selection);
-		this.selectionRect.x=0;
-		this.selectionRect.y=0;
-		this.selectionRect.width=0;
-		this.selectionRect.height=0;
- 	 }
+		this.zoomtorect(this.selectionRect);
+		var selection = $('schematic_selection');
+		if (selection) {
+			this.remove(selection);
+			this.selectionRect.x=0;
+			this.selectionRect.y=0;
+			this.selectionRect.width=0;
+			this.selectionRect.height=0;
+		 }
+
+		
 	}
 };
 
@@ -643,8 +699,8 @@ Schematic.prototype.onDrag = function(event) {
 
   var offset = this.container.cumulativeOffset();
 	var soffset=this.container.cumulativeScrollOffset();
- 	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0])/this.zoomRatio);
-	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1])/this.zoomRatio);
+ 	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
+	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
 	this.mouseAt.x = Math.round(realX / this.grid) * this.grid;
 	this.mouseAt.y =Math.round(realY / this.grid) * this.grid;
 
@@ -657,7 +713,7 @@ Schematic.prototype.onDrag = function(event) {
 			this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
 		}
 		else{
-		var selection = $('selection');
+		var selection = $('schematic_selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
 			this.selectionRect.width=realX-this.selectionRect.x;
@@ -667,7 +723,19 @@ Schematic.prototype.onDrag = function(event) {
 			}
 		}
 	}
-
+	else if(this.mode=='zoom'){
+		var selection = $('schematic_selection');
+		if (selection) {
+			if(this.selected.length)this.unselect();
+			this.selectionRect.width=realX-this.selectionRect.x;
+			this.selectionRect.height=realY-this.selectionRect.y;
+			selection.setAttributeNS(null,'width', this.selectionRect.width);
+			selection.setAttributeNS(null,'height',this.selectionRect.height);
+		}
+	}
+			
+		
+		
 	else if (this.mode=='line')
 	{
 		if (this.selected[0]){
@@ -686,7 +754,8 @@ Schematic.prototype.getgroup =function(elem){
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')')
 		this.select(newelem);
 		this.drag=1;
-		}
+//	this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
+}
 
 Schematic.prototype.getfile =function(elem){
 this.unselect();
