@@ -26,7 +26,7 @@ var webtronics={
 		showMarkup:function() {
 		var str="<?xml version='1.0' ?>\n";
 		str+="<!--Created by webtronics 0.1-->\n";
-		str+=this.circuit.getMarkup();
+		str+=webtronics.circuit.getMarkup();
 		var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(str) );
 	},
 
@@ -40,11 +40,11 @@ var webtronics={
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
 
 		if(mode!='select'){
-			if(this.circuit.selected){
-				this.circuit.unselect();
+			if(webtronics.circuit.selected){
+				webtronics.circuit.unselect();
 			}
 		}
-		this.circuit.mode=mode;
+		webtronics.circuit.mode=mode;
 
 		},
 
@@ -72,7 +72,7 @@ var webtronics={
 
 		returnpart:function(Name){
 			var xmlDoc=webtronics.openfile(Name);
-			this.circuit.getgroup(xmlDoc.getElementsByTagName('g')[0]);
+			webtronics.circuit.getgroup(xmlDoc.getElementsByTagName('g')[0]);
 			$('webtronics_parts_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		},	
@@ -87,7 +87,7 @@ var webtronics={
 					textReader.onloadend=function(){
 						
 						var xmlDoc=docfromtext(textReader.result);
-						this.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+						webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					}
 				textReader.readAsText($('webtronics_open_file_selector').files[0]);
 				$('webtronics_open_file').hide();
@@ -100,8 +100,8 @@ var webtronics={
 			$('webtronics_open_file').show();
 				$('webtronics_open_file_selector').onchange=function(){
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
-					var xmlDoc=docfromtext(txt);
-					this.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+					var xmlDoc=webtronics.docfromtext(txt);
+					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					$('webtronics_open_file').hide();
 				}
 			}
@@ -110,8 +110,8 @@ var webtronics={
 
 			else {
 				$('webtronics_open_text_ok').onclick=function(){
-					var xmlDoc=docfromtext($('webtronics_svg_code').value);
-					this.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+					var xmlDoc=webtronics.docfromtext($('webtronics_svg_code').value);
+					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					$('webtronics_open_text').hide();
 				}
 				$('webtronics_open_text').show();
@@ -122,7 +122,7 @@ var webtronics={
 
 
 		returnchip:function(){
-		this.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
+		webtronics.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
 		$('webtronics_chips_box').hide();
 		webtronics.setMode('webtronics_select','select','Selection');
 		}
