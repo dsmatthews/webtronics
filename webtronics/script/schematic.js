@@ -80,7 +80,7 @@ Schematic.prototype.zoomtorect = function(rect){
 	else{
 		this.viewoffset.x=rect.x*this.zoomRatio;
 		this.viewoffset.y=rect.y*this.zoomRatio;
-		var svgsize=this.tracker(this.svgRoot);
+//		var svgsize=this.tracker(this.svgRoot);
 		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 		this.svgRoot.setAttributeNS(null,'viewBox',rect.x+' '+ rect.y +' '+ maxv +' '+maxv );
@@ -321,7 +321,7 @@ Schematic.prototype.tracker = function(elem) {
 		catch(e){
 			return box;
 		}
-		if(elem.tagName=='g'){
+		if(elem.tagName=='g'||elem.tagName=='svg'){
 /*get all child element x+width y+height because firefox doesn't get group boxes right*/
 				
 
@@ -411,8 +411,8 @@ Schematic.prototype.getMarkup = function() {
 	var svg=this.svgRoot.cloneNode(true);
 	var svgsize=this.tracker(this.svgRoot);
 	svg.removeAttributeNS(null,'viewBox');
-	svg.setAttributeNS(null,'width',svgsize.x+svgsize.width);
-	svg.setAttributeNS(null,'height',svgsize.y+svgsize.height);
+	svg.setAttributeNS(null,'width',svgsize.width+10);
+	svg.setAttributeNS(null,'height',svgsize.height+10);
 	return (new XMLSerializer()).serializeToString(svg);
 
 };
@@ -513,11 +513,17 @@ Schematic.prototype.getPart=function(){
 };
 /*mouseout event handler*/
 Schematic.prototype.onMouseOut = function(event){
-/*  this.selectionRect = { x:0, y:0, width:0, height: 0 };
-//	this.drag=0;	
-	this.mouseDown={x:0,y:0};
-	this.mouseAt={x:0,y:0};
+/*
+		var selection = $('schematic_selection');
+		if (selection) {
+			this.remove(selection);
+			this.selectionRect.x=0;
+			this.selectionRect.y=0;
+			this.selectionRect.width=0;
+			this.selectionRect.height=0;
+		 }
 */
+
 }
 
 /*mousedown event handler*/
