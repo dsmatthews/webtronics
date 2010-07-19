@@ -66,6 +66,11 @@ function Schematic(elem) {
 
 }
 
+
+Schematic.prototype.showgadgets=function(elem){
+
+}
+
 Schematic.prototype.zoomtorect = function(rect){
 	var maxv =Math.max(rect.width,rect.height)
 	this.zoomRatio=this.container.offsetWidth/maxv;
@@ -138,24 +143,6 @@ Schematic.prototype.parseMatrix=function(group){
 
 };
 
-
-Schematic.prototype.rotate=function(){
-if(this.selected.length>1||!this.selected[0])return;
-if(this.selected[0].tagName!='g')return;
-	var matrix=this.parseMatrix(this.selected[0]);
-	matrix=matrix.rotate(90);
-
-	if(this.selected[0].id=='Q'||this.selected[0].id=='opamp'){
-		if(matrix.b<0){
-matrix.c=matrix.c*-1;
-//			matrix=matrix.flipX();
-		}
-	}
-	
-	this.selected[0].setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-	this.removeTracker();
-	this.showTracker(this.selected[0]);		
-}
 
 
 Schematic.prototype.createtext = function(str){
@@ -376,20 +363,86 @@ Schematic.prototype.tracker = function(elem) {
  0 -1 -1  0 x  y     =fliph and rotate 270`
 */
 /*show a box around an element*/
+Schematic.prototype.rotate=function(elem){
+
+	var matrix=this.parseMatrix(elem);
+	matrix=matrix.rotate(90);
+
+	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+	this.removeTracker();
+	for(i=0;i<this.selected.length;i++)
+		this.showTracker(this.selected[i]);		
+}
+
+Schematic.prototype.flip=function(elem){
+	var matrix=this.parseMatrix(elem);
+	matrix=matrix.flipX();
+	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+	this.removeTracker();
+	for(i=0;i<this.selected.length;i++)
+		this.showTracker(this.selected[i]);		
+	
+	
+}
+
 Schematic.prototype.showTracker = function(elem) {
 	var rect=this.tracker(elem);
-  tracked = document.createElementNS(this.svgNs, 'rect');
+
+  var tracked = document.createElementNS(this.svgNs, 'g');
   tracked.setAttributeNS(null, 'id', 'schematic_tracker');
-	tracked.setAttributeNS(null, 'x', rect.x);
- 	tracked.setAttributeNS(null, 'y', rect.y);
-  tracked.setAttributeNS(null, 'width', rect.width);
-  tracked.setAttributeNS(null, 'height', rect.height);
-	tracked.setAttributeNS(null, 'fill-opacity', .35);
- 	tracked.setAttributeNS(null, 'fill', 'blue');
-  tracked.setAttributeNS(null, 'stroke', 'blue');
-  tracked.setAttributeNS(null, 'stroke-width', '1');
+
+  var svg = document.createElementNS(this.svgNs, 'rect');
+	svg.setAttributeNS(null, 'x', rect.x);
+ 	svg.setAttributeNS(null, 'y', rect.y);
+  svg.setAttributeNS(null, 'width', rect.width);
+  svg.setAttributeNS(null, 'height', rect.height);
+	svg.setAttributeNS(null, 'fill-opacity', .35);
+ 	svg.setAttributeNS(null, 'fill', 'blue');
+  svg.setAttributeNS(null, 'stroke', 'blue');
+  svg.setAttributeNS(null, 'stroke-width', '1');
+	tracked.appendChild(svg)
+
+/*add gadgets*/
+	if(elem.tagName=='g'){
+		svg = document.createElementNS(this.svgNs, 'text');
+		svg.setAttributeNS(null, 'x', rect.x+rect.width);
+		svg.setAttributeNS(null, 'y', rect.y);
+		svg.setAttributeNS(null, 'font-size', 12);
+		svg.setAttributeNS(null,'fill','blue');
+		svg.appendChild(document.createTextNode('rotate'));
+		svg.rotatorfor=elem;
+		Event.observe(svg,"mousedown", function(e){
+			this.mode='rotate';
+			this.rotate(e.target.rotatorfor);
+			e.stopPropagation();}.bind(this));
+		tracked.appendChild(svg);
+	}
+	
+	if (elem.id=='Q'||elem.id=='opamp'){
+		svg = document.createElementNS(this.svgNs, 'text');
+		svg.setAttributeNS(null, 'x', rect.x);
+		svg.setAttributeNS(null, 'y', rect.y+rect.height+10);
+		svg.setAttributeNS(null, 'font-size', 12);
+		svg.setAttributeNS(null,'fill','blue');
+		svg.appendChild(document.createTextNode('flip'));
+		svg.rotatorfor=elem;
+		Event.observe(svg,"mousedown", function(e){
+			this.mode='rotate';
+			this.flip(e.target.rotatorfor);
+			e.stopPropagation();}.bind(this));
+		tracked.appendChild(svg);
+	
+	}
+
+
+
+
+
+
  this.svgRoot.appendChild(tracked);
 }
+
+
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
 	
@@ -499,9 +552,9 @@ Schematic.prototype.getPart=function(){
 		if(part.nodeType==1){
 			if(part.id!='schematic_tracker'&&
 				part.id!='schematic_selection'&&
-				part.id!='schematic_floating'){
-		
-
+				part.id!='schematic_floating'&&
+				part.parentNode.id!='schematic_tracker'){
+					
 				var rect=this.tracker(part);
 				if(Utils.rectsIntersect(rect,this.selectionRect)){
 					this.select(part);
@@ -591,9 +644,9 @@ if(!this.drag){
 					selection.setAttributeNS(null, 'stroke-width', '1');
 					this.svgRoot.appendChild(selection);
 			}
-	for(var i=0;i<this.selected.length;i++){
-		if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
-		}
+		for(var i=0;i<this.selected.length;i++){
+			if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+			}
 		}
 		if(this.mode=='delete'){
 			this.deleteSelection();	
@@ -612,7 +665,6 @@ if(!this.drag){
 				}
 			}			
 		}
-		//if(this.mode=='select'){this.createMenu(realX,realY)}
 		
 	}	  
   return false;
@@ -628,18 +680,17 @@ Schematic.prototype.dragSelection=function(x ,y){
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 		}
-		var tracked=this.container.ownerDocument.getElementById('schematic_tracker');
+		var tracked=$('schematic_tracker');
 		do{
 			if(tracked){
 				floating.appendChild(tracked);
-				tracked=this.container.ownerDocument.getElementById('schematic_tracker');
+				tracked=$('schematic_tracker');
 			}
 		}while(tracked);
 		floating.setAttributeNS(null, 'id', 'schematic_floating');
 	  this.svgRoot.appendChild(floating);
 	}
 	floating.setAttributeNS(null,'transform','matrix(1,0,0,1,'+x+','+y+')');
-	//this.unselect();
 	
 };
 
@@ -695,8 +746,9 @@ Schematic.prototype.onMouseUp = function(event) {
 			this.selectionRect.width=0;
 			this.selectionRect.height=0;
 		 }
-
-		
+	}
+	else if(this.mode=='rotate'){
+		this.mode='select';
 	}
 };
 

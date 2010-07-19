@@ -160,9 +160,11 @@ var webtronics={
 		Event.observe($('webtronics_select'), 'click', function() {
 			webtronics.setMode('webtronics_select','select', 'Selection');
 			});
+/*
 		Event.observe($('webtronics_rotate'), 'click', function() {
 			webtronics.circuit.rotate();
 			});
+*/
 		Event.observe($('webtronics_wire'), 'click', function() {
 			webtronics.setMode('webtronics_wire','line');
 			});
