@@ -86,7 +86,7 @@ var webtronics={
 					var textReader = new FileReader();
 					textReader.onloadend=function(){
 						
-						var xmlDoc=docfromtext(textReader.result);
+						var xmlDoc=webtronics.docfromtext(textReader.result);
 						webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					}
 				textReader.readAsText($('webtronics_open_file_selector').files[0]);
