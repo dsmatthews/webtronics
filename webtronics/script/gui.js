@@ -134,10 +134,17 @@ var webtronics={
 
 
 	Event.observe(window, 'load', function() {
+
+		var url=window.location.search.toQueryParams();
+		var file=url['file'];
 		document.oncontextmenu=new Function("return false");
-		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
+		webtronics.circuit = new Schematic($('webtronics_diagram_area'),file);
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		webtronics.setsize();
+		if(file){
+				var xmlDoc=webtronics.openfile(file);
+				webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+		}
 /*menu events*/
 		Event.observe($('webtronics_file_open'), 'click', function() {
 			webtronics.setMode('webtronics_file_open','select','Selection');
@@ -160,11 +167,6 @@ var webtronics={
 		Event.observe($('webtronics_select'), 'click', function() {
 			webtronics.setMode('webtronics_select','select', 'Selection');
 			});
-/*
-		Event.observe($('webtronics_rotate'), 'click', function() {
-			webtronics.circuit.rotate();
-			});
-*/
 		Event.observe($('webtronics_wire'), 'click', function() {
 			webtronics.setMode('webtronics_wire','line');
 			});

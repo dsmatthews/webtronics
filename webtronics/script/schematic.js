@@ -1,9 +1,10 @@
 /*----------------------------------------------------------------------------
- RICHDRAW 1.0
- Vector Graphics Drawing Script
+ Webtronics 1.0
+ SVG schematic drawing Script
  -----------------------------------------------------------------------------
- Created by Mark Finkle (mark.finkle@gmail.com)
- Implementation of simple vector graphic drawing control using SVG or VML.
+ Created by an electronics hobbyist
+ Basee on Richdraw by Mark Finkle 
+ Also with help from svg-edit 
  -----------------------------------------------------------------------------
  Copyright (c) 2006 Mark Finkle
 
@@ -27,14 +28,13 @@
  FROM,  OUT OF OR  IN  CONNECTION  WITH  THE  SOFTWARE OR THE  USE OR  OTHER
  DEALINGS IN THE SOFTWARE.
  -----------------------------------------------------------------------------
- Dependencies: (SVG or VML rendering implementations)
  History:
  2006-04-05 | Created
  --------------------------------------------------------------------------*/
 
 
 
-function Schematic(elem) {
+function Schematic(elem,file) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
   this.container = elem;
   this.grid = 10;
@@ -53,7 +53,7 @@ function Schematic(elem) {
 	this.lastclick={x:0,y:0};
 	this.viewoffset={x:0,y:0};
 	
-	this.init(this.container);
+	this.init(this.container,file);
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
 	this.onMouseOutListener = this.onMouseOut.bindAsEventListener(this);
@@ -118,7 +118,7 @@ Schematic.prototype.setzoom=function(reset){
 }
 
 
-Schematic.prototype.init = function(elem) {
+Schematic.prototype.init = function(elem,file) {
 
 	this.container = elem;
 	this.container.style.MozUserSelect = 'none';
@@ -127,7 +127,7 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 	this.container.appendChild(this.svgRoot);
-
+	if(file);	
 	}
 
 Schematic.prototype.parseMatrix=function(group){
