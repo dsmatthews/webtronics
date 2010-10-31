@@ -87,7 +87,12 @@ var webtronics={
 					textReader.onloadend=function(){
 						
 						var xmlDoc=webtronics.docfromtext(textReader.result);
-						webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+						if(!xmlDoc){alert("error parsing svg");}
+						else{
+							var node=xmlDoc.getElementsByTagName('svg')[0];
+							if(!node){alert("svg node not found")}
+							else webtronics.circuit.getfile(node);
+						}
 					}
 				textReader.readAsText($('webtronics_open_file_selector').files[0]);
 				$('webtronics_open_file').hide();
@@ -97,11 +102,13 @@ var webtronics={
 				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1))	 &&window.FileList){
 
 			$('webtronics_open_file_selector').form.reset();
-			$('webtronics_open_file').show();
+			$('webtronics_open_file').style.display = "block";
 				$('webtronics_open_file_selector').onchange=function(){
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
 					var xmlDoc=webtronics.docfromtext(txt);
-					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+					var node=xmlDoc.getElementsByTagName('svg')[0];
+					if(!node){alert("svg node not found");}
+					else webtronics.circuit.getfile(node);
 					$('webtronics_open_file').hide();
 				}
 			}
@@ -114,7 +121,7 @@ var webtronics={
 					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					$('webtronics_open_text').hide();
 				}
-				$('webtronics_open_text').show();
+				$('webtronics_open_text').style.display = "block";
 
 			}
 			webtronics.setMode('webtronics_select','select','Selection');
@@ -143,7 +150,12 @@ var webtronics={
 		webtronics.setsize();
 		if(file){
 				var xmlDoc=webtronics.openfile(file);
-				webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+				if(!xmlDoc){alert("file opening error");}
+				else{
+					var node=xmlDoc.getElementsByTagName('svg')[0]
+					if(!node){alert("svg node not found");}
+					else	webtronics.circuit.getfile(node);
+				}
 		}
 /*menu events*/
 		Event.observe($('webtronics_file_open'), 'click', function() {
@@ -153,11 +165,11 @@ var webtronics={
 		Event.observe($('webtronics_chips_open'), 'click', function() {
 //			$('webtronics_chips_box').reset();
 			webtronics.setMode('webtronics_chips_open','select','Selection');
-			$('webtronics_chips_box').show();
+			$('webtronics_chips_box').style.display = "block";
 			});
 		Event.observe($('webtronics_parts_open'), 'click', function() {
 			webtronics.setMode('webtronics_parts_open','select','Selection');
-			$('webtronics_parts_box').show();
+			$('webtronics_parts_box').style.display = "block";
 			});
 		Event.observe($('webtronics_zoom'), 'click', function() {
 				//set zoom to 1
@@ -172,7 +184,7 @@ var webtronics={
 			});
 		Event.observe($('webtronics_text'), 'click', function() {
 			webtronics.setMode('webtronics_text','select', 'Selection');
-			$('webtronics_add_text').show();
+			$('webtronics_add_text').style.display = "block";
 			});
 		Event.observe($('webtronics_delete'), 'click', function() {
 			webtronics.circuit.deleteSelection();

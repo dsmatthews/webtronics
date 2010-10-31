@@ -3,7 +3,7 @@
  SVG schematic drawing Script
  -----------------------------------------------------------------------------
  Created by an electronics hobbyist
- Basee on Richdraw by Mark Finkle 
+ Based on Richdraw by Mark Finkle 
  Also with help from svg-edit 
  -----------------------------------------------------------------------------
  Copyright (c) 2006 Mark Finkle
