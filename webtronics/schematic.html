@@ -2,24 +2,20 @@
 <!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"-->
 <html>
 <head>
-
+<link rel="stylesheet" href="schematic.css" type="text/css" />
 <script type="text/javascript" src="./script/prototype.js"></script>
 <script type="text/javascript" src="./script/schematic.js"></script>
 <script type="text/javascript" src="./script/chipmaker.js"></script>
 <script type="text/javascript" src="./script/gui.js"></script>
-  <style>
-  body        { font-family:verdana,arial; font-size:10pt; }
-  div *       { vertical-align: middle; }
-  div img     { padding:2px; border:2px solid grey;}
-  </style>
 </head>
 
-<body id="webtronics_main_window" >
+<body >
+<div id="webtronics_main_window" >
 
 <!--
 toolbar
 -->
-<div  id="webtronics_toolbar" style="width:auto; height:auto; background-color:#C0C0C0;">
+<div  id="webtronics_toolbar" >
 	<img id="webtronics_file_open" title="open file" src="./buttons/open.png" />
 	<img id='webtronics_chips_open' title="make chips" src="./buttons/icbut.png" />
 	<img id="webtronics_parts_open" title="get parts" src="./buttons/disc.png"/>
@@ -35,27 +31,20 @@ toolbar
 display area
 -->
 
-  <div id="webtronics_diagram_area" style="width:auto;height:auto;overflow:scroll;cursor:crosshair;position:relative;border:1px solid black;" >
+  <div id="webtronics_diagram_area" >
   </div>
 
 <!--
 status bar
 -->
   
- <div id="webtronics_status_bar" style="width:auto;height:auto ; background-color:#c0c0c0;">Mode: Draw Rectangle</div>
+ <div id="webtronics_status_bar">Mode: Draw Rectangle</div>
 
  <!--
 parts box
 -->
 
-<div id="webtronics_parts_box"
-   style="display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-      background-color:#c0c0c0; 
-      padding: 5px;">
+<div id="webtronics_parts_box">
  <form >
 <select id="webtronics_part" size="10">
 
@@ -111,7 +100,7 @@ parts box
 
 </select>
 </form>
-<embed   id="webtronics_part_display"  style="padding:5px; margin-bottom:5px; background-color:#ffffff; border:1px solid black;"  src="./symbols/gnd.svg" width="60" height="60" />	
+<embed   id="webtronics_part_display" src="./symbols/gnd.svg" width="60" height="60" />	
 <br>
 <img  id="webtronics_part_ok" src="./buttons/ok.png" />
 <img  id="webtronics_part_cancel" src="./buttons/cancel.png" />
@@ -119,14 +108,7 @@ parts box
 <!--
 open files
 -->
-<div id="webtronics_open_file" 
-   style="display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-      background-color:#c0c0c0; 
-      padding: 5px;">
+<div id="webtronics_open_file" >
 
 <form>
 <input type="file" id="webtronics_open_file_selector" />
@@ -140,15 +122,8 @@ open files
 make chips
 -->
 
-<div id="webtronics_chips_box"
-style="display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-      background-color:#c0c0c0; 
-      padding: 5px;">
-  <div id="webtronics_chip_display"  style="width:300px; height:300px; border:1px solid black; background-color:#ffffff;" >
+<div id="webtronics_chips_box">
+  <div id="webtronics_chip_display" >
   </div>
 	<form>
 <br>
@@ -264,14 +239,7 @@ style="display:none;
 add text
  -->
 
-<div id="webtronics_add_text" 
- style="display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-      background-color:#c0c0c0; 
-      padding: 5px;">
+<div id="webtronics_add_text">
 <form>
 <textarea cols="50" rows="4" id="webtronics_comment"></textarea>
 <!--<input type="text" size="50" name="address" />address</br>-->
@@ -284,18 +252,12 @@ add text
 add code text
  -->
 
-<div id="webtronics_open_text" 
- style="display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-      background-color:#c0c0c0; 
-      padding: 5px;">
+<div id="webtronics_open_text" >
 
 <textarea cols="50" rows="4" id="webtronics_svg_code"></textarea>
 <img  id="webtronics_open_text_ok" src="./buttons/ok.png" /> 
 <img  id="webtronics_open_text_cancel" src="./buttons/cancel.png" />
+</div>
 </div>
 </body>
 </html>
