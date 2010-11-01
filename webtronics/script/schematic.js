@@ -579,15 +579,26 @@ Schematic.prototype.onMouseOut = function(event){
 
 }
 
+Schematic.prototype.realPosition=function(event){
+	var real={x:0,y:0};
+	var offset = this.container.cumulativeOffset();
+	var soffset=this.container.cumulativeScrollOffset();
+/*this section gets the pointer position relative to the window and scrollbars
+ * I'm using this for now until something better comes up
+ */
+	real.x=Math.round((Event.pointerX(event)-offset[0]+this.container.scrollLeft+this.viewoffset.x)/this.zoomRatio);
+	real.y=Math.round((Event.pointerY(event)-offset[1]+this.container.scrollTop+this.viewoffset.y)/this.zoomRatio);
+//	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
+//	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
+	return real;
+}
+
 /*mousedown event handler*/
 Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
-	var offset = this.container.cumulativeOffset();
-	var soffset=this.container.cumulativeScrollOffset();
-	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
-	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
-	this.mouseDown.x = Math.round(realX/this.grid) * this.grid;
-	this.mouseDown.y =Math.round(realY/this.grid) * this.grid;
+	var real=this.realPosition(event);
+	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
+	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
 	var x=0;
 	var y=0;
 	  
@@ -632,10 +643,10 @@ if(!this.drag){
 					this.selectionRect.y=this.mouseDown.y;
 					this.selectionRect.width=1;
 					this.selectionRect.height=1;
-				  selection = document.createElementNS(this.svgNs, 'rect');
+				  	selection = document.createElementNS(this.svgNs, 'rect');
 					selection.setAttributeNS(null, 'id', 'schematic_selection');
-				  selection.setAttributeNS(null, 'x', realX );
- 					selection.setAttributeNS(null, 'y', realY );
+				  	selection.setAttributeNS(null, 'x', real.x );
+ 					selection.setAttributeNS(null, 'y', real.y );
 					selection.setAttributeNS(null, 'width', 0);
 					selection.setAttributeNS(null, 'height', 0);
 					selection.setAttributeNS(null, 'fill-opacity', .35);
@@ -755,12 +766,9 @@ Schematic.prototype.onMouseUp = function(event) {
 
 Schematic.prototype.onDrag = function(event) {
 
-  var offset = this.container.cumulativeOffset();
-	var soffset=this.container.cumulativeScrollOffset();
- 	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
-	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
-	this.mouseAt.x = Math.round(realX / this.grid) * this.grid;
-	this.mouseAt.y =Math.round(realY / this.grid) * this.grid;
+	var real=this.realPosition(event);
+	this.mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+	this.mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 
 
 	if(this.mode=='select'){
@@ -774,8 +782,8 @@ Schematic.prototype.onDrag = function(event) {
 		var selection = $('schematic_selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
-			this.selectionRect.width=realX-this.selectionRect.x;
-			this.selectionRect.height=realY-this.selectionRect.y;
+			this.selectionRect.width=real.x-this.selectionRect.x;
+			this.selectionRect.height=real.y-this.selectionRect.y;
 			selection.setAttributeNS(null,'width', this.selectionRect.width);
 			selection.setAttributeNS(null,'height',this.selectionRect.height);
 			}
@@ -785,8 +793,8 @@ Schematic.prototype.onDrag = function(event) {
 		var selection = $('schematic_selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
-			this.selectionRect.width=realX-this.selectionRect.x;
-			this.selectionRect.height=realY-this.selectionRect.y;
+			this.selectionRect.width=real.x-this.selectionRect.x;
+			this.selectionRect.height=real.y-this.selectionRect.y;
 			selection.setAttributeNS(null,'width', this.selectionRect.width);
 			selection.setAttributeNS(null,'height',this.selectionRect.height);
 		}
