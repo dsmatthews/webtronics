@@ -2,49 +2,81 @@
 var webtronics={
 		circuit:null,
 
-			docfromtext:function(txt){
-			var xmlDoc;
-			if (window.DOMParser){
-				parser=new DOMParser();
-				xmlDoc=parser.parseFromString(txt,"text/xml");
+		saveserver:function(){
+			var str="<?xml version='1.0' ?>\n";
+			str+="<!--Created by webtronics 0.1-->\n";
+			str+=webtronics.circuit.getMarkup();
+    // Define a boundary, I stole this from IE but you can use any string AFAIK
+			var boundary = '-----------------------------' +
+							Math.floor(Math.random() * Math.pow(10, 8));
+			var xhr = new XMLHttpRequest();
+			var body = '--' + boundary + '\r\n'
+							 // Parameter name is "file" and local filename is "temp.txt"
+							 + 'Content-Disposition: form-data; name="file";'
+							 + 'filename="temp.txt"\r\n'
+							 // Add the file's mime-type
+							 + 'Content-type: image/svg+xml\r\n\r\n'
+							 + str + '\r\n'
+							 + boundary + '--';
+
+			xhr.open("POST", location, true);
+			xhr.setRequestHeader(
+					"Content-type", "multipart/form-data; boundary="+boundary
+
+			);
+			xhr.onreadystatechange = function ()
+			{
+					if (xhr.readyState == 4 && xhr.status == 200)
+							alert("File uploaded!");
 			}
-			else{ // Internet Explorer
-				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-				xmlDoc.async="false";
-				xmlDoc.loadXML(txt);
-			} 
-			return xmlDoc;
+			xhr.send(body);
+							
+					
+		},
+		
+			docfromtext:function(txt){
+				var xmlDoc;
+				if (window.DOMParser){
+					parser=new DOMParser();
+					xmlDoc=parser.parseFromString(txt,"text/xml");
+				}
+				else{ // Internet Explorer
+					xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+					xmlDoc.async="false";
+					xmlDoc.loadXML(txt);
+				} 
+				return xmlDoc;
 		},
 
 		setsize:function(){
 		
-		var buffer=20;
-		var realsize=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight-buffer;
-		$('webtronics_diagram_area').style.height = realsize+'px';
+			var buffer=20;
+			var realsize=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight-buffer;
+			$('webtronics_diagram_area').style.height = realsize+'px';
 		},
 
 		showMarkup:function() {
-		var str="<?xml version='1.0' ?>\n";
-		str+="<!--Created by webtronics 0.1-->\n";
-		str+=webtronics.circuit.getMarkup();
-		var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(str) );
-	},
+			var str="<?xml version='1.0' ?>\n";
+			str+="<!--Created by webtronics 0.1-->\n";
+			str+=webtronics.circuit.getMarkup();
+			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(str) );
+		},
 
 		setMode:function(button,mode, status){
 
-		var imgs = $('webtronics_toolbar').getElementsByTagName('img');
+			var imgs = $('webtronics_toolbar').getElementsByTagName('img');
 			for (var i=0; i<imgs.length; i++) {
 				imgs[i].style.backgroundColor = '';
 			}
 			$(button).style.backgroundColor = 'grey';
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
 
-		if(mode!='select'){
-			if(webtronics.circuit.selected){
-				webtronics.circuit.unselect();
+			if(mode!='select'){
+				if(webtronics.circuit.selected){
+					webtronics.circuit.unselect();
+				}
 			}
-		}
-		webtronics.circuit.mode=mode;
+			webtronics.circuit.mode=mode;
 
 		},
 
@@ -190,6 +222,7 @@ var webtronics={
 			webtronics.circuit.deleteSelection();
 			});
 		Event.observe($('webtronics_save'), 'click', function() {
+		//	webtronics.saveserver();
 			webtronics.showMarkup();
 			});
 /*parts box events*/		

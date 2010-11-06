@@ -418,7 +418,7 @@ Schematic.prototype.showTracker = function(elem) {
 		tracked.appendChild(svg);
 	}
 	
-	if (elem.id=='Q'||elem.id=='opamp'){
+	if (this.getparttype(elem)=='Q'||this.getparttype(elem)=='opamp'){
 		svg = document.createElementNS(this.svgNs, 'text');
 		svg.setAttributeNS(null, 'x', rect.x);
 		svg.setAttributeNS(null, 'y', rect.y+rect.height+10);
@@ -812,12 +812,26 @@ Schematic.prototype.onDrag = function(event) {
 };
 
 
+Schematic.prototype.getparttype=function(elem){
+var type;
+if(elem.id){
+	type=elem.id.split(':',1)[0];
+}
+return type;
+}
+
+Schematic.prototype.changeid=function(elem){
+	var type=this.getparttype(elem);
+  elem.id=type +':'+ createUUID();
+}
+
 
 Schematic.prototype.getgroup =function(elem){
 		this.unselect();
 		var newelem=document.importNode(elem,true);
 		this.svgRoot.appendChild(newelem);
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')')
+		this.changeid(newelem);
 		this.select(newelem);
 		this.drag=1;
 //	this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
@@ -833,6 +847,9 @@ for(var i= ch.length;i>0;i--){
 			ch[i-1].tagName=='line'||
 			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes())||
 			ch[i-1].tagName=='g'){
+//check for duplicate id
+			if(lookforid(ch[i-1].id,$$('body')[0]))
+				this.changeid(ch[i-1]);
 			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
 			this.select(newelem);
@@ -840,6 +857,21 @@ for(var i= ch.length;i>0;i--){
 	}
 
 	
+};
+
+
+function lookforid(id,node){
+	var found=false;
+	if(!id)return false;	
+
+
+/*i like recursion */
+	if(node.id){
+		if(node.id==id)found=true; 	
+	}
+	if(!found)if(node.hasChildNodes())found= lookforid(id,node.childNodes[0]);
+	if(!found)if(node.nextSibling)found= lookforid(id,node.nextSibling);
+	return found;
 };
 
 function createUUID()
