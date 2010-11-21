@@ -12,7 +12,7 @@
   <g
      id="R">
     <path
-       d="M 5.2980198,11.083892 L 7.5499171,0.49999994 L 9.6216626,19.372482 L 13.044546,0.62751664 L 15.836899,19.5 L 18.899479,0.49999994 L 22.096739,19.640104 L 25.204791,0.62751664 L 28.2219,19.544056 L 29.889606,10.210156"
+       d="M 5.2980198,11.083892 L 7.2206253,5.0442263 L 9.687521,15.091689 L 12.715254,4.3155844 L 16.034474,14.955774 L 18.833621,4.4515011 L 22.162597,14.766586 L 25.138933,4.5131594 L 28.090183,14.99983 L 29.889606,10.210156"
        id="path3444"
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.99999988px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
@@ -23,5 +23,14 @@
        d="M 35.349502,10.588417 L 29.890396,10.588417"
        id="path2161"
        style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:0.82316649px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       width="35.542572"
+       height="19.999998"
+       rx="0"
+       ry="0"
+       x="0.076328166"
+       y="0.063776597"
+       id="rect2162"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
 </svg>

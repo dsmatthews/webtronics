@@ -194,6 +194,11 @@ var webtronics={
 			webtronics.setMode('webtronics_file_open','select','Selection');
 			webtronics.returnsvg();
 			});
+		Event.observe($('webtronics_new'), 'click', function() {
+			webtronics.setMode('webtronics_select','select','Selection');
+			input_box=confirm("Click OK to Continue");
+			if (input_box==true)webtronics.circuit.newdoc();
+			});
 		Event.observe($('webtronics_chips_open'), 'click', function() {
 //			$('webtronics_chips_box').reset();
 			webtronics.setMode('webtronics_chips_open','select','Selection');

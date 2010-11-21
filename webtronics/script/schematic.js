@@ -118,7 +118,7 @@ Schematic.prototype.setzoom=function(reset){
 }
 
 
-Schematic.prototype.init = function(elem,file) {
+Schematic.prototype.init = function(elem) {
 
 	this.container = elem;
 	this.container.style.MozUserSelect = 'none';
@@ -127,7 +127,6 @@ Schematic.prototype.init = function(elem,file) {
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 	this.container.appendChild(this.svgRoot);
-	if(file);	
 	}
 
 Schematic.prototype.parseMatrix=function(group){
@@ -456,7 +455,14 @@ Schematic.prototype.removeTracker=function(){
 		
 	}	
 	
-}
+};
+
+Schematic.prototype.newdoc = function(){
+	this.remove(this.svgRoot);
+	this.init(this.container);	
+	
+	
+};
 
 Schematic.prototype.getMarkup = function() {
 	this.unselect();
