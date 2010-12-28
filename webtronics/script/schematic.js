@@ -471,6 +471,7 @@ Schematic.prototype.removeTracker=function(){
 };
 
 Schematic.prototype.newdoc = function(){
+	this.setzoom(1);
 	this.remove(this.svgRoot);
 	this.init(this.container);	
 };
