@@ -72,6 +72,14 @@ Schematic.prototype.showgadgets=function(elem){
 }
 
 Schematic.prototype.zoomtorect = function(rect){
+	if(rect.width<0)rect.x=rect.x+rect.width;
+	if(rect.height<0)rect.y=rect.y+rect.height;
+	rect.width=Math.abs(rect.width);
+	rect.height=Math.abs(rect.height);
+
+
+
+
 	var maxv =Math.max(rect.width,rect.height)
 	this.zoomRatio=this.container.offsetWidth/maxv;
 	if(this.zoomRatio>8){
@@ -127,6 +135,7 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 	this.container.appendChild(this.svgRoot);
+	//this.invertcolors();
 	}
 
 Schematic.prototype.parseMatrix=function(group){
@@ -156,6 +165,7 @@ Schematic.prototype.createtext = function(str){
 			svg.setAttributeNS(null, 'x', this.mouseDown.x);
 			svg.setAttributeNS(null, 'y', this.mouseDown.y+(i*12));
 			svg.setAttributeNS(null, 'font-size', 12);
+		  svg.setAttributeNS(null, 'stroke', this.lineColor);
 			svg.appendChild(this.container.ownerDocument.createTextNode(lines[i]));
 			this.svgRoot.appendChild(svg);
 			this.select(svg);
@@ -164,6 +174,7 @@ Schematic.prototype.createtext = function(str){
 	this.drag=1;
 
 }
+
 Schematic.prototype.createline = function(lineColor,left, top,right,bottom){
   var svg;
 
@@ -408,6 +419,7 @@ Schematic.prototype.showTracker = function(elem) {
 		svg.setAttributeNS(null, 'y', rect.y);
 		svg.setAttributeNS(null, 'font-size', 12);
 		svg.setAttributeNS(null,'fill','blue');
+		svg.setAttributeNS(null,'stroke','blue');
 		svg.appendChild(document.createTextNode('rotate'));
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
@@ -423,6 +435,7 @@ Schematic.prototype.showTracker = function(elem) {
 		svg.setAttributeNS(null, 'y', rect.y+rect.height+10);
 		svg.setAttributeNS(null, 'font-size', 12);
 		svg.setAttributeNS(null,'fill','blue');
+		svg.setAttributeNS(null,'stroke','blue');
 		svg.appendChild(document.createTextNode('flip'));
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
@@ -460,9 +473,36 @@ Schematic.prototype.removeTracker=function(){
 Schematic.prototype.newdoc = function(){
 	this.remove(this.svgRoot);
 	this.init(this.container);	
-	
-	
 };
+
+
+Schematic.prototype.invertcolors =function(){
+
+	if(!$('invertfilter')){
+		var defs=document.createElementNS(this.svgNs ,'defs');
+		var fe = document.createElementNS(this.svgNs ,'feComponentTransfer');
+		var filter=document.createElementNS(this.svgNs ,'feFuncR');
+		filter.setAttributeNS(null,'type','table');
+		filter.setAttributeNS(null,'tableValues','1 0');
+		fe.appendChild(filter);	
+		filter=document.createElementNS(this.svgNs ,'feFuncG');
+		filter.setAttributeNS(null,'type','table');
+		filter.setAttributeNS(null,'tableValues','1 0');
+		fe.appendChild(filter);	
+		filter=document.createElementNS(this.svgNs ,'feFuncB');
+		filter.setAttributeNS(null,'type','table');
+		filter.setAttributeNS(null,'tableValues','1 0');
+		fe.appendChild(filter);	
+		filter=document.createElementNS(this.svgNs ,'filter');
+		filter.setAttributeNS(null,'id','invertfilter');
+		filter.appendChild(fe);
+		defs.appendChild(filter);
+		this.svgRoot.appendChild(defs);
+		this.svgRoot.setAttribute('filter','url(#invertfilter)');
+
+	}
+else this.remove($('filter'));
+}
 
 Schematic.prototype.getMarkup = function() {
 	this.unselect();
@@ -594,8 +634,6 @@ Schematic.prototype.realPosition=function(event){
  */
 	real.x=Math.round((Event.pointerX(event)-offset[0]+this.container.scrollLeft+this.viewoffset.x)/this.zoomRatio);
 	real.y=Math.round((Event.pointerY(event)-offset[1]+this.container.scrollTop+this.viewoffset.y)/this.zoomRatio);
-//	var realX=Math.round((Event.pointerX(event) - offset[0]+soffset[0]+this.viewoffset.x)/this.zoomRatio);
-//	var realY=Math.round((Event.pointerY(event) - offset[1]+soffset[1]+this.viewoffset.y)/this.zoomRatio);
 	return real;
 }
 
@@ -740,6 +778,7 @@ Schematic.prototype.onMouseUp = function(event) {
 		else{
 			this.unselect();
 			this.getPart();
+
 		}
 			this.drag=0;	
 		var selection = $('schematic_selection');
@@ -788,10 +827,14 @@ Schematic.prototype.onDrag = function(event) {
 		var selection = $('schematic_selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
+
+				
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
-			selection.setAttributeNS(null,'width', this.selectionRect.width);
-			selection.setAttributeNS(null,'height',this.selectionRect.height);
+			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
+			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
+			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			}
 		}
 	}
@@ -801,8 +844,10 @@ Schematic.prototype.onDrag = function(event) {
 			if(this.selected.length)this.unselect();
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
-			selection.setAttributeNS(null,'width', this.selectionRect.width);
-			selection.setAttributeNS(null,'height',this.selectionRect.height);
+			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
+			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
+			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
+			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 		}
 	}
 			
@@ -938,10 +983,21 @@ var Utils = {
 	},
 
 	"rectsIntersect": function(r1, r2) {
-		return r2.x < (r1.x+r1.width) && 
-			(r2.x+r2.width) > r1.x &&
-			r2.y < (r1.y+r1.height) &&
-			(r2.y+r2.height) > r1.y;
+		
+		return			((r2.width>0)?(r2.x):(r2.x+r2.width)) < ((r1.width>0)?(r1.x+r1.width):(r1.x)) &&
+			((r2.width>0)?(r2.x+r2.width):(r2.x)) > ((r1.width>0)?(r1.x):(r1.x+r1.width)) &&
+			((r2.height>0)?(r2.y):(r2.y+r2.height)) < ((r1.height>0)?(r1.y+r1.height):(r1.y)) &&
+			((r2.height>0)?(r2.y+r2.height):(r2.y)) > ((r1.height>0)?(r1.y):(r1.y+r1.height));
+
+
+
+
+
+
+
+
+
+
 	}
 
 	
