@@ -34,7 +34,7 @@
 
 
 
-function Schematic(elem,file) {
+function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
   this.container = elem;
   this.grid = 10;
@@ -53,7 +53,7 @@ function Schematic(elem,file) {
 	this.lastclick={x:0,y:0};
 	this.viewoffset={x:0,y:0};
 	
-	this.init(this.container,file);
+	this.init(this.container);
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
 	this.onMouseOutListener = this.onMouseOut.bindAsEventListener(this);
@@ -72,11 +72,14 @@ Schematic.prototype.showgadgets=function(elem){
 }
 
 Schematic.prototype.zoomtorect = function(rect){
-	if(rect.width<0)rect.x=rect.x+rect.width;
-	if(rect.height<0)rect.y=rect.y+rect.height;
-	rect.width=Math.abs(rect.width);
-	rect.height=Math.abs(rect.height);
-
+	if(rect.width<0){
+		rect.width=Math.abs(rect.width);
+		rect.x=rect.x-rect.width;
+	}
+	if(rect.height<0){
+		rect.height=Math.abs(rect.height);
+		rect.y=rect.y-rect.height;
+	}
 
 
 
@@ -942,46 +945,26 @@ function createUUID()
 
 var Utils = {
 
-// This code was written by Tyler Akins and has been placed in the
-// public domain.  It would be nice if you left this header intact.
-// Base64 code from Tyler Akins -- http://rumkin.com
-
-// schiller: Removed string concatenation in favour of Array.join() optimization,
-//           also precalculate the size of the array needed.
-
-	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
 	"encode64" : function(input) {
-		// base64 strings are 4/3 larger than the original string
-		var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
-		var chr1, chr2, chr3;
-		var enc1, enc2, enc3, enc4;
-		var i = 0, p = 0;
+//probably won't work on older browsers
+		return btoa(input);
 
-		do {
-			chr1 = input.charCodeAt(i++);
-			chr2 = input.charCodeAt(i++);
-			chr3 = input.charCodeAt(i++);
-
-			enc1 = chr1 >> 2;
-			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-			enc4 = chr3 & 63;
-
-			if (isNaN(chr2)) {
-				enc3 = enc4 = 64;
-			} else if (isNaN(chr3)) {
-				enc4 = 64;
-			}
-
-			output[p++] = this._keyStr.charAt(enc1);
-			output[p++] = this._keyStr.charAt(enc2);
-			output[p++] = this._keyStr.charAt(enc3);
-			output[p++] = this._keyStr.charAt(enc4);
-		} while (i < input.length);
-
-		return output.join('');
 	},
+
+	"decode64" : function (input) {
+
+
+			return  atob(input);
+	 
+		},
+
+
+
+
+
+
+
 
 	"rectsIntersect": function(r1, r2) {
 		

@@ -176,16 +176,27 @@ var webtronics={
 
 		var url=window.location.search.toQueryParams();
 		var file=url['file'];
+		var code = url['code'];
+		
 		document.oncontextmenu=new Function("return false");
-		webtronics.circuit = new Schematic($('webtronics_diagram_area'),file);
+		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		webtronics.setsize();
-		if(file){
+		if(code){
+			var xmlDoc=webtronics.docfromtext(Utils.decode64(code));
+			if(!xmlDoc)alert("data opening error");
+			else{
+					var node=xmlDoc.getElementsByTagName('svg')[0]
+					if(!node){alert("code svg node not found");}
+					else	webtronics.circuit.getfile(node);
+				}
+		}
+		else if(file){
 				var xmlDoc=webtronics.openfile(file);
 				if(!xmlDoc){alert("file opening error");}
 				else{
 					var node=xmlDoc.getElementsByTagName('svg')[0]
-					if(!node){alert("svg node not found");}
+					if(!node){alert("file svg node not found");}
 					else	webtronics.circuit.getfile(node);
 				}
 		}
