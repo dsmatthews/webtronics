@@ -931,7 +931,7 @@ function lookforid(id,node){
 
 function createUUID()
 {
-  return [4, 2, 2, 2, 6].map(function(length) {
+  return [7].map(function(length) {
     var uuidpart = "";
     for (var i=0; i<length; i++) {
       var uuidchar = parseInt((Math.random() * 256)).toString(16);
