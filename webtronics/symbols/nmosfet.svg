@@ -9,32 +9,32 @@
    id="svg2160">
   <defs
      id="defs2162" />
-  <g
+  <g connects="0,20;30,0;30,40"
      id="Q">
     <path
        d="M 36.976901,19.036987 C 36.976901,26.778191 30.227933,33.053678 21.90266,33.053678 C 13.577387,33.053678 6.8284181,26.778191 6.8284181,19.036987 C 6.8284181,11.295782 13.577387,5.0202949 21.90266,5.0202949 C 30.227933,5.0202949 36.976901,11.295782 36.976901,19.036987 L 36.976901,19.036987 z"
        id="path2170"
-       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:0.84852141px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 15.271146,31.633176 L 15.271146,7.37878"
        id="path2178"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.92834872px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 30.587966,8.0714286 L 30.587966,0.5"
        id="path2186"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 30.581079,31.195586 L 30.581079,39.481301"
        id="path2188"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.804376,25.074652 L 30.428581,25.160329 L 30.548117,31.193863"
        id="path3564"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.80010068px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 20.008478,14.375915 L 30.650939,14.290238 L 30.650939,7.6524399"
        id="path3566"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.83032721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 15.364201,19.910211 L 6.398249,19.910211"
        id="path3568"
@@ -42,30 +42,30 @@
     <path
        d="M 0.7066217,19.949171 L 6.6230085,19.949171"
        id="path4107"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.877067,12.080459 C 19.877067,12.080459 19.877067,12.080459 19.877067,12.080459 z"
        id="path2398"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.962744,21.847638 L 19.962744,17.135402"
        id="path2402"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.79139,15.850247 L 19.79139,10.880981"
        id="path2404"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.962744,23.132793 L 20.048421,28.359091"
        id="path2406"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 19.877067,19.620036 L 30.329662,19.363005 L 30.415339,25.189041"
        id="path2408"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 24.417949,17.992172 L 20.733837,19.620035 L 24.589303,20.905191"
        id="path2416"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>

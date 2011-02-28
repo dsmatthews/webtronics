@@ -9,27 +9,27 @@
    id="svg1906">
   <defs
      id="defs11">w30h36</defs>
-  <g
+  <g connects="10,40;20,40;30,40"
      id="IC">
     <path
-       d="M 20.5,31.025973 L 20.5,37"
+       d="M 20.5,31.025973 L 20.5,40"
        id="path1918"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:0.99999964px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
     <path
-       d="M 10.5,31.025971 L 10.5,37"
+       d="M 10.5,31.025971 L 10.5,40"
        id="path1916"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:0.99999964px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
     <path
-       d="M 30.5,31.108947 L 30.5,37"
+       d="M 30.5,31.108947 L 30.5,40"
        id="path1920"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:0.99999964px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
     <rect
        width="39.5"
        height="30"
        x="0.5"
        y="0.5"
        id="rect1914"
-       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <rect
        width="2.3587224"
        height="2.8304667"

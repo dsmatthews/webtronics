@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -9,31 +10,31 @@
    id="svg1964">
   <defs
      id="defs1966" />
-  <g
+  <g connects="0,10;0,30;40,10;40,30"
      id="IC">
     <path
-       d="M 6.5000002,9.4999989 L 0.50000006,9.4999989"
+       d="m 6.4152544,10 -6.50847468,0"
        id="path1974"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:1.00000012px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
     <path
-       d="M 6.4999999,30.5 L 0.9285712,30.5"
+       d="M 6.3880715,30 0.19304194,30"
        id="path1976"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:1.00000012px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
     <path
-       d="M 36.247479,9.4999989 L 41.866521,9.4999989"
+       d="m 37.014827,9.4999989 6.311443,0"
        id="path1978"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:1.00000024px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
     <path
-       d="M 36.5,30.5 L 42.5,30.5"
+       d="m 36.837651,30.5 6.451817,0"
        id="path1980"
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00000f;stroke-width:1.00000024px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
     <rect
        width="30.171429"
        height="39"
        x="5.5"
        y="0.50000006"
        id="rect1972"
-       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <rect
        width="3.3022113"
        height="3.6560197"

@@ -9,23 +9,23 @@
    id="svg2160">
   <defs
      id="defs2162" />
-  <g
+  <g connects="0,10;50,10;0,20"
      id="D">
     <path
        d="M 10.056699,19.706003 L 10.056699,0.45435962"
        id="path2210"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.90871924px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 11.056699,9.3421656 L 30.030771,0.61472262 L 30.030771,19.706003 L 11.056699,9.3421656 z"
        id="path2220"
-       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.90871918px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       d="M 0.5,10.160362 L 38.561819,10.160362"
+       d="M 0.5,10.160362 L 50,10.160362"
        id="path3202"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        d="M 10.048965,11.52119 L 0.5,20.160362"
        id="path2226"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>
