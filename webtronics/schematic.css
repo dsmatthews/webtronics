@@ -13,11 +13,6 @@ div img {
 	border:2px solid grey;
 	}
 
-@color-profile{}
-
-
-
-
 
 
 #webtronics_main_window{
@@ -28,6 +23,11 @@ div img {
 	height:auto;
 	background-color:inherit;
 	}
+
+#webtronics_settings{
+	float:right;
+}
+
 
 #webtronics_diagram_area{
 width:auto;

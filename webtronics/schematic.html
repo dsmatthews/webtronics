@@ -5,8 +5,11 @@
 <link rel="stylesheet" href="schematic.css" type="text/css" />
 <script type="text/javascript" src="./script/prototype.js"></script>
 <script type="text/javascript" src="./script/schematic.js"></script>
+<script type="text/javascript" src="./script/primatives.js"></script>
+<script type="text/javascript" src="./script/connections.js"></script>
 <script type="text/javascript" src="./script/chipmaker.js"></script>
 <script type="text/javascript" src="./script/gui.js"></script>
+
 </head>
 
 <body >
@@ -27,6 +30,10 @@ toolbar
 	<img id="webtronics_text" title="add text"  src="./buttons/text.png" />
 	<img  id="webtronics_delete" title="Delete selected shape" src="./buttons/delete.png" />
 	<img  id="webtronics_save" title="Save the file" src="./buttons/save.png" />
+	<form id="webtronics_settings">
+		<input type="checkbox" id="webtronics_connections" /> show connections 
+		<input type="checkbox" id="webtronics_invert" />Invert colors
+	</form>
 </div>
 <!--
 display area
@@ -53,6 +60,7 @@ parts box
 	<option  value="./symbols/polar-cap.svg" >polar cap</option>
 	<option  value="./symbols/varicap.svg" >vari cap</option>
 	<option  value="./symbols/resistor.svg" >resistor</option>
+
 	<option  value="./symbols/vresistor.svg" >variable resistor</option>
 	<option  value="./symbols/vari-resistor.svg" >potentiometer</option>
 
@@ -74,6 +82,7 @@ parts box
 	<option  value="./symbols/pjfet.svg" >pjfet</option>
 	<option  value="./symbols/nmosfet.svg" >nmosfet</option>
 	<option  value="./symbols/pmosfet.svg" >pmosfet</option>
+	<option  value="./symbols/ncpb.svg" >ncpb</option>
 	<option  value="./symbols/nopb.svg" >nopb</option>
 	<option  value="./symbols/tapcoil.svg" >tapped inductor</option>
 	<option  value="./symbols/phototrans.svg" >phototransistor</option>

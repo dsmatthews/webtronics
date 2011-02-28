@@ -2,37 +2,7 @@
 var webtronics={
 		circuit:null,
 
-		saveserver:function(){
-			var str="<?xml version='1.0' ?>\n";
-			str+="<!--Created by webtronics 0.1-->\n";
-			str+=webtronics.circuit.getMarkup();
-    // Define a boundary, I stole this from IE but you can use any string AFAIK
-			var boundary = '-----------------------------' +
-							Math.floor(Math.random() * Math.pow(10, 8));
-			var xhr = new XMLHttpRequest();
-			var body = '--' + boundary + '\r\n'
-							 // Parameter name is "file" and local filename is "temp.txt"
-							 + 'Content-Disposition: form-data; name="file";'
-							 + 'filename="temp.txt"\r\n'
-							 // Add the file's mime-type
-							 + 'Content-type: image/svg+xml\r\n\r\n'
-							 + str + '\r\n'
-							 + boundary + '--';
 
-			xhr.open("POST", location, true);
-			xhr.setRequestHeader(
-					"Content-type", "multipart/form-data; boundary="+boundary
-
-			);
-			xhr.onreadystatechange = function ()
-			{
-					if (xhr.readyState == 4 && xhr.status == 200)
-							alert("File uploaded!");
-			}
-			xhr.send(body);
-							
-					
-		},
 		
 			docfromtext:function(txt){
 				var xmlDoc;
@@ -166,8 +136,7 @@ var webtronics={
 		webtronics.setMode('webtronics_select','select','Selection');
 		}
 	
-}; 
-
+}
 
 
 
@@ -241,6 +210,16 @@ var webtronics={
 		//	webtronics.saveserver();
 			webtronics.showMarkup();
 			});
+		$('webtronics_invert').checked=false;
+		Event.observe($('webtronics_invert'),'click',function(){
+				webtronics.circuit.invertcolors($('webtronics_invert').checked);
+			});
+		$('webtronics_connections').checked=false;
+		Event.observe($('webtronics_connections'),'click',function(){
+				webtronics.circuit.showconnections($('webtronics_connections').checked);
+						
+				});
+		
 /*parts box events*/		
 		Event.observe($('webtronics_part'), 'change', function() {
 			webtronics.changeimage($('webtronics_part').value);
@@ -266,6 +245,7 @@ var webtronics={
 		});
 		Event.observe($('webtronics_chip_ok'), 'click', function() {
 			webtronics.returnchip();
+			//chipmaker.clear();
 		});
 		Event.observe($('webtronics_chip_cancel'), 'click', function() {
 			$('webtronics_chips_box').hide();
@@ -273,7 +253,7 @@ var webtronics={
 		});
 /*text add events*/
 		Event.observe($('webtronics_text_ok'), 'click', function() {
-			webtronics.circuit.createtext($('webtronics_comment').value);
+			webtronics.circuit.addtext($('webtronics_comment').value);
 			$('webtronics_add_text').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		});
