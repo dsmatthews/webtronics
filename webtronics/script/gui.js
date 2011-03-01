@@ -181,41 +181,51 @@ var webtronics={
 			});
 		Event.observe($('webtronics_chips_open'), 'click', function() {
 //			$('webtronics_chips_box').reset();
+			webtronics.circuit.clearinfo();
 			webtronics.setMode('webtronics_chips_open','select','Selection');
 			$('webtronics_chips_box').style.display = "block";
 			});
 		Event.observe($('webtronics_parts_open'), 'click', function() {
+			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
 			webtronics.setMode('webtronics_parts_open','select','Selection');
 			$('webtronics_parts_box').style.display = "block";
 			});
 		Event.observe($('webtronics_zoom'), 'click', function() {
 				//set zoom to 1
+				webtronics.circuit.clearinfo();
 				webtronics.circuit.setzoom(false);
 				webtronics.setMode('webtronics_zoom','zoom', 'Zoom');
 			});
 		Event.observe($('webtronics_select'), 'click', function() {
-			webtronics.setMode('webtronics_select','select', 'Selection');
+				webtronics.circuit.clearinfo();
+				webtronics.setMode('webtronics_select','select', 'Selection');
 			});
 		Event.observe($('webtronics_wire'), 'click', function() {
-			webtronics.setMode('webtronics_wire','line');
+				webtronics.circuit.clearinfo();
+				webtronics.setMode('webtronics_wire','line');
 			});
 		Event.observe($('webtronics_text'), 'click', function() {
+			webtronics.circuit.clearinfo();
 			webtronics.setMode('webtronics_text','select', 'Selection');
 			$('webtronics_add_text').style.display = "block";
 			});
 		Event.observe($('webtronics_delete'), 'click', function() {
+			webtronics.circuit.clearinfo();
 			webtronics.circuit.deleteSelection();
 			});
 		Event.observe($('webtronics_save'), 'click', function() {
 		//	webtronics.saveserver();
+			webtronics.circuit.clearinfo();
 			webtronics.showMarkup();
 			});
 		$('webtronics_invert').checked=false;
 		Event.observe($('webtronics_invert'),'click',function(){
+				webtronics.circuit.clearinfo();
 				webtronics.circuit.invertcolors($('webtronics_invert').checked);
 			});
 		$('webtronics_connections').checked=false;
 		Event.observe($('webtronics_connections'),'click',function(){
+				webtronics.circuit.clearinfo();
 				webtronics.circuit.showconnections($('webtronics_connections').checked);
 						
 				});
@@ -248,6 +258,7 @@ var webtronics={
 			//chipmaker.clear();
 		});
 		Event.observe($('webtronics_chip_cancel'), 'click', function() {
+
 			$('webtronics_chips_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		});

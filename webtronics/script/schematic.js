@@ -164,6 +164,8 @@ Schematic.prototype.parseMatrix=function(group){
 Schematic.prototype.addtext=function(str){
 
 	this.unselect();
+	this.mouseDown.x=0;
+	this.mouseDown.y=0;
 	str=str.replace(/(^\s*|\s*$)/g, "");
 	var lines=str.split('\n');
 	for(var i=0; i<lines.length;i++){
@@ -347,7 +349,18 @@ Schematic.prototype.showTracker = function(elem) {
  this.info.appendChild(tracked);
 }
 
+Schematic.prototype.clearinfo=function(){
+	this.remove(this.info);
 
+	this.info=document.createElementNS(this.svgNs,'g');
+	this.info.id="information";
+	this.svgRoot.appendChild(this.info);
+
+	this.lastclick.x=0;
+	this.lastclick.y=0;
+	this.showallconnects();
+
+}
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
 	
@@ -483,43 +496,35 @@ Schematic.prototype.unselect = function() {
 
 
 
-Schematic.prototype.connect =function(x1,y1,x2,y2){
+Schematic.prototype.connect =function(x1,y1){
         
-
-        for(var line=this.svgRoot.firstChild;line!=null;line=line.nextSibling){
-                if(line.tagName=='line'){
-                        var lx1=line.getAttributeNS(null,"x1")-0;                       
-                        var lx2=line.getAttributeNS(null,"x2")-0;                       
-                        var ly1=line.getAttributeNS(null,"y1")-0;                       
-                        var ly2=line.getAttributeNS(null,"y2")-0;                       
-/*one is horizontal and the other vertical*/
-                        if(x1==x2 && ly1==ly2){
-/*x1 is in between lx1 and lx2*/
-                                if((lx1<lx2 && x1>lx1 && x1<lx2)||(lx1>lx2 && x1<lx1 && x1>lx2)){
-/*y1 or y2 is the same as ly1 or ly2*/                                          
-                                        if(y1==ly1||y1==ly2||y2==ly1||y2==ly2){
-/*splitline in two parts*/ 			this.remove(line);
-						this.svgRoot.appendChild(this.createline(this.lineColor,lx1,ly1,x1,y1));
-						this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
-						this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
-//                                                this.selected[0].id = 'shape:' + createUUID();
-                                        }
+	var point=this.isconnects(5,x1,y1);		
+	if(point!=null){
+		this.remove($('templine'));
+		this.lastclick.x=0;
+		this.lastclick.y=0;
+		return;
+	}
+	var lines=this.svgRoot.childNodes;	
+        for(var i=0;i<lines.length;i++){
+                if(lines[i].tagName=='line'){
+                        var lx1=lines[i].getAttributeNS(null,"x1")-0;                       
+                        var lx2=lines[i].getAttributeNS(null,"x2")-0;                       
+                        var ly1=lines[i].getAttributeNS(null,"y1")-0;                       
+                        var ly2=lines[i].getAttributeNS(null,"y2")-0;                       
+                                if((lx1<lx2 && x1>lx1 && x1<lx2 && y1==ly1)||
+                                (ly1<ly2 && y1>ly1 && y1< ly2 &&x1==lx1)||
+				(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
+                                (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
+                                        this.remove(lines[i]);
+					this.svgRoot.appendChild(this.createline(this.lineColor,lx1,ly1,x1,y1));
+					this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
+					this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
+					this.remove($('templine'));
+					this.lastclick.x=0;
+					this.lastclick.y=0;
+					return;
                                 }
-                        }                       
-/*one is vertical and the other horizontal*/
-                        if(y1==y2 && lx1==lx2){
-/*y1 is in between ly1 and ly2 even if l2 is lower*/
-                                if((ly1<ly2 && y1>ly1 && y1<ly2)||(ly1>ly2 && y1<ly1 && y1>ly2)){
-/*x1 or x2 is the same as lx1 or lx2*/                                          
-                                        if(x1==lx1||x1==lx2||x2==lx1||x2==lx2){
-/*splitline in two parts*/ 			this.remove(line);
-						this.svgRoot.appendChild(this.createline(this.lineColor,lx1,ly1,x1,y1));
-						this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
-                                                this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
-                                                //this.selected[0].id = 'shape:' + createUUID();
-                                        }
-                                }
-                        }                       
                 }
         }
 }
@@ -575,46 +580,46 @@ if(!this.drag){
 	var real=this.realPosition(event);
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
-	var x=0;
-	var y=0;
 	  
 	if (Event.isLeftClick(event)){
 		if (this.mode == 'line') {
-			if(this.selected[0]){
-				if (this.selected[0].tagName=='line'){
-/*save last click position end of line*/
-
-					x=this.selected[0].getAttributeNS(null,"x2");						
-					y=this.selected[0].getAttributeNS(null,"y2");						
-
-				}
-	/*remove lines that are zero length*/
-
-					if(Math.abs(parseInt(this.selected[0].getAttributeNS(null,"x1"))-parseInt(this.selected[0].getAttributeNS(null,"x2")))<10 &&
-						Math.abs(parseInt(this.selected[0].getAttributeNS(null,"y1"))-parseInt(this.selected[0].getAttributeNS(null,"y2")))<10){	
-		/*remove wire if it is empty*/
-						this.deleteSelection();
-						if(!this.wire.childNodes.length)this.remove(this.wire);
-					}
-			}
-
-			if(x || y){
-			  this.lastclick.x = x;
-			  this.lastclick.y = y;
+			if($('templine')){
+				/*create line*/
+				this.lastclick.x=$('templine').getAttributeNS(null,"x2");						
+				this.lastclick.y=$('templine').getAttributeNS(null,"y2");						
+				var x1=$('templine').getAttributeNS(null,'x1');
+				var y1=$('templine').getAttributeNS(null,'y1');
+				
+				var svg=this.createline(this.lineColor, x1, y1,	this.lastclick.x, this.lastclick.y);
+				svg.id='line'+createUUID();
+				this.svgRoot.appendChild(svg);
+				this.remove($('templine'));
+				this.connect(this.lastclick.x, this.lastclick.y);
+				
 			}
 			else{
-				this.lastclick.x = this.mouseDown.x;
-				this.lastclick.y = this.mouseDown.y;
+				if(!this.lastclick.x||!this.lastclick.y){	
+					this.connect(this.mouseDown.x, this.mouseDown.y);
+					this.lastclick.x=this.mouseDown.x;
+					this.lastclick.y=this.mouseDown.y;
+				}
 			}
-			/*check all lines for dots*/
-				
-			this.connect(this.lastclick.x, this.lastclick.y,this.lastclick.x, this.lastclick.y);
-		
-
-		this.selected[0] = this.createline(this.lineColor, this.lastclick.x, this.lastclick.y,this.lastclick.x, this.lastclick.y);
-		this.selected[0].id = 'line:' + createUUID();
-		this.svgRoot.appendChild(this.selected[0]);				
+	/*create temperary line*/
+			if(this.lastclick.x||this.lastclick.y){
+				var svg = this.createline('blue', this.lastclick.x, this.lastclick.y,	this.lastclick.x, this.lastclick.y);
+				svg.id = 'templine';
+				svg.setAttributeNS(null,'stroke-dasharray','5,4');
+				this.info.appendChild(svg);
+			}
+							
 		}
+	/* remove temperary line	
+		else{
+			this.lastclick.x=0;
+			this.lastclick.y=0;
+			this.remove($('templine'));
+		}
+		*/
 /*clicked on background  in select mode ,remove selection*/
 		if(this.mode=='select'||this.mode=='zoom'){
 			if (this.lastclick.x != this.mouseDown.x || this.lastclick.y != this.mouseDown.y){	
@@ -634,24 +639,9 @@ if(!this.drag){
 			this.deleteSelection();	
 		}
 	}
-/*right click */
-	else{
-		if(this.mode=='line'){
-			if(this.selected[0]){
-				
-				x=0;
-				y=0;
-				if(this.selected[0]){
-					this.remove(this.selected[0]);
-					this.unselect();
-				}
-			}			
-		}
-		
-	}	  
   return false;
+	}
 }
-};
 
 
 
@@ -660,10 +650,7 @@ Schematic.prototype.dragSelection=function(x ,y){
 	if(!floating){
 		floating = document.createElementNS(this.svgNs, 'g');
 		for(var i=0;i<this.selected.length;i++){
-		/*drag the whole wire group*/
-			if(this.selected[i].parentNode.tagName=='wire')
-				floating.appendChild(this.selected[i].parentNode);
-			else floating.appendChild(this.selected[i]);
+			floating.appendChild(this.selected[i]);
 		}
 
 		var tracked=$('schematic_tracker');
@@ -682,7 +669,6 @@ Schematic.prototype.dragSelection=function(x ,y){
 } 
 
 Schematic.prototype.move = function(shape, x, y) {
-	/*move all wires*/
 	var rect;
 	try{
 		rect=shape.getBBox();
@@ -711,12 +697,11 @@ Schematic.prototype.move = function(shape, x, y) {
 		else {
 			shape.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 		}	
-		//this.moveconnects(shape,x,y);
 
 	}
 	else {
-		shape.setAttributeNS(null, 'x', x);
-		shape.setAttributeNS(null, 'y', y);
+		shape.setAttributeNS(null, 'x', point.x+x);
+		shape.setAttributeNS(null, 'y', point.y+y);
 	}
 
 }
@@ -830,9 +815,9 @@ Schematic.prototype.onDrag = function(event) {
 		
 	else if (this.mode=='line')
 	{
-		if (this.selected[0]){
+		if ($('templine')){
 			
-			this.resize(this.selected[0], this.lastclick.x, this.lastclick.y, this.mouseAt.x, this.mouseAt.y);
+			this.resize($('templine'), this.lastclick.x, this.lastclick.y, this.mouseAt.x, this.mouseAt.y);
 		}
 	}
 }

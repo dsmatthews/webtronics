@@ -1,7 +1,7 @@
 
 
 Schematic.prototype.getconnects=function(elem){
-	var pins=Array();
+	var pins= Array();
 	var str=elem.getAttribute("connects");
 	if(!str)return null;
 	var points=str.split(';');
@@ -11,12 +11,7 @@ Schematic.prototype.getconnects=function(elem){
 		pins[i].y=points[i].split(',')[1]-0;
 	}			
 /* add transform to connects*/
-	try{
-		var matrix=elem.getTransformToElement(this.svgRoot);
-	}
-	catch(e){
-		if(!matrix)return pins;
-	}
+	var matrix=this.parseMatrix(elem);
 	var pin=this.svgRoot.createSVGPoint();
 	for(var i=0;i<pins.length;i++){
 		pin.x = pins[i].x;
@@ -63,12 +58,15 @@ Schematic.prototype.isconnect=function(pin,radius,x,y){
 
 Schematic.prototype.isconnects=function(radius,x,y){
 
-	for(var i=0;i<$$('g').length;i++){
-		var pins=this.getconnects($$('g')[i]);
-		if(pins){
-			for(var i=0;i<pins.length;i++){
-				if(this.isconnect(pins[i],radius,x,y)){
-					return pins[i];
+	var parts=this.svgRoot.childNodes;
+	for(var i=0; i<parts.length; i++){
+		if(parts[i].tagName=='g'){
+			var pins=this.getconnects(parts[i]);
+			if(pins){
+				for(var j=0;j<pins.length;j++){
+					if(this.isconnect(pins[j],radius,x,y)){
+						return pins[j];
+					}
 				}
 			}
 		}
