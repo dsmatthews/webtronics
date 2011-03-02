@@ -147,7 +147,7 @@ var webtronics={
 		var file=url['file'];
 		var code = url['code'];
 		
-		document.oncontextmenu=new Function("return false");
+		//document.oncontextmenu=new Function("return false");
 		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		webtronics.setsize();
