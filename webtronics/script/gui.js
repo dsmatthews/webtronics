@@ -143,6 +143,7 @@ var webtronics={
 	Event.observe(window, 'load', function() {
 
 		var url=window.location.search.toQueryParams();
+		document.onselectstart = function() {return false;} 
 		var file=url['file'];
 		var code = url['code'];
 		

@@ -327,15 +327,18 @@ Schematic.prototype.showTracker = function(elem) {
 		svg=this.createtext('rotate','blue',rect.x+rect.width,rect.y);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
+			this.mode='rotate';
 			this.rotate(e.target.rotatorfor);
 			e.stopPropagation();}.bind(this));
 		tracked.appendChild(svg);
+
 	}
 	
 	if (this.getparttype(elem)=='Q'||this.getparttype(elem)=='opamp'){
 		svg=this.createtext('flip','blue',rect.x,rect.y+rect.height+10);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
+			this.mode='rotate';
 			this.flip(e.target.rotatorfor);
 			e.stopPropagation();}.bind(this));
 		tracked.appendChild(svg);
@@ -524,11 +527,10 @@ Schematic.prototype.getPart=function(){
         for(var i=0;i<this.svgRoot.childNodes.length;i++){
                 var part=this.svgRoot.childNodes[i];
                 if(part.nodeType==1){
-                        if(part.id!='information'){
-                                                               
+                        if(part.id!='information'&&part.parentNode.id!='information'){
                                 var rect=this.tracker(part);
                                 if(Utils.rectsIntersect(rect,this.selectionRect)){
-                                        this.select(part);
+					this.select(part);
                                                 
                                 }
                         }
@@ -588,11 +590,11 @@ if(!this.drag){
 							
 		}
 /*clicked on background  in select mode ,remove selection*/
-		if(this.mode=='select'||this.mode=='zoom'){
-			this.selectionRect.x=this.mouseDown.x;
-			this.selectionRect.y=this.mouseDown.y;
-			this.selectionRect.width=1;
-			this.selectionRect.height=1;
+		else if(this.mode=='select'||this.mode=='zoom'){
+			this.selectionRect.x=real.x;
+			this.selectionRect.y=real.y;
+			this.selectionRect.width=0;
+			this.selectionRect.height=0;
 		/* if there is already a selection rectangle delete it*/
 			var selection=$('schematic_selection');
 			do{
@@ -602,8 +604,11 @@ if(!this.drag){
 			selection = this.createrect('blue',real.x,real.y,0,0);
 			selection.id='schematic_selection';
 			this.info.appendChild(selection);
-			for(var i=0;i<this.selected.length;i++){
-				if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+			if(this.mode=='select'){
+				for(var i=0;i<this.selected.length;i++){
+					if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+				}
+				if(!this.drag)this.unselect();
 			}
 		}
 	}
@@ -704,7 +709,6 @@ Schematic.prototype.onMouseUp = function(event) {
 		else{
 			this.unselect();
 			this.getPart();
-
 		}
 			
 	}
@@ -722,6 +726,10 @@ Schematic.prototype.onMouseUp = function(event) {
 		this.selectionRect.width=0;
 		this.selectionRect.height=0;
 	 }
+	/*skip the mouseup after a rotate*/
+	if(this.mode=='rotate'){
+		this.mode='select';
+	}
 
 }
 
@@ -816,7 +824,6 @@ Schematic.prototype.getgroup =function(elem){
 		this.changeid(newelem);
 		this.select(newelem);
 		this.drag=1;
-//	this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
 }
 
 Schematic.prototype.getfile =function(elem){
