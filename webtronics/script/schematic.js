@@ -356,8 +356,8 @@ Schematic.prototype.clearinfo=function(){
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
 
-	this.lastclick.x=0;
-	this.lastclick.y=0;
+	this.mouseDown.x=0;
+	this.mouseDown.y=0;
 	this.showallconnects();
 
 }
@@ -501,8 +501,8 @@ Schematic.prototype.connect =function(x1,y1){
 	var point=this.isconnects(5,x1,y1);		
 	if(point!=null){
 		this.remove($('templine'));
-		this.lastclick.x=0;
-		this.lastclick.y=0;
+		//this.lastclick.x=0;
+		//this.lastclick.y=0;
 		return;
 	}
 	var lines=this.svgRoot.childNodes;	
@@ -521,8 +521,8 @@ Schematic.prototype.connect =function(x1,y1){
 					this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
 					this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
 					this.remove($('templine'));
-					this.lastclick.x=0;
-					this.lastclick.y=0;
+					//this.lastclick.x=0;
+					//this.lastclick.y=0;
 					return;
                                 }
                 }
@@ -578,69 +578,59 @@ Schematic.prototype.realPosition=function(event){
 Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
 	var real=this.realPosition(event);
+	this.lastclick.x=this.mouseDown.x;
+	this.lastclick.y=this.mouseDown.y;
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
 	  
-	if (Event.isLeftClick(event)){
 		if (this.mode == 'line') {
 			if($('templine')){
 				/*create line*/
-				this.lastclick.x=$('templine').getAttributeNS(null,"x2");						
-				this.lastclick.y=$('templine').getAttributeNS(null,"y2");						
 				var x1=$('templine').getAttributeNS(null,'x1');
 				var y1=$('templine').getAttributeNS(null,'y1');
-				
-				var svg=this.createline(this.lineColor, x1, y1,	this.lastclick.x, this.lastclick.y);
+				var x2=$('templine').getAttributeNS(null,'x2');
+				var y2=$('templine').getAttributeNS(null,'y2');
+				var svg=this.createline(this.lineColor, x1, y1,	x2, y2);
 				svg.id='line'+createUUID();
 				this.svgRoot.appendChild(svg);
 				this.remove($('templine'));
-				this.connect(this.lastclick.x, this.lastclick.y);
+				this.connect(x1, y1);
+				svg = this.createline('blue', x2, y2,x2,y2);
+				svg.id = 'templine';
+				svg.setAttributeNS(null,'stroke-dasharray','5,4');
+				this.info.appendChild(svg);
+				this.connect(x2, y2);
 				
 			}
-			else{
-				if(!this.lastclick.x||!this.lastclick.y){	
-					this.connect(this.mouseDown.x, this.mouseDown.y);
-					this.lastclick.x=this.mouseDown.x;
-					this.lastclick.y=this.mouseDown.y;
-				}
-			}
 	/*create temperary line*/
-			if(this.lastclick.x||this.lastclick.y){
-				var svg = this.createline('blue', this.lastclick.x, this.lastclick.y,	this.lastclick.x, this.lastclick.y);
+			else{
+				
+				var svg = this.createline('blue', this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
 				svg.id = 'templine';
 				svg.setAttributeNS(null,'stroke-dasharray','5,4');
 				this.info.appendChild(svg);
 			}
 							
 		}
-	/* remove temperary line	
-		else{
-			this.lastclick.x=0;
-			this.lastclick.y=0;
-			this.remove($('templine'));
-		}
-		*/
 /*clicked on background  in select mode ,remove selection*/
 		if(this.mode=='select'||this.mode=='zoom'){
-			if (this.lastclick.x != this.mouseDown.x || this.lastclick.y != this.mouseDown.y){	
-					this.selectionRect.x=this.mouseDown.x;
-					this.selectionRect.y=this.mouseDown.y;
-					this.selectionRect.width=1;
-					this.selectionRect.height=1;
-				  	var selection = this.createrect('blue',real.x,real.y,0,0);
-					selection.id='schematic_selection';
-					this.info.appendChild(selection);
+			this.selectionRect.x=this.mouseDown.x;
+			this.selectionRect.y=this.mouseDown.y;
+			this.selectionRect.width=1;
+			this.selectionRect.height=1;
+			var selection=$('schematic_selection');
+			if(!selection){
+		  		selection = this.createrect('blue',real.x,real.y,0,0);
+				selection.id='schematic_selection';
+				this.info.appendChild(selection);
+				for(var i=0;i<this.selected.length;i++){
+					if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+				}
 			}
-		for(var i=0;i<this.selected.length;i++){
-			if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
-			}
-		}
-		if(this.mode=='delete'){
-			this.deleteSelection();	
 		}
 	}
   return false;
-	}
+	
 }
 
 
@@ -761,9 +751,6 @@ Schematic.prototype.onMouseUp = function(event) {
 			this.selectionRect.height=0;
 		 }
 	}
-	else if(this.mode=='rotate'){
-		this.mode='select';
-	}
 }
 
 
@@ -785,16 +772,12 @@ Schematic.prototype.onDrag = function(event) {
 		var selection = $('schematic_selection');
 		if (selection) {
 			if(this.selected.length)this.unselect();
-
-				
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
-
+			else selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-
-			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
-			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
+			else selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 			}
 		}
 	}
@@ -805,9 +788,9 @@ Schematic.prototype.onDrag = function(event) {
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
+			else selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
-			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+			else selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 		}
 	}
 			
@@ -817,7 +800,19 @@ Schematic.prototype.onDrag = function(event) {
 	{
 		if ($('templine')){
 			
-			this.resize($('templine'), this.lastclick.x, this.lastclick.y, this.mouseAt.x, this.mouseAt.y);
+			var x=$('templine').getAttribute('x1')-0;
+			var y=$('templine').getAttribute('y1')-0;
+
+			if(Math.abs(this.mouseDown.x-this.mouseAt.x)>Math.abs(this.mouseDown.y-this.mouseAt.y)){
+				
+				this.resize($('templine'), x, y, this.mouseAt.x, y);
+	
+			}
+			else{
+							
+				this.resize($('templine'), x, y, x, this.mouseAt.y);
+			}
+			
 		}
 	}
 }
