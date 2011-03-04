@@ -61,11 +61,9 @@ function Schematic(elem) {
 	this.init(this.container);
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
-	this.onMouseOutListener = this.onMouseOut.bindAsEventListener(this);
 	this.onDragListener = this.onDrag.bindAsEventListener(this);
 
 	Event.observe(this.container, "mousemove", this.onDragListener); 
-	Event.observe(this.container, "mouseout", this.onMouseOutListener); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
 
@@ -329,7 +327,6 @@ Schematic.prototype.showTracker = function(elem) {
 		svg=this.createtext('rotate','blue',rect.x+rect.width,rect.y);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
-			this.mode='rotate';
 			this.rotate(e.target.rotatorfor);
 			e.stopPropagation();}.bind(this));
 		tracked.appendChild(svg);
@@ -339,7 +336,6 @@ Schematic.prototype.showTracker = function(elem) {
 		svg=this.createtext('flip','blue',rect.x,rect.y+rect.height+10);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
-			this.mode='rotate';
 			this.flip(e.target.rotatorfor);
 			e.stopPropagation();}.bind(this));
 		tracked.appendChild(svg);
@@ -355,9 +351,6 @@ Schematic.prototype.clearinfo=function(){
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
-
-	this.mouseDown.x=0;
-	this.mouseDown.y=0;
 	this.showallconnects();
 
 }
@@ -501,8 +494,6 @@ Schematic.prototype.connect =function(x1,y1){
 	var point=this.isconnects(5,x1,y1);		
 	if(point!=null){
 		this.remove($('templine'));
-		//this.lastclick.x=0;
-		//this.lastclick.y=0;
 		return;
 	}
 	var lines=this.svgRoot.childNodes;	
@@ -521,8 +512,6 @@ Schematic.prototype.connect =function(x1,y1){
 					this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
 					this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
 					this.remove($('templine'));
-					//this.lastclick.x=0;
-					//this.lastclick.y=0;
 					return;
                                 }
                 }
@@ -547,20 +536,6 @@ Schematic.prototype.getPart=function(){
         }
 };
 
-/*mouseout event handler*/
-Schematic.prototype.onMouseOut = function(event){
-/*
-		var selection = $('schematic_selection');
-		if (selection) {
-			this.remove(selection);
-			this.selectionRect.x=0;
-			this.selectionRect.y=0;
-			this.selectionRect.width=0;
-			this.selectionRect.height=0;
-		 }
-*/
-
-}
 
 Schematic.prototype.realPosition=function(event){
 	var real={x:0,y:0};
@@ -618,14 +593,17 @@ if(!this.drag){
 			this.selectionRect.y=this.mouseDown.y;
 			this.selectionRect.width=1;
 			this.selectionRect.height=1;
+		/* if there is already a selection rectangle delete it*/
 			var selection=$('schematic_selection');
-			if(!selection){
-		  		selection = this.createrect('blue',real.x,real.y,0,0);
-				selection.id='schematic_selection';
-				this.info.appendChild(selection);
-				for(var i=0;i<this.selected.length;i++){
-					if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
-				}
+			do{
+				if(selection)this.remove(selection);
+				selection=$('schematic_selection');	
+			}while(selection);
+			selection = this.createrect('blue',real.x,real.y,0,0);
+			selection.id='schematic_selection';
+			this.info.appendChild(selection);
+			for(var i=0;i<this.selected.length;i++){
+				if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
 			}
 		}
 	}
@@ -717,7 +695,7 @@ Schematic.prototype.dropSelection=function(){
 
 Schematic.prototype.onMouseUp = function(event) {
 
-
+	this.drag=0;
 	if(this.mode=='select'){
 		var floating=$('schematic_floating');
 		if(floating){
@@ -728,29 +706,23 @@ Schematic.prototype.onMouseUp = function(event) {
 			this.getPart();
 
 		}
-			this.drag=0;	
-		var selection = $('schematic_selection');
-		if (selection) {
-			this.remove(selection);
-			this.selectionRect.x=0;
-			this.selectionRect.y=0;
-			this.selectionRect.width=0;
-			this.selectionRect.height=0;
-		 }
-		}
+			
+	}
 	
 	else	if(this.mode=='zoom'){
 		this.unselect();
 		this.zoomtorect(this.selectionRect);
-		var selection = $('schematic_selection');
-		if (selection) {
-			this.remove(selection);
-			this.selectionRect.x=0;
-			this.selectionRect.y=0;
-			this.selectionRect.width=0;
-			this.selectionRect.height=0;
-		 }
 	}
+
+	var selection = $('schematic_selection');
+	if (selection) {
+		this.remove(selection);
+		this.selectionRect.x=0;
+		this.selectionRect.y=0;
+		this.selectionRect.width=0;
+		this.selectionRect.height=0;
+	 }
+
 }
 
 
@@ -765,32 +737,31 @@ Schematic.prototype.onDrag = function(event) {
 /*clicked inside bounds*/
 
 		if(this.drag){
-			//this.removeTracker();			
 			this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
 		}
 		else{
 		var selection = $('schematic_selection');
 		if (selection) {
-			if(this.selected.length)this.unselect();
+			//if(this.selected.length)this.unselect();
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
-			else selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-			else selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
+			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 			}
 		}
 	}
 	else if(this.mode=='zoom'){
 		var selection = $('schematic_selection');
 		if (selection) {
-			if(this.selected.length)this.unselect();
+			//if(this.selected.length)this.unselect();
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
-			else selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-			else selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
+			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 		}
 	}
 			
