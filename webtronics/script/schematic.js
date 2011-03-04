@@ -136,9 +136,9 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
+	this.container.appendChild(this.svgRoot);
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
-	this.container.appendChild(this.svgRoot);
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);

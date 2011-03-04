@@ -4,18 +4,18 @@ var webtronics={
 
 
 		
-			docfromtext:function(txt){
-				var xmlDoc;
-				if (window.DOMParser){
-					parser=new DOMParser();
-					xmlDoc=parser.parseFromString(txt,"text/xml");
-				}
-				else{ // Internet Explorer
-					xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-					xmlDoc.async="false";
-					xmlDoc.loadXML(txt);
-				} 
-				return xmlDoc;
+		docfromtext:function(txt){
+			var xmlDoc;
+			if (window.DOMParser){
+				parser=new DOMParser();
+				xmlDoc=parser.parseFromString(txt,"text/xml");
+			}
+			else{ // Internet Explorer
+				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+				xmlDoc.async="false";
+				xmlDoc.loadXML(txt);
+			} 
+			return xmlDoc;
 		},
 
 		setsize:function(){
@@ -82,12 +82,11 @@ var webtronics={
 
 		returnsvg:function(){
 			if(window.FileReader){
-			$('webtronics_open_file_selector').form.reset();
-			$('webtronics_open_file').show();
+				$('webtronics_open_file_selector').form.reset();
+				$('webtronics_open_file').style.display = "block";
 				$('webtronics_open_file_selector').onchange=function(){
 					var textReader = new FileReader();
 					textReader.onloadend=function(){
-						
 						var xmlDoc=webtronics.docfromtext(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
@@ -96,8 +95,8 @@ var webtronics={
 							else webtronics.circuit.getfile(node);
 						}
 					}
-				textReader.readAsText($('webtronics_open_file_selector').files[0]);
-				$('webtronics_open_file').hide();
+					textReader.readAsText($('webtronics_open_file_selector').files[0]);
+					$('webtronics_open_file').hide();
 				}
 			}
 			else if(((navigator.userAgent.toLowerCase().indexOf('firefox')>-1)||
