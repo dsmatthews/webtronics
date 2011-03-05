@@ -441,12 +441,11 @@ Schematic.prototype.showconnections=function(check){
 
 Schematic.prototype.getMarkup = function() {
 	this.setzoom(true);
-	var svg=document.createElementNS(this.svgNs,'svg');
-	for(var node=this.svgRoot.firstChild;node!=null;node=node.nextSibling){
-		if(node.id!='information')svg.appendChild(node.cloneNode(true));
-	}
-	var svgsize=this.tracker(this.svgRoot);
+	this.svgRoot.removeChild($('information'));
+	var svg=this.svgRoot.cloneNode(true);
+	this.svgRoot.appendChild(this.info);
 	svg.removeAttributeNS(null,'viewBox');
+	var svgsize=this.tracker(this.svgRoot);
 	svg.setAttributeNS(null,'width',svgsize.width+10);
 	svg.setAttributeNS(null,'height',svgsize.height+10);
 	return (new XMLSerializer()).serializeToString(svg);
