@@ -6,42 +6,44 @@
    version="1.0"
    width="51.917667"
    height="40.356956"
-   id="svg1879">
-  <defs
-     id="defs1881" />
+>
+  <defs>
+</defs>
   <g connects= "0,10;0,30;50,20"
+	stroke='black'
+	stroke-width='2px' 
      id="opamp">
     <path
        d="M 40.89454,20.540576 12.315297,39.544438 12.209005,1.1874808 40.89454,20.540576 z"
        id="path1887"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
+       fill='none' />
     <path
        d="m 11.578863,11.329398 -11.36246404,0"
        id="path1889"
-       style="fill:none;stroke:#000000;stroke-width:2.17910361px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
+        />
     <path
        d="m 11.49836,30.841525 -11.31103873,0"
        id="path1893"
-       style="fill:none;stroke:#000000;stroke-width:2.12706733px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible" />
+        />
     <text
        x="13.219952"
        y="16.536049"
        id="text1895"
        xml:space="preserve"
-       style="font-size:10.41952133px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+       font-size='12px'><tspan
          x="13.219952"
          y="16.536049"
          id="tspan1897">+</tspan></text>
     <path
        d="m 41.828266,20.613697 9.92629,0"
        id="path2167"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       />
     <text
        x="15.692554"
        y="28.003143"
        id="text1915"
        xml:space="preserve"
-       style="font-size:10.41952133px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+       font-size='12px'><tspan
          x="15.692554"
          y="28.003143"
          id="tspan1917">_</tspan></text>

@@ -218,11 +218,13 @@ var webtronics={
 			webtronics.circuit.clearinfo();
 			webtronics.showMarkup();
 			});
+		/*
 		$('webtronics_invert').checked=false;
 		Event.observe($('webtronics_invert'),'click',function(){
 				webtronics.circuit.clearinfo();
 				webtronics.circuit.invertcolors($('webtronics_invert').checked);
 			});
+		*/		
 		$('webtronics_connections').checked=false;
 		Event.observe($('webtronics_connections'),'click',function(){
 				webtronics.circuit.clearinfo();

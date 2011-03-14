@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="31.19149"
    height="19.2792"
-   id="svg2160">
-  <defs 
-     id="defs2162" />
+>
+  <defs>
+     </style>
+</defs>
   <g connects="0,10;30,10"
+	stroke='black'
+	stroke-width='2px' 
      transform="translate(0,0.516986)"
      id="D">
     <path
        d="M 7.075891,18.82484 L 7.075891,0.45435962"
        id="path2210"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       d="M 6.9758131,9.219705 L 24.667172,0.94293572 L 24.667172,18.043117 L 6.9758131,9.219705 z"
-       id="path2220"
-       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 0.61488576,9.242 L 30.806377,9.242"
        id="path3202"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
+    <path
+       d="M 6.9758131,9.219705 L 24.667172,0.94293572 L 24.667172,18.043117 L 6.9758131,9.219705 z"
+       id="path2220"
+       fill='black' />
+
   </g>
 </svg>

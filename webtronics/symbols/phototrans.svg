@@ -1,51 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="40.028328"
    height="40.606297"
-   id="svg2160">
-  <defs
-     id="defs75" />
+>
+ <defs>
+</defs>
   <g connects="30,0;30,40"
+	stroke='black'
+	stroke-width='2px' 
      id="Q">
     <path
        d="M 39.528327,19.711332 C 39.528327,27.422391 32.281724,33.673439 23.342588,33.673439 C 14.403451,33.673439 7.1568491,27.422391 7.1568492,19.711332 C 7.1568491,12.000274 14.403451,5.7492257 23.342588,5.7492257 C 32.281724,5.7492257 39.528327,12.000274 39.528327,19.711332 L 39.528327,19.711332 z"
        id="path2170"
-       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       fill='none'
+ />
     <path
        d="M 15.507593,31.530581 L 15.728279,8.4635117"
        id="path2178"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 15.286906,19.730534 L 30.046507,32.277381"
        id="path2180"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 16.111535,19.730533 L 30.728279,6.6063688"
        id="path2182"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 20.916302,29.049101 L 29.699143,31.727149 L 25.677184,23.383532"
        id="path2184"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+	fill='none'
+/>
     <path
        d="M 30.176563,6.500601 L 30.176563,0.49999991"
        id="path2186"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 29.976563,32.247914 L 29.976563,40.106297"
        id="path2188"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 0.5,1.659174 L 8.5237866,9.548579"
        id="path4105"
-       style="fill:none;fill-rule:evenodd;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 2.5986186,8.508829 L 9,9.6062965 L 7.102072,3.3069872"
        id="path2297"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+	fill='none'
+ />
   </g>
 </svg>

@@ -2,35 +2,37 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="40.454754"
    height="20.444269"
-   id="svg2160">
-  <defs
-     id="defs2162" />
+>
+ <defs>
+</defs>
   <g connects="0,10;40,10"
+	stroke='black'
+	stroke-width='2px' 
      id="R">
     <path
        d="M 5.3415991,11.079275 8.0153231,0.54357924 10.475149,19.330121 14.539209,0.67051526 17.854627,19.457059 21.490891,0.54357924 25.287064,19.596525 28.977318,0.67051526 32.559593,19.500914 34.539695,10.209518"
        id="path3444"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+fill='none'
+ />
     <path
        d="m 0.41158316,10.588417 5.05722044,0"
        id="path2159"
-       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="m 40.043171,10.417738 -5.459106,0"
        id="path2161"
-       style="fill:none;stroke:#00000f;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 34.013535,19.885585 2.0746539,1.2571588"
        id="path2242"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 5,5.6401043 1,0.64010429 7,1.6401043"
        id="path2244"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
   </g>
 </svg>

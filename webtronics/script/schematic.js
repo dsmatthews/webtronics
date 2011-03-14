@@ -137,6 +137,10 @@ Schematic.prototype.init = function(elem) {
 	this.container.appendChild(this.svgRoot);
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
+/*set colors*/
+	this.svgRoot.style.backgroundColor="#ffffff";
+//	this.svgRoot.setAttributeNS(null,'stroke','black');
+//	this.svgRoot.setAttributeNS(null,'stroke-width','2px');
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
@@ -259,6 +263,7 @@ Schematic.prototype.tracker = function(elem) {
 			tleft.x=box.x;
 			tleft.y=box.y;
 			tleft=tleft.matrixTransform(matrix);
+
 			bright.x=box.x+box.width;
 			bright.y=box.y+box.height;
 			bright=bright.matrixTransform(matrix);
@@ -394,7 +399,8 @@ Schematic.prototype.invertcolors =function(check){
 	if(check){
 		if(!$('invertfilter')){
 			this.svgRoot.style.backgroundColor="#000000";
-			var defs=$$('defs')[0];
+			this.svgRoot.setAttribute('stroke','white');
+/*			var defs=$$('defs')[0];
 			if(!defs)defs=document.createElementNS(this.svgNs ,'defs');
 			var fe = document.createElementNS(this.svgNs ,'feComponentTransfer');
 			var filter=document.createElementNS(this.svgNs ,'feFuncR');
@@ -415,12 +421,14 @@ Schematic.prototype.invertcolors =function(check){
 			defs.appendChild(filter);
 			this.svgRoot.appendChild(defs);
 			this.svgRoot.setAttribute('filter','url(#invertfilter)');
+*/
 		}
 	}
 	else {
-		this.remove($('invertfilter'));
-		this.svgRoot.removeAttributeNS(null,'filter');
+//		this.remove($('invertfilter'));
+//		this.svgRoot.removeAttributeNS(null,'filter');
 		this.svgRoot.style.backgroundColor="#ffffff";
+		this.svgRoot.setAttribute('stroke','black');
 	}
 }
 
@@ -510,9 +518,9 @@ Schematic.prototype.connect =function(x1,y1){
 				(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
                                 (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
                                         this.remove(lines[i]);
-					this.svgRoot.appendChild(this.createline(this.lineColor,lx1,ly1,x1,y1));
-					this.svgRoot.appendChild(this.createline(this.lineColor,x1,y1,lx2,ly2));
-					this.svgRoot.appendChild(this.createdot(this.lineColor,x1,y1));
+					this.svgRoot.appendChild(this.createline('inherit',lx1,ly1,x1,y1));
+					this.svgRoot.appendChild(this.createline('inherit',x1,y1,lx2,ly2));
+					this.svgRoot.appendChild(this.createdot('inherit',x1,y1));
 					this.remove($('templine'));
 					return;
                                 }
@@ -566,24 +574,26 @@ if(!this.drag){
 				var y1=$('templine').getAttributeNS(null,'y1');
 				var x2=$('templine').getAttributeNS(null,'x2');
 				var y2=$('templine').getAttributeNS(null,'y2');
-				var svg=this.createline(this.lineColor, x1, y1,	x2, y2);
-				svg.id='line'+createUUID();
-				this.svgRoot.appendChild(svg);
-				this.remove($('templine'));
-				this.connect(x1, y1);
-				svg = this.createline('blue', x2, y2,x2,y2);
-				svg.id = 'templine';
-				svg.setAttributeNS(null,'stroke-dasharray','5,4');
-				this.info.appendChild(svg);
-				this.connect(x2, y2);
+				if(!(x1==x2&&y1==y2)){
+					var svg=this.createline('black', x1, y1,	x2, y2);
+					svg.id='line'+createUUID();
+					this.svgRoot.appendChild(svg);
+					this.remove($('templine'));
+					this.connect(x1, y1);
+					svg = this.createline('blue', x2, y2,x2,y2);
+					svg.id = 'templine';
+					svg.setAttributeNS(null,'stroke-dasharray','3,2');
+					this.info.appendChild(svg);
+					this.connect(x2, y2);
+				}
 				
 			}
 	/*create temperary line*/
 			else{
-				
+			
 				var svg = this.createline('blue', this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
 				svg.id = 'templine';
-				svg.setAttributeNS(null,'stroke-dasharray','5,4');
+				svg.setAttributeNS(null,'stroke-dasharray','3,2');
 				this.info.appendChild(svg);
 			}
 							
@@ -781,7 +791,7 @@ Schematic.prototype.onDrag = function(event) {
 			var x=$('templine').getAttribute('x1')-0;
 			var y=$('templine').getAttribute('y1')-0;
 
-			if(Math.abs(this.mouseDown.x-this.mouseAt.x)>Math.abs(this.mouseDown.y-this.mouseAt.y)){
+			if(Math.abs(this.mouseDown.x-this.mouseAt.x)>=Math.abs(this.mouseDown.y-this.mouseAt.y)){
 				
 				this.resize($('templine'), x, y, this.mouseAt.x, y);
 	
@@ -828,6 +838,7 @@ Schematic.prototype.getgroup =function(elem){
 Schematic.prototype.getfile =function(elem){
 this.unselect();
 ch=elem.childNodes;
+
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 		/*get rid  of empty text*/

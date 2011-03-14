@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="27.000002"
    height="20.649992"
-   id="svg2160">
-  <defs
-     id="defs2162" />
+>
+ <defs>
+</defs>
   <g connects="0,10;30,10"
-     id="C">
+	stroke='black'
+	stroke-width='2px' 
+      id="C">
     <path
        d="M 10.369779,0.65035363 L 10.251843,20.149993"
        id="path3412"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 15.5,0.5 L 15.5,19.99964"
        id="path3414"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 15.500001,9.9247403 L 30,9.9996396"
        id="path3420"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 9.8980368,9.9996389 L 0.5,10.107676"
        id="path3422"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
     <path
        d="M 3.0442249,4.8200227 L 8.8282521,4.8200227"
        id="path2162"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 5.7840272,8.0671959 L 5.7332901,1.8265349"
        id="path2164"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+ />
   </g>
 </svg>

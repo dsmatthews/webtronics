@@ -24,6 +24,12 @@ Schematic.prototype.getconnects=function(elem){
  return pins;
 }
 
+Schematic.prototype.followline=function(elem){
+
+
+
+}
+
 Schematic.prototype.addconnects=function(elem,pin){
 	var pins=this.getconnects(elem);
 	var str;

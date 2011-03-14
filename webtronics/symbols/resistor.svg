@@ -2,33 +2,33 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="40"
    height="19.999998"
-   id="svg2160">
-  <defs
-     id="defs2162" />
+>
+ <defs>
+</defs>
   <g connects="0,10;40,10"
-     id="R">
+	stroke='black'
+	stroke-width='2px' 
+      id="R">
     <path
        d="M 5.1400289,10.973441 7.5009997,5.0436578 10.530362,14.908323 14.248435,4.3282724 18.324457,14.77488 21.761826,4.4617163 25.849828,14.589134 29.504786,4.5222528 33.128938,14.818135 35.33864,10.115602"
        id="path3444"
-       style="fill:none;stroke:#000000;stroke-width:2.1960547px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       fill='none'
+/>
     <path
        d="m -0.0278984,10.588417 5.424147,0"
        id="path2159"
-       style="fill:none;stroke:#000000;stroke-width:2.07128453px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="m 40.555206,9.9057016 -5.459106,0"
        id="path2161"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <rect
        width="40"
        height="19.999998"
-       rx="0"
-       ry="0"
        x="-0.86240554"
        y="-0.021562828"
        id="rect2162"

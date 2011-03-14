@@ -6,30 +6,34 @@
    version="1.0"
    width="60.318184"
    height="40.902729"
-   id="svg2168">
-  <defs
-     id="defs2170" />
+>
+ <defs>
+</defs>
   <g connects="0,10;0,30;60,20"
+	stroke='black'
+	stroke-width='2px' 
      id="G">
     <path
        d="m 10.863637,0.66290618 9.272727,-0.0909091 c 1.054535,0.0492046 13.887589,1.54738812 20.909091,8.46350252 5.021048,4.9456854 7.84074,9.5075004 8.373838,11.0957734 0.910212,2.711815 -0.233035,-1.390855 -0.0102,0.02653 0.269718,1.7156 -2.93611,8.017301 -9.474468,14.222668 -7.264999,6.895002 -19.796886,6.019318 -19.798259,6.00971 l -9.272727,-0.272727 c 4.003203,-12.651115 5.429849,-25.624299 0,-39.45454482 z"
        id="path2189"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       fill='none'/>
     <path
        d="m 49.818182,19.935633 c 7.395532,0.238953 7.086384,0.02469 10,0"
        id="path2191"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       fill='none'
+ />
     <path
        d="M 13.388164,10.102383 0.5,10.435633"
        id="path2193"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="m 12.928763,30.299269 -12.110581,0"
        id="path2195"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+/>
     <path
        d="M 8.5534073,0.24627359 C 12.833902,15.790562 11.722718,28.63901 8.3312409,40.347313"
        id="path3223"
-       style="fill:none;stroke:#000000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+	fill='none'
+/>
   </g>
 </svg>
