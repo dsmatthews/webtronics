@@ -518,9 +518,9 @@ Schematic.prototype.connect =function(x1,y1){
 				(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
                                 (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
                                         this.remove(lines[i]);
-					this.svgRoot.appendChild(this.createline('inherit',lx1,ly1,x1,y1));
-					this.svgRoot.appendChild(this.createline('inherit',x1,y1,lx2,ly2));
-					this.svgRoot.appendChild(this.createdot('inherit',x1,y1));
+					this.svgRoot.appendChild(this.createline('black',lx1,ly1,x1,y1));
+					this.svgRoot.appendChild(this.createline('black',x1,y1,lx2,ly2));
+					this.svgRoot.appendChild(this.createdot('black',x1,y1));
 					this.remove($('templine'));
 					return;
                                 }
