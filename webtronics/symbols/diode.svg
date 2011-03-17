@@ -7,21 +7,19 @@
    height="19.2792"
 >
   <defs>
-     </style>
 </defs>
   <g connects="0,10;30,10"
 	stroke='black'
 	stroke-width='2px' 
-     transform="translate(0,0.516986)"
      id="D">
     <path
        d="M 7.075891,18.82484 L 7.075891,0.45435962"
        id="path2210"
- />
+	 />
     <path
        d="M 0.61488576,9.242 L 30.806377,9.242"
        id="path3202"
-/>
+	/>
     <path
        d="M 6.9758131,9.219705 L 24.667172,0.94293572 L 24.667172,18.043117 L 6.9758131,9.219705 z"
        id="path2220"
