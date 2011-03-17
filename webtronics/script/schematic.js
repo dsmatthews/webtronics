@@ -791,7 +791,7 @@ Schematic.prototype.onDrag = function(event) {
 			var x=$('templine').getAttribute('x1')-0;
 			var y=$('templine').getAttribute('y1')-0;
 
-			if(Math.abs(this.mouseDown.x-this.mouseAt.x)>=Math.abs(this.mouseDown.y-this.mouseAt.y)){
+			if(Math.abs(this.mouseDown.x-real.x)>=Math.abs(this.mouseDown.y-real.y)){
 				
 				this.resize($('templine'), x, y, this.mouseAt.x, y);
 	
