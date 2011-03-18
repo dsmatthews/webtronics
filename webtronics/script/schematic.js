@@ -45,8 +45,6 @@ function Schematic(elem) {
 	this.connections=false;
 	this.zoomRatio=1;
 	this.mode = '';
-	this.lineColor = 'black';
-	this.lineWidth = 2;
 /*array of nodes*/
 	this.selected = Array();
 /*selecting rectangle*/
@@ -54,11 +52,10 @@ function Schematic(elem) {
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
 
 	this.mouseDown={x:0,y:0};
-	this.mouseAt={x:0,y:0};
-	this.lastclick={x:0,y:0};
 	this.viewoffset={x:0,y:0};
 	
 	this.init(this.container);
+
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
 	this.onDragListener = this.onDrag.bindAsEventListener(this);
@@ -139,8 +136,6 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 /*set colors*/
 	this.svgRoot.style.backgroundColor="#ffffff";
-//	this.svgRoot.setAttributeNS(null,'stroke','black');
-//	this.svgRoot.setAttributeNS(null,'stroke-width','2px');
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
@@ -562,8 +557,8 @@ Schematic.prototype.realPosition=function(event){
 Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
 	var real=this.realPosition(event);
-	this.lastclick.x=this.mouseDown.x;
-	this.lastclick.y=this.mouseDown.y;
+//	this.lastclick.x=this.mouseDown.x;
+//	this.lastclick.y=this.mouseDown.y;
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
 	  
@@ -746,15 +741,16 @@ Schematic.prototype.onMouseUp = function(event) {
 Schematic.prototype.onDrag = function(event) {
 
 	var real=this.realPosition(event);
-	this.mouseAt.x = Math.round(real.x / this.grid) * this.grid;
-	this.mouseAt.y =Math.round(real.y / this.grid) * this.grid;
+	mouseAt={x:0,y:0}
+	mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+	mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 
 
 	if(this.mode=='select'){
 /*clicked inside bounds*/
 
 		if(this.drag){
-			this.dragSelection(this.mouseAt.x-this.mouseDown.x,this.mouseAt.y-this.mouseDown.y);
+			this.dragSelection(mouseAt.x-this.mouseDown.x,mouseAt.y-this.mouseDown.y);
 		}
 		else{
 		var selection = $('schematic_selection');
@@ -793,12 +789,12 @@ Schematic.prototype.onDrag = function(event) {
 
 			if(Math.abs(this.mouseDown.x-real.x)>=Math.abs(this.mouseDown.y-real.y)){
 				
-				this.resize($('templine'), x, y, this.mouseAt.x, y);
+				this.resize($('templine'), x, y, mouseAt.x, y);
 	
 			}
 			else{
 							
-				this.resize($('templine'), x, y, x, this.mouseAt.y);
+				this.resize($('templine'), x, y, x, mouseAt.y);
 			}
 			
 		}
@@ -824,7 +820,6 @@ Schematic.prototype.getgroup =function(elem){
 		this.unselect();
 		var newelem=document.importNode(elem,true);
 		this.svgRoot.appendChild(newelem);
-		//newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,0,0)');
 		this.mouseDown.x=0;
 		this.mouseDown.y=0;
 		
