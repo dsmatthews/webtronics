@@ -227,7 +227,7 @@ var webtronics={
 		*/		
 		$('webtronics_connections').checked=false;
 		Event.observe($('webtronics_connections'),'click',function(){
-				webtronics.circuit.clearinfo();
+				//webtronics.circuit.clearinfo();
 				webtronics.circuit.showconnections($('webtronics_connections').checked);
 						
 				});
