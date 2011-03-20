@@ -66,7 +66,7 @@ var webtronics={
 		openfile:function(Name){
 			var xmldoc;
 			new Ajax.Request(Name,{
-			method:'post',
+			method:'get',
 			asynchronous:false,
 			contentType:"image/svg+xml",
 			onSuccess: function(transport){
