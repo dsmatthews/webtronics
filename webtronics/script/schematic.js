@@ -266,14 +266,12 @@ Schematic.prototype.tracker = function(elem) {
 			bright.x=box.x+box.width;
 			bright.y=box.y+box.height;
 			bright=bright.matrixTransform(matrix);
-			
-	
 
 			rect.x=Math.min(tleft.x,bright.x);
 			rect.y=Math.min(tleft.y,bright.y);
 			rect.width=Math.max(tleft.x,bright.x)-rect.x;			
 			rect.height=Math.max(tleft.y,bright.y)-rect.y;			
-
+	
 
 
 		}

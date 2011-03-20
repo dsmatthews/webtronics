@@ -51,10 +51,16 @@ var webtronics={
 		},
 
 		changeimage:function(Name){
-			
-			$('webtronics_part_display').src=Name;
-			$('webtronics_part_display').hide();
-			$('webtronics_part_display').show();
+			$('webtronics_part_display').parentNode.removeChild($('webtronics_part_display'));
+			var embed=document.createElement('embed');
+			embed.src=Name;
+			embed.width=70;
+			embed.height=70;
+			embed.id='webtronics_part_display'
+			$('webtronics_parts_box').appendChild(embed);
+			//$('webtronics_part_display').src=Name;
+			//$('webtronics_part_display').hide();
+			//$('webtronics_part_display').show();
 		},
 
 		openfile:function(Name){
@@ -67,7 +73,6 @@ var webtronics={
 				xmldoc=transport.responseXML;
 				},
 			onFailure: function(){ alert('Something went wrong...'); }
-			//, onException: function(x){alert(" Error name: " + x.name  + ". Error message: " + x.message); }
 			});
 			return xmldoc;
 		},
