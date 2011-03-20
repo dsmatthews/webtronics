@@ -68,7 +68,7 @@ drawchip:function(h,v,elem){
 		chipG.appendChild(svg);
 		
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
-		svg.setAttributeNS(null, 'x', 10);
+		svg.setAttributeNS(null, 'x', 0);
 		svg.setAttributeNS(null, 'y', y);
 		svg.setAttributeNS(null, 'font-size', 8);
 		svg.setAttributeNS(null, 'stroke','blue');
@@ -161,10 +161,10 @@ drawchip:function(h,v,elem){
 
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'x', x);
-		svg.setAttributeNS(null, 'y', 10);
+		svg.setAttributeNS(null, 'y', 0);
 		svg.setAttributeNS(null, 'font-size', 8);
 		svg.setAttributeNS(null, 'stroke','blue');
-		svg.setAttributeNS(null, 'transform', 'rotate(90 '+x+' 10)');
+		svg.setAttributeNS(null, 'transform', 'rotate(90 '+x+' 0)');
 		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
 		chipG.appendChild(svg);
 		pins[pincount]=x+','+0;

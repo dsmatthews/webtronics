@@ -230,15 +230,19 @@ Schematic.prototype.resize = function(shape, fromX, fromY, toX, toY) {
 Schematic.prototype.tracker = function(elem) {
 	var rect=Object();
 	if(elem&&(elem.nodeType==1)){	
-		var box={x:0,y:0,width:0,height:0};
 		try{
-			var box=elem.getBBox();
+			var bbox=elem.getBBox();
 		}
 		catch(e){
 			/*do nothing*/
 			}
-		if(!box)var box={x:0,y:0,width:0,height:0};
-
+		var box={x:0,y:0,width:0,height:0};
+		if(bbox){
+			box.x=bbox.x;
+			box.y=bbox.y;
+			box.width=bbox.width;
+			box.height=bbox.height;	
+		}
 		if(elem.tagName=='g'||elem.tagName=='svg'){
 
 				for(var i= elem.childNodes.length;i>0;i--){
