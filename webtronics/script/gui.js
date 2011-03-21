@@ -68,18 +68,24 @@ var webtronics={
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
-			//contentType:"image/svg+xml",
+			contentType:"image/svg+xml",
 			onSuccess: function(transport){
 				xmldoc=transport.responseXML;
 				},
-			onFailure: function(){ alert('Something went wrong...'); }
+			onFailure: function(){ alert('Something went wrong...'); },
+			onException: function(req,exception) {
+				alert(exception);
+				return true;
+				}, 
 			});
 			return xmldoc;
 		},
 
 		returnpart:function(Name){
 			var xmlDoc=webtronics.openfile(Name);
-			webtronics.circuit.getgroup(xmlDoc.getElementsByTagName('g')[0]);
+			//if(!xmlDoc)alert('something broke');
+			var group=xmlDoc.getElementsByTagName('g')[0];
+			webtronics.circuit.getgroup(group);
 			$('webtronics_parts_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		},	
