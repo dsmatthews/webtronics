@@ -818,9 +818,9 @@ Schematic.prototype.changeid=function(elem){
 }
 
 
-Schematic.prototype.getgroup =function(newelem){
+Schematic.prototype.getgroup =function(elem){
 		this.unselect();
-		//var newelem=elem.cloneNode(true);
+		var newelem=document.importNode(elem,true);
 		this.svgRoot.appendChild(newelem);
 		this.mouseDown.x=0;
 		this.mouseDown.y=0;
