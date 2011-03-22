@@ -820,7 +820,7 @@ Schematic.prototype.changeid=function(elem){
 
 Schematic.prototype.getgroup =function(elem){
 		this.unselect();
-		var newelem=document.importNode(elem,true);
+		var newelem=elem.cloneNode(true);
 		this.svgRoot.appendChild(newelem);
 		this.mouseDown.x=0;
 		this.mouseDown.y=0;
