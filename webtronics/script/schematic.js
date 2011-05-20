@@ -43,6 +43,7 @@ function Schematic(elem) {
 /*group to display information*/
 	this.info=null;
 	this.connections=false;
+	this.graph=false;
 	this.zoomRatio=1;
 	this.mode = '';
 /*array of nodes*/
@@ -135,7 +136,8 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
 	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 /*set colors*/
-	this.svgRoot.style.backgroundColor="#ffffff";
+//	this.svgRoot.style.backgroundColor="#ffffff";
+	this.container.style.backgroundColor="#ffffff";
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
@@ -433,16 +435,14 @@ Schematic.prototype.showconnections=function(check){
 	if(check){
 		this.connections=true;
 		this.showallconnects();
-
 	}
-
-
 	else{
 		this.connections=false;
 		this.hideconnects();
 	}
 	
 }
+
 
 Schematic.prototype.getMarkup = function() {
 	this.setzoom(true);
@@ -451,6 +451,7 @@ Schematic.prototype.getMarkup = function() {
 	this.svgRoot.appendChild(this.info);
 	svg.removeAttributeNS(null,'viewBox');
 	var svgsize=this.tracker(this.svgRoot);
+	svg.style.backgroundColor="#ffffff";
 	svg.setAttributeNS(null,'width',svgsize.width+10);
 	svg.setAttributeNS(null,'height',svgsize.height+10);
 	return (new XMLSerializer()).serializeToString(svg);

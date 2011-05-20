@@ -23,13 +23,19 @@ var webtronics={
 			var buffer=20;
 			var realsize=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight-buffer;
 			$('webtronics_diagram_area').style.height = realsize+'px';
+		
 		},
 
-		showMarkup:function() {
+		getMarkup:function() {
 			var str="<?xml version='1.0' ?>\n";
 			str+="<!--Created by webtronics 0.1-->\n";
 			str+=webtronics.circuit.getMarkup();
-			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(str) );
+			return str;
+		},
+		
+		showMarkup:function(){
+
+			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(webtronics.getMarkup() ));
 		},
 
 		setMode:function(button,mode, status){
@@ -179,8 +185,11 @@ var webtronics={
 					if(!node){alert("file svg node not found");}
 					else	webtronics.circuit.getfile(node);
 				}
+
 		}
+
 /*menu events*/
+		
 		Event.observe($('webtronics_file_open'), 'click', function() {
 			webtronics.setMode('webtronics_file_open','select','Selection');
 			webtronics.returnsvg();
@@ -224,21 +233,38 @@ var webtronics={
 			webtronics.circuit.clearinfo();
 			webtronics.circuit.deleteSelection();
 			});
-		Event.observe($('webtronics_save'), 'click', function() {
-		//	webtronics.saveserver();
-			webtronics.circuit.clearinfo();
-			webtronics.showMarkup();
-			});
-		/*
-		$('webtronics_invert').checked=false;
-		Event.observe($('webtronics_invert'),'click',function(){
+		if($('webtronics_save')){
+			Event.observe($('webtronics_save'), 'click', function() {
 				webtronics.circuit.clearinfo();
+				webtronics.showMarkup();
+				});
+		}
+/*	
+	$('webtronics_invert').checked=false;
+		Event.observe($('webtronics_invert'),'click',function(){
 				webtronics.circuit.invertcolors($('webtronics_invert').checked);
 			});
-		*/		
+*/				
+		$('webtronics_graph').checked=false;
+		Event.observe($('webtronics_graph'),'click',function(){
+		if($('webtronics_graph').checked){
+			$('webtronics_diagram_area').style.backgroundImage = 'url('+graphPath+')';
+			//console.log(graphpath);
+			//$('webtronics_diagram_area').style.backgroundSize = webtronics.circuit.zoomRatio*100+'%';
+		}
+		else{
+						
+			//$('webtronics_diagram_area').style.background='none';
+			$('webtronics_diagram_area').setAttributeNS(null,'style',"background-color:'white'");
+			webtronics.setsize();
+		}
+	
+					
+						
+			});
+
 		$('webtronics_connections').checked=false;
 		Event.observe($('webtronics_connections'),'click',function(){
-				//webtronics.circuit.clearinfo();
 				webtronics.circuit.showconnections($('webtronics_connections').checked);
 						
 				});

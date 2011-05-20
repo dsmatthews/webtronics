@@ -1,0 +1,37 @@
+#files
+
+
+schematic.html is the stadalone version
+schematic.css  is the style sheet needed by the plugins and standalone version
+graph.jpg is the graph background  needed by the plugins and standalone version
+the rest are mediawiki plugin files 
+the folders are all required except diagrams is where I put diagrams for testing.
+
+
+
+#INSTALLING mediawiki plugin
+
+The mediawiki plugin is tested on version 1.15
+This plugin is currently for a test environment only.
+It appears to function correctly but may not be stable or secure.
+
+The mediawiki plugin is actually two plugins
+
+svge plugin adds a svge tag  which displays the image in svg format in the image tag
+
+webtronics plugin is the editor and file upload function.
+
+
+enable svg uploads
+
+place th webtronics folder (the second one if you use svn to get it) in  your mediawiki/extensions/ directory.
+The path should be mediawiki/extensions/webtronics/webtronics.php. 
+
+add the following to your LocalSettings.php
+
+require_once($IP."extensions/webtronics/Svge.php");
+require_once($IP."extensions/webtronics/webtronics.php");
+
+*on debian there are two LocalSettings.php files one is in /etc/mediawiki
+ If your changes don't take effect, try putting them in there.
+
