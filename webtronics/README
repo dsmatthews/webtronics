@@ -4,7 +4,7 @@
 schematic.html is the stadalone version
 schematic.css  is the style sheet needed by the plugins and standalone version
 graph.jpg is the graph background  needed by the plugins and standalone version
-the rest are mediawiki plugin files 
+all the php files are mediawiki plugin files 
 the folders are all required except diagrams is where I put diagrams for testing.
 
 
@@ -30,7 +30,7 @@ The path should be mediawiki/extensions/webtronics/webtronics.php.
 add the following to your LocalSettings.php
 
 require_once($IP."extensions/webtronics/Svge.php");
-require_once($IP."extensions/webtronics/webtronics.php");
+require_once($IP."extensions/webtronics/Webtronics.php");
 
 *on debian there are two LocalSettings.php files one is in /etc/mediawiki
  If your changes don't take effect, try putting them in there.

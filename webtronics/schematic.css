@@ -29,20 +29,20 @@ div img {
 }
 
 
-#webtronics_diagram_area{
-width:auto;
-height:auto;
-overflow:scroll;
-cursor:crosshair;
-position:relative;
-border:1px solid black;
-background-color:#ffffff;
+#webtronics_diagram_area{	
+	width:auto;
+	height:auto;
+	overflow:scroll;
+	cursor:crosshair;
+	position:relative;
+	border:1px solid black;
+	background-color:#ffffff;
 }
 
 #webtronics_status_bar{
- width:auto;
- height:auto ;
- background-color:inherit;
+	 width:auto;
+	 height:auto ;
+	 background-color:inherit;
  }
  
 #webtronics_parts_box{
@@ -62,49 +62,49 @@ background-color:#ffffff;
 	}	
    
 #webtronics_open_file{ 
-  display:none; 
-  position:absolute; 
-  left:200px; 
-  top:10px; 
-  border-style: solid; 
-  background-color:inherit; 
+	display:none; 
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	background-color:inherit; 
 	padding: 5px;   
    }   
    
 #webtronics_chips_box{
 	display:none; 
-  position:absolute; 
-  left:200px; 
-  top:10px; 
-  border-style: solid; 
-  background-color:inherit; 
-  padding: 5px;
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	background-color:inherit; 
+	padding: 5px;
   }
   
 #webtronics_chip_display{
-width:300px;
-height:300px;
-border:1px solid black;
-background-color:#ffffff
+	width:300px;
+	height:300px;
+	border:1px solid black;
+	background-color:#ffffff
   } 
 
 #webtronics_add_text{ 
 	display:none; 
-  position:absolute; 
-  left:200px; 
-  top:10px; 
-  border-style: solid; 
-  background-color:inherit; 
-  padding: 5px;      
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	background-color:inherit; 
+	padding: 5px;      
 }
 #webtronics_open_text{ 
 	display:none; 
-  position:absolute; 
-  left:200px; 
-  top:10px; 
-  border-style: solid; 
-  background-color:inherit; 
-  padding: 5px;
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	background-color:inherit; 
+	padding: 5px;
   }
   
   

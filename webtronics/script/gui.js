@@ -203,12 +203,17 @@ var webtronics={
 //			$('webtronics_chips_box').reset();
 			webtronics.circuit.clearinfo();
 			webtronics.setMode('webtronics_chips_open','select','Selection');
+			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
 			$('webtronics_chips_box').style.display = "block";
+			$('webtronics_chips_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_chips_box').offsetWidth/2)+'px';
+			$('webtronics_chips_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_chips_box').offsetHeight/2)+'px';
 			});
 		Event.observe($('webtronics_parts_open'), 'click', function() {
-			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
 			webtronics.setMode('webtronics_parts_open','select','Selection');
 			$('webtronics_parts_box').style.display = "block";
+			$('webtronics_parts_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_parts_box').offsetWidth/2)+'px';
+			$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
+
 			});
 		Event.observe($('webtronics_zoom'), 'click', function() {
 				//set zoom to 1
@@ -228,6 +233,9 @@ var webtronics={
 			webtronics.circuit.clearinfo();
 			webtronics.setMode('webtronics_text','select', 'Selection');
 			$('webtronics_add_text').style.display = "block";
+			$('webtronics_add_text').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_add_text').offsetWidth/2)+'px';
+			$('webtronics_add_text').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_add_text').offsetHeight/2)+'px';
+
 			});
 		Event.observe($('webtronics_delete'), 'click', function() {
 			webtronics.circuit.clearinfo();
