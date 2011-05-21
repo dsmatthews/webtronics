@@ -29,7 +29,7 @@ The path should be mediawiki/extensions/webtronics/webtronics.php.
 
 add the following to your LocalSettings.php
 
-require_once($IP."extensions/webtronics/Svge.php");
+require_once($IP."extensions/webtronics/Svgiframe.php");
 require_once($IP."extensions/webtronics/Webtronics.php");
 
 *on debian there are two LocalSettings.php files one is in /etc/mediawiki
