@@ -1,6 +1,5 @@
 <?php
 
-
 class SpecialWebtronics extends SpecialPage {
         function __construct() {
                 parent::__construct( 'Webtronics' );
@@ -32,9 +31,7 @@ class SpecialWebtronics extends SpecialPage {
 
 		$uploadform= new WebtronicsUploadForm($wgRequest);	
 		$uploadform->execute();
-
 		$uploadform->cleanupTempFile();
-
 
 	}
 }
@@ -43,8 +40,6 @@ class WebtronicsUploadForm extends UploadForm {
 	var $svgDestHandle;
 
 	function __construct(&$request){
-		//global $wgOut; 
-		parent::UploadForm($request);
 
 		$this->mDesiredDestName   = $request->getText( 'wpDestFile' );
 		$this->mIgnoreWarning     = $request->getCheck( 'wpIgnoreWarning' );
@@ -94,6 +89,46 @@ class WebtronicsUploadForm extends UploadForm {
 		}
 	}
 
+	function uploadWarning( $warning ) {
+		global $wgOut;
+		global $wgUseCopyrightUpload;
+
+		$this->mSessionKey = $this->stashSession();
+		if( !$this->mSessionKey ) {
+			# Couldn't save file; an error has been displayed so let's go.
+			return;
+		}
+
+		$wgOut->addHTML( '<h2>' . wfMsgHtml( 'uploadwarning' ) . "</h2>\n" );
+		$wgOut->addHTML( '<ul class="warning">' . $warning . "</ul>\n" );
+
+//FIXME will return to the page without reloading file
+		$titleObj = SpecialPage::getTitleFor( 'Webtronics' );
+
+		if ( $wgUseCopyrightUpload ) {
+			$copyright = Xml::hidden( 'wpUploadCopyStatus', $this->mCopyrightStatus ) . "\n" .
+					Xml::hidden( 'wpUploadSource', $this->mCopyrightSource ) . "\n";
+		} else {
+			$copyright = '';
+		}
+
+		$wgOut->addHTML(
+			Xml::openElement( 'form', array( 'method' => 'post', 'action' => $titleObj->getLocalURL( 'action=submit' ),
+				 'enctype' => 'multipart/form-data', 'id' => 'uploadwarning' ) ) . "\n" .
+			Xml::hidden( 'wpIgnoreWarning', '1' ) . "\n" .
+			Xml::hidden( 'wpSessionKey', $this->mSessionKey ) . "\n" .
+			Xml::hidden( 'wpUploadDescription', $this->mComment ) . "\n" .
+			Xml::hidden( 'wpLicense', $this->mLicense ) . "\n" .
+			Xml::hidden( 'wpDestFile', $this->mDesiredDestName ) . "\n" .
+			Xml::hidden( 'wpWatchthis', $this->mWatchthis ) . "\n" .
+			"{$copyright}<br />" .
+			Xml::submitButton( wfMsg( 'ignorewarning' ), array ( 'name' => 'wpUpload', 'id' => 'wpUpload', 'checked' => 'checked' ) ) . ' ' .
+			Xml::submitButton( wfMsg( 'reuploaddesc' ), array ( 'name' => 'wpReUpload', 'id' => 'wpReUpload' ) ) .
+			Xml::closeElement( 'form' ) . "\n"
+		);
+
+	}
+
 	function initializeFromSVG($request){
 
 		global $wgTmpDirectory,$wgUser, $wgOut,$wgMaxUploadSize;
@@ -132,7 +167,6 @@ class WebtronicsUploadForm extends UploadForm {
 	function mainUploadForm( $msg='' ) {
 	global $wgScriptPath,$wgOut;	
 
-//	if( $msg == '' && !$this->mShowUploadForm ) return;
 		if ( '' != $msg ) {
 			$sub = wfMsgHtml( 'uploaderror' );
 			$wgOut->addHTML( "<h2>{$sub}</h2>\n" .

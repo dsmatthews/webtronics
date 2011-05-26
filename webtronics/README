@@ -15,21 +15,13 @@ The mediawiki plugin is tested on version 1.15
 This plugin is currently for a test environment only.
 It appears to function correctly but may not be stable or secure.
 
-The mediawiki plugin is actually two plugins
 
-svge plugin adds a svge tag  which displays the image in svg format in the image tag
+1.enable svg uploads
 
-webtronics plugin is the editor and file upload function.
+2.place th webtronics folder (the second one if you use svn to get it) in  your mediawiki/extensions/ directory.
+The path should be mediawiki/extensions/webtronics/Webtronics.php. 
 
-
-enable svg uploads
-
-place th webtronics folder (the second one if you use svn to get it) in  your mediawiki/extensions/ directory.
-The path should be mediawiki/extensions/webtronics/webtronics.php. 
-
-add the following to your LocalSettings.php
-
-require_once($IP."extensions/webtronics/Svgiframe.php");
+3.add the following to your LocalSettings.php
 require_once($IP."extensions/webtronics/Webtronics.php");
 
 *on debian there are two LocalSettings.php files one is in /etc/mediawiki

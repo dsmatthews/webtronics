@@ -1,9 +1,9 @@
-
+/*
 body{
 	font-family:verdana,arial;
 	font-size:10pt;
 	 }
-
+*/
 div * {
 	vertical-align: middle;
 	}
@@ -16,6 +16,8 @@ div img {
 
 
 #webtronics_main_window{
+	font-family:verdana,arial;
+	font-size:10pt;
 	background-color:#C0C0C0;
 }
 #webtronics_toolbar{
@@ -51,6 +53,7 @@ div img {
       left:200px; 
       top:10px; 
       border-style: solid; 
+	border-radius:20px;
       background-color:inherit; 
       padding: 5px;
       }
@@ -76,6 +79,7 @@ div img {
 	position:absolute; 
 	left:200px; 
 	top:10px; 
+	border-radius:20px;
 	border-style: solid; 
 	background-color:inherit; 
 	padding: 5px;
@@ -93,6 +97,7 @@ div img {
 	position:absolute; 
 	left:200px; 
 	top:10px; 
+	border-radius:20px;
 	border-style: solid; 
 	background-color:inherit; 
 	padding: 5px;      
