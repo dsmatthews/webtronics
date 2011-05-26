@@ -76,7 +76,8 @@ var webtronics={
 			asynchronous:false,
 			contentType:"text/xml",
 			onSuccess: function(transport){
-				xmldoc=transport.responseXML;
+				/*this overrides the mimetype to xml for ie9*/
+				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
 				},
 			onFailure: function(){ alert('Something went wrong...'); },
 			onException: function(req,exception) {
