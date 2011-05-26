@@ -74,7 +74,7 @@ var webtronics={
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
-			contentType:"image/svg+xml",
+			contentType:"text/xml",
 			onSuccess: function(transport){
 				xmldoc=transport.responseXML;
 				},
