@@ -22,7 +22,7 @@ It appears to function correctly but may not be stable or secure.
 The path should be mediawiki/extensions/webtronics/Webtronics.php. 
 
 3.add the following to your LocalSettings.php
-require_once($IP."extensions/webtronics/Webtronics.php");
+require_once($IP."/extensions/webtronics/Webtronics.php");
 
 *on debian there are two LocalSettings.php files one is in /etc/mediawiki
  If your changes don't take effect, try putting them in there.
