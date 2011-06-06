@@ -299,9 +299,22 @@ Schematic.prototype.tracker = function(elem) {
 /*show a box around an element*/
 Schematic.prototype.rotate=function(elem){
 	var matrix=this.parseMatrix(elem);
-	matrix=matrix.rotate(90);
+/*center the  object?*/
+	var box=this.tracker(elem);	
+	var centerh = Math.round(((box.height / 2))/10)*10;
+	var centerw = Math.round(((box.width / 2))/10)*10;	
 
+	matrix=matrix.translate(centerw,centerh);
+	matrix=matrix.rotate(90);
+	matrix=matrix.translate(-centerh,-centerw);
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+
+
+/* center the object?*/
+
+
+	//elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+
 	this.removeTracker();
 	for(i=0;i<this.selected.length;i++)
 		this.showTracker(this.selected[i]);		
@@ -309,8 +322,12 @@ Schematic.prototype.rotate=function(elem){
 
 Schematic.prototype.flip=function(elem){
 	var matrix=this.parseMatrix(elem);
-	var flip =matrix.flipX();
-	elem.setAttributeNS(null,'transform','matrix('+flip.a+','+flip.b+','+flip.c+','+flip.d+','+flip.e+','+flip.f+')');
+	var box=this.tracker(elem);	
+	matrix=matrix.translate(box.width,0);
+	matrix=matrix.flipX();
+
+	//matrix=matrix.translate(-box.width,0);
+	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.removeTracker();
 	for(i=0;i<this.selected.length;i++)
 		this.showTracker(this.selected[i]);		
@@ -338,7 +355,7 @@ Schematic.prototype.showTracker = function(elem) {
 
 	}
 	
-	if (this.getparttype(elem)=='Q'||this.getparttype(elem)=='opamp'){
+	if (elem.getAttribute("flippable")=="true"){
 		svg=this.createtext('flip','blue',rect.x,rect.y+rect.height+10);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
@@ -354,7 +371,6 @@ Schematic.prototype.showTracker = function(elem) {
 
 Schematic.prototype.clearinfo=function(){
 	this.remove(this.info);
-
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
@@ -890,14 +906,14 @@ var Utils = {
 
 	"encode64" : function(input) {
 //probably won't work on older browsers
-		return btoa(input);
+		return window.btoa(input);
 
 	},
 
 	"decode64" : function (input) {
 
 
-			return  atob(input);
+			return  window.atob(input);
 	 
 		},
 

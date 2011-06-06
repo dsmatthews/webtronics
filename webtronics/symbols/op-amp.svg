@@ -12,7 +12,8 @@
   <g connects= "0,10;0,30;50,20"
 	stroke='black'
 	stroke-width='2px' 
-     id="opamp">
+     	id="opamp"
+	flippable="true" >
     <path
        d="M 40.89454,20.540576 12.315297,39.544438 12.209005,1.1874808 40.89454,20.540576 z"
        id="path1887"
