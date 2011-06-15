@@ -299,14 +299,14 @@ Schematic.prototype.tracker = function(elem) {
 /*show a box around an element*/
 Schematic.prototype.rotate=function(elem){
 	var matrix=this.parseMatrix(elem);
-/*center the  object?*/
+/*center the  object?
 	var box=this.tracker(elem);	
 	var centerh = Math.round(((box.height / 2))/10)*10;
 	var centerw = Math.round(((box.width / 2))/10)*10;	
 
 	matrix=matrix.translate(centerw,centerh);
-	matrix=matrix.rotate(90);
 	matrix=matrix.translate(-centerh,-centerw);
+*/	matrix=matrix.rotate(90);
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 
 
