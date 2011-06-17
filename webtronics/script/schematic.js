@@ -517,7 +517,7 @@ Schematic.prototype.connect =function(x1,y1){
         
 	var point=this.isconnects(5,x1,y1);		
 	if(point!=null){
-		this.remove($('templine'));
+		this.remove($('templine1'));
 		return;
 	}
 	var lines=this.svgRoot.childNodes;	
@@ -535,7 +535,7 @@ Schematic.prototype.connect =function(x1,y1){
 					this.svgRoot.appendChild(this.createline('black',lx1,ly1,x1,y1));
 					this.svgRoot.appendChild(this.createline('black',x1,y1,lx2,ly2));
 					this.svgRoot.appendChild(this.createdot('black',x1,y1));
-					this.remove($('templine'));
+					this.remove($('templine1'));
 					return;
                                 }
                 }
@@ -582,33 +582,37 @@ if(!this.drag){
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
 	  
 		if (this.mode == 'line') {
-			if($('templine')){
+			if($('templine1')){
 				/*create line*/
-				var x1=$('templine').getAttributeNS(null,'x1');
-				var y1=$('templine').getAttributeNS(null,'y1');
-				var x2=$('templine').getAttributeNS(null,'x2');
-				var y2=$('templine').getAttributeNS(null,'y2');
+				var x1=$('templine1').getAttributeNS(null,'x1');
+				var y1=$('templine1').getAttributeNS(null,'y1');
+				var x2=$('templine1').getAttributeNS(null,'x2');
+				var y2=$('templine1').getAttributeNS(null,'y2');
 				if(!(x1==x2&&y1==y2)){
-					var svg=this.createline('black', x1, y1,	x2, y2);
+					var svg=this.createline('black', x1, y1,x2, y2);
 					svg.id='line'+createUUID();
 					this.svgRoot.appendChild(svg);
-					this.remove($('templine'));
+					this.remove($('templine1'));
 					this.connect(x1, y1);
-					svg = this.createline('blue', x2, y2,x2,y2);
-					svg.id = 'templine';
-					svg.setAttributeNS(null,'stroke-dasharray','3,2');
-					this.info.appendChild(svg);
+					if($('templine2'))$('templine2').id='templine1';					
+					else{
+						svg = this.createline('blue', x2, y2,x2,y2);
+						svg.id = 'templine1';
+						svg.setAttributeNS(null,'stroke-dasharray','3,2');
+						this.info.appendChild(svg);
+					}					
 					this.connect(x2, y2);
+					
 				}
 				
 			}
 	/*create temperary line*/
 			else{
-			
 				var svg = this.createline('blue', this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
-				svg.id = 'templine';
+				svg.id = 'templine1';
 				svg.setAttributeNS(null,'stroke-dasharray','3,2');
 				this.info.appendChild(svg);
+
 			}
 							
 		}
@@ -635,8 +639,8 @@ if(!this.drag){
 			}
 		}
 	}
-  return false;
-	
+	return false;
+
 }
 
 
@@ -799,24 +803,37 @@ Schematic.prototype.onDrag = function(event) {
 			
 		
 		
-	else if (this.mode=='line')
-	{
-		if ($('templine')){
+	else if (this.mode=='line'){
+		if ($('templine1')){
 			
-			var x=$('templine').getAttribute('x1')-0;
-			var y=$('templine').getAttribute('y1')-0;
+			var x=$('templine1').getAttribute('x1')-0;
+			var y=$('templine1').getAttribute('y1')-0;
+			
 
-			if(Math.abs(this.mouseDown.x-real.x)>=Math.abs(this.mouseDown.y-real.y)){
+			if(Math.abs(x-real.x)>=Math.abs(y-real.y)){
 				
-				this.resize($('templine'), x, y, mouseAt.x, y);
+				this.resize($('templine1'), x, y, mouseAt.x, y);
+				this.remove($('templine2'));	
+				var svg = this.createline('blue', mouseAt.x, y, mouseAt.x, mouseAt.y);
+				svg.id = 'templine2';
+				svg.setAttributeNS(null,'stroke-dasharray','3,2');
+				this.info.appendChild(svg);
+
 	
 			}
 			else{
 							
-				this.resize($('templine'), x, y, x, mouseAt.y);
+				this.resize($('templine1'), x, y, x, mouseAt.y);
+				this.remove($('templine2'));	
+				var svg = this.createline('blue', x, mouseAt.y, mouseAt.x, mouseAt.y);
+				svg.id = 'templine2';
+				svg.setAttributeNS(null,'stroke-dasharray','3,2');
+				this.info.appendChild(svg);
+
 			}
 			
 		}
+	
 	}
 }
 
