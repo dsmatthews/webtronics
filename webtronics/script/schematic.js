@@ -299,26 +299,34 @@ Schematic.prototype.tracker = function(elem) {
 /*show a box around an element*/
 Schematic.prototype.rotate=function(elem){
 	var matrix=this.parseMatrix(elem);
-/*center the  object?
-	var box=this.tracker(elem);	
-	var centerh = Math.round(((box.height / 2))/10)*10;
-	var centerw = Math.round(((box.width / 2))/10)*10;	
-
-	matrix=matrix.translate(centerw,centerh);
-	matrix=matrix.translate(-centerh,-centerw);
-*/	matrix=matrix.rotate(90);
+/*center the  object?*/
+	var box1=this.tracker(elem);	
+	matrix=matrix.rotate(90);
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+	var box2=this.tracker(elem);	
+	var x=matrix.e+((box1.x+(box1.width/2))-(box2.x+(box2.width/2)));
+	var y=matrix.f+((box1.y+(box1.height/2))-(box2.y+(box2.height/2))); 
+	x=Math.round(x/this.grid)*this.grid;
+	y=Math.round(y/this.grid)*this.grid;
+	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+x+','+y+')');
+
+//	var trans=this.svgRoot.createSVGTransform();
+//	trans.setRotate(90,0,0);
+//	elem.transform.baseVal.appendItem(trans);
+//	elem.transform.baseVal.consolidate();
+//	var box2=this.tracker(elem);	
+//	var x=box1.x-box2.x;
+//	var y=box1.y-box2.y;
+//	trans.setTranslate(x,y);
+//	elem.transform.baseVal.appendItem(trans);
+//	elem.transform.baseVal.consolidate();
 
 
-/* center the object?*/
-
-
-	//elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-
+	
 	this.removeTracker();
 	for(i=0;i<this.selected.length;i++)
 		this.showTracker(this.selected[i]);		
-}
+};
 
 Schematic.prototype.flip=function(elem){
 	var matrix=this.parseMatrix(elem);
@@ -326,7 +334,9 @@ Schematic.prototype.flip=function(elem){
 	matrix=matrix.translate(box.width,0);
 	matrix=matrix.flipX();
 
-	//matrix=matrix.translate(-box.width,0);
+	matrix.e=Math.round(matrix.e/this.grid)*this.grid;
+	matrix.f=Math.round(matrix.f/this.grid)*this.grid;
+
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.removeTracker();
 	for(i=0;i<this.selected.length;i++)
@@ -549,6 +559,7 @@ Schematic.prototype.getPart=function(){
                 var part=this.svgRoot.childNodes[i];
                 if(part.nodeType==1){
                         if(part.id!='information'&&part.parentNode.id!='information'){
+
                                 var rect=this.tracker(part);
                                 if(Utils.rectsIntersect(rect,this.selectionRect)){
 					this.select(part);
