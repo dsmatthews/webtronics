@@ -64,9 +64,6 @@ var webtronics={
 			embed.height=70;
 			embed.id='webtronics_part_display'
 			$('webtronics_parts_box').appendChild(embed);
-			//$('webtronics_part_display').src=Name;
-			//$('webtronics_part_display').hide();
-			//$('webtronics_part_display').show();
 		},
 
 		openfile:function(Name){
@@ -98,60 +95,12 @@ var webtronics={
 		},	
 
 
-		returnsvg:function(){
-			if(window.FileReader){
-				$('webtronics_open_file_selector').form.reset();
-				$('webtronics_open_file').style.display = "block";
-				$('webtronics_open_file_selector').onchange=function(){
-					var textReader = new FileReader();
-					textReader.onloadend=function(){
-						var xmlDoc=webtronics.docfromtext(textReader.result);
-						if(!xmlDoc){alert("error parsing svg");}
-						else{
-							var node=xmlDoc.getElementsByTagName('svg')[0];
-							if(!node){alert("svg node not found")}
-							else webtronics.circuit.getfile(node);
-						}
-					}
-					textReader.readAsText($('webtronics_open_file_selector').files[0]);
-					$('webtronics_open_file').hide();
-				}
-			}
-			else if(((navigator.userAgent.toLowerCase().indexOf('firefox')>-1)||
-				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1))	 &&window.FileList){
-
-			$('webtronics_open_file_selector').form.reset();
-			$('webtronics_open_file').style.display = "block";
-				$('webtronics_open_file_selector').onchange=function(){
-					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
-					var xmlDoc=webtronics.docfromtext(txt);
-					var node=xmlDoc.getElementsByTagName('svg')[0];
-					if(!node){alert("svg node not found");}
-					else webtronics.circuit.getfile(node);
-					$('webtronics_open_file').hide();
-				}
-			}
-
-			/*no file read capability*/
-
-			else {
-				$('webtronics_open_text_ok').onclick=function(){
-					var xmlDoc=webtronics.docfromtext($('webtronics_svg_code').value);
-					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
-					$('webtronics_open_text').hide();
-				}
-				$('webtronics_open_text').style.display = "block";
-
-			}
-			webtronics.setMode('webtronics_select','select','Selection');
-		},
-
 
 		returnchip:function(){
 		webtronics.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
 		$('webtronics_chips_box').hide();
 		webtronics.setMode('webtronics_select','select','Selection');
-		}
+		},
 	
 }
 
@@ -164,8 +113,53 @@ var webtronics={
 		document.onselectstart = function() {return false;} 
 		var file=url['file'];
 		var code = url['code'];
-		
-		//document.oncontextmenu=new Function("return false");
+		/* test file read capability*/
+			if(window.FileReader){
+				$('webtronics_open_file_selector').form.reset();
+				$('webtronics_open_file_selector').onchange=function(){
+					var textReader = new FileReader();
+					textReader.onloadend=function(){
+						var xmlDoc=webtronics.docfromtext(textReader.result);
+						if(!xmlDoc){alert("error parsing svg");}
+						else{
+							var node=xmlDoc.getElementsByTagName('svg')[0];
+							if(!node){alert("svg node not found")}
+							else webtronics.circuit.getfile(node);
+						}
+					}
+					textReader.readAsText($('webtronics_open_file_selector').files[0]);
+				}
+			}
+			else if((navigator.userAgent.toLowerCase().indexOf('firefox')>-1)||
+				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1)&&window.FileList){
+
+				$('webtronics_open_file_selector').form.reset();
+				$('webtronics_open_file_selector').onchange=function(){
+					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
+					var xmlDoc=webtronics.docfromtext(txt);
+					var node=xmlDoc.getElementsByTagName('svg')[0];
+					if(!node){alert("svg node not found");}
+					else webtronics.circuit.getfile(node);
+				}
+
+			}
+
+			/*no file read capability*/
+
+			else {
+				$('webtronics_open_file').hide();
+				$('webtronics_open_text_ok').onclick=function(){
+					var xmlDoc=webtronics.docfromtext($('webtronics_svg_code').value);
+					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
+					//$('webtronics_open_text').reset();
+					$('webtronics_open_text').hide();
+				 	webtronics.setMode('webtronics_select','select', 'Selection');    
+				}
+			}
+				
+
+			
+
 		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		webtronics.setsize();
@@ -189,11 +183,15 @@ var webtronics={
 
 		}
 
-/*menu events*/
-		
+
+		$('webtronics_open_file').style.left = $('webtronics_file_open').offsetLeft+'px';
+		$('webtronics_open_file').style.top = $('webtronics_file_open').offsetTop+'px';
+		$('webtronics_open_file').style.width = $('webtronics_file_open').offsetWidth+'px';
+		$('webtronics_open_file').style.height = $('webtronics_file_open').offsetHeight+'px';
+/*menu events*/		
 		Event.observe($('webtronics_file_open'), 'click', function() {
+			$('webtronics_open_text').style.display = "block";
 			webtronics.setMode('webtronics_file_open','select','Selection');
-			webtronics.returnsvg();
 			});
 		Event.observe($('webtronics_new'), 'click', function() {
 			webtronics.setMode('webtronics_select','select','Selection');
@@ -289,11 +287,7 @@ var webtronics={
 			$('webtronics_parts_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 			});
-/*file open events*/
-		Event.observe($('webtronics_open_file_cancel'), 'click', function() {
-			$('webtronics_open_file').hide();
-			webtronics.setMode('webtronics_select','select','Selection');
-		});
+
 /*chip box events*/
 		Event.observe($('webtronics_vert_pins'), 'change', function() {
 			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
@@ -338,5 +332,4 @@ var webtronics={
 	Event.observe(window, 'resize', function() {
 		webtronics.setsize();
 	});
-//	window.addEventListener("oncontextmenu",function(){return false},true);
 

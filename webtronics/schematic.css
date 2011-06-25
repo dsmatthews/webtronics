@@ -66,15 +66,22 @@ div img {
 	}	
    
 #webtronics_open_file{ 
-	display:none; 
+	/*display:none;*/ 
+	filter: alpha(opacity=0);
+ 	opacity: 0;
+	overflow:hidden;
 	position:absolute; 
 	left:200px; 
 	top:10px; 
-	border-style: solid; 
+	border-style: none; 
 	background-color:inherit; 
-	padding: 5px;   
+	padding: none;   
    }   
-   
+
+#webtronics_open_file_selector{
+	font-size:30pt;
+}
+ 
 #webtronics_chips_box{
 	display:none; 
 	position:absolute; 
