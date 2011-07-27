@@ -59,8 +59,11 @@ function Schematic(elem) {
 
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
-	this.onDragListener = this.onDrag.bindAsEventListener(this);
+	this.onDragListener = this.onDrag.bindAsEventListener(this);	
+//	this.onWheelListener=this.onWheel.bindAsEventListener(this);
 
+//	Event.observe(this.container, "mousewheel",this.onWheelListener);
+//	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
 	Event.observe(this.container, "mousemove", this.onDragListener); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
@@ -809,6 +812,9 @@ Schematic.prototype.onDrag = function(event) {
 			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
 			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
 			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+
+
+
 		}
 	}
 			
@@ -848,6 +854,25 @@ Schematic.prototype.onDrag = function(event) {
 	}
 }
 
+Schematic.prototype.onWheel=function(event){
+	var real=this.realPosition(event);
+	var wheel=0;
+	if(event.wheelDelta)wheel=-event.wheelDelta;
+	else wheel=event.detail;
+	
+	if(wheel>0&&this.zoomRatio>.5){
+		this.zoomRatio-=.1;
+		}
+	else if(wheel<0&&this.zoomRatio<3)this.zoomRatio+=.1;
+	var size=Math.max(this.container.offsetWidth,this.container.offsetHeight);	
+	//var rect={x:(this.container.offsetWidth-real.x),y:(this.container.offsetHeight-real.y),w:size,h:size}; 
+	this.viewoffset.x=(this.container.offsetWidth-Event.pointerX(event))*this.zoomRatio;
+	this.viewoffset.y=(this.container.offsetHeight-Event.pointerY(event))*this.zoomRatio;
+	this.svgRoot.setAttributeNS(null,'width',size);
+	this.svgRoot.setAttributeNS(null,'height',size);
+	this.svgRoot.setAttributeNS(null,'viewBox',(this.container.offsetWidth-Event.pointerX(event))+' '+ (this.container.offsetHeight-Event.pointerY(event)) +' '+ size*this.zoomRatio +' '+size*this.zoomRatio );
+
+}
 
 Schematic.prototype.getparttype=function(elem){
 var type;

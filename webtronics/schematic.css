@@ -1,12 +1,9 @@
-/*
-body{
-	font-family:verdana,arial;
-	font-size:10pt;
-	 }
-*/
+
+
 div * {
 	vertical-align: middle;
 	}
+
 	
 div img {
 	padding:2px;
@@ -25,11 +22,7 @@ div img {
 	height:auto;
 	background-color:inherit;
 	}
-/*
-#webtronics_settings{
-	float:right;
-}
-*/
+
 
 #webtronics_diagram_area{	
 	width:auto;
