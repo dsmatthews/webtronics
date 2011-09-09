@@ -193,24 +193,28 @@ class WebtronicsUploadForm extends UploadForm {
 	toolbar
 	-->
 	<div  id='webtronics_toolbar' >
-		<img id='webtronics_file_open' title='import file' src='$editorpath/buttons/open.png' />
-		<img id='webtronics_new' title ='clear the drawing area' src='$editorpath/buttons/new.png' />
-		<img id='webtronics_chips_open' title='make chips' src='$editorpath/buttons/icbut.png' />
-		<img id='webtronics_parts_open' title='get parts' src='$editorpath/buttons/disc.png'/>
-		<img id='webtronics_zoom'  title='click this to zoom out, select area to zoom in'  src='$editorpath/buttons/zoom.png'/>
-		<img id='webtronics_select' title='Select shapes' src='$editorpath/buttons/select.png' />
-		<!--img id='webtronics_rotate' title ='select 1 part and click to rotate part' src='$editorpath/buttons/rotate.png' /-->
-		<img id='webtronics_wire' title='click to start wire'  src='$editorpath/buttons/wire.png' />
-		<img id='webtronics_text' title='add text'  src='$editorpath/buttons/text.png' />
-		<img  id='webtronics_delete' title='Delete selected shape' src='$editorpath/buttons/delete.png' />
-		<!--img  id='webtronics_save' title='Save the file' src='$editorpath/buttons/save.png' / -->
-		<!--img  id='webtronics_netlist' title='Create a netlist' src='$editorpath/buttons/net.png' /-->
+		<div id='webtronics_buttons'>
+			<img id='webtronics_file_open' title='import file' src='$editorpath/buttons/open.png' />
+			<img id='webtronics_new' title ='clear the drawing area' src='$editorpath/buttons/new.png' />
+			<img id='webtronics_chips_open' title='make chips' src='$editorpath/buttons/icbut.png' />
+			<img id='webtronics_parts_open' title='get parts' src='$editorpath/buttons/disc.png'/>
+			<img id='webtronics_zoom'  title='click this to zoom out, select area to zoom in'  src='$editorpath/buttons/zoom.png'/>
+			<img id='webtronics_select' title='Select shapes' src='$editorpath/buttons/select.png' />
+			<img id='webtronics_wire' title='click to start wire'  src='$editorpath/buttons/wire.png' />
+			<img id='webtronics_text' title='add text'  src='$editorpath/buttons/text.png' />
+			<img  id='webtronics_delete' title='Delete selected shape' src='$editorpath/buttons/delete.png' />
+			<img  id='webtronics_save' title='Save the file' src='$editorpath/buttons/save.png' />
+		</div>
+		<!--<img  id='webtronics_netlist' title='Create a netlist' src='$editorpath/buttons/net.png' />-->
+		<div id='webtronics_settings'> 	
+			<form> 
+				<input type='checkbox' id='webtronics_connections' > show connections 
+				<input type='checkbox' id='webtronics_graph' > show graph 
+				<!--<input type='checkbox' id='webtronics_invert' />Invert colors-->
+			</form>
+		</div>
+		<div id='webtronics_value_box' ><input id='webtronics_value' />value/part#</div>
 
-		<form id='webtronics_settings'>
-			<input type='checkbox' id='webtronics_connections' > show connections </input>
-			<input type='checkbox' id='webtronics_graph' > show graph </input>
-			<!--<input type='checkbox' id='webtronics_invert' />Invert colors-->
-		</form>
 	</div>
 	<!--
 	display area

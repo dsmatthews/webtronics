@@ -324,7 +324,12 @@ var webtronics={
 
 			$('webtronics_open_text').hide();
 		});
-
+/*part number / value */
+		Event.observe($('webtronics_value'),'keyup',function(){
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_value').value);
+			$('value'+webtronics.circuit.selected[0].id).removeChild($('value'+webtronics.circuit.selected[0].id).firstChild);
+			$('value'+webtronics.circuit.selected[0].id).appendChild(document.createTextNode($('webtronics_value').value));
+		});
 
 
 	

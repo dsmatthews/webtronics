@@ -7,7 +7,7 @@
    width="40"
    height="19.999998"
 >
- <defs>
+<defs>
 </defs>
   <g connects="0,10;40,10"
 	stroke='black'
@@ -33,5 +33,6 @@
        y="-0.021562828"
        id="rect2162"
        style="fill:none;stroke:none" />
+
   </g>
 </svg>

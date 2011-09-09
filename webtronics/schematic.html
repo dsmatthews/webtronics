@@ -20,25 +20,33 @@
 toolbar
 -->
 <div  id="webtronics_toolbar" >
-	<img id="webtronics_file_open" title="import file" src="./buttons/open.png" />
-	<img id="webtronics_new" title ="clear the drawing area" src="./buttons/new.png" />
-	<img id='webtronics_chips_open' title="make chips" src="./buttons/icbut.png" />
-	<img id="webtronics_parts_open" title="get parts" src="./buttons/disc.png"/>
-	<img id="webtronics_zoom"  title="click this to zoom out, select area to zoom in"  src="./buttons/zoom.png"/>
-	<img id="webtronics_select" title="Select shapes" src="./buttons/select.png" />
-	<!--img id="webtronics_rotate" title ="select 1 part and click to rotate part" src="./buttons/rotate.png" /-->
-	<img id="webtronics_wire" title="click to start wire"  src="./buttons/wire.png" />
-	<img id="webtronics_text" title="add text"  src="./buttons/text.png" />
-	<img  id="webtronics_delete" title="Delete selected shape" src="./buttons/delete.png" />
-	<img  id="webtronics_save" title="Save the file" src="./buttons/save.png" />
+	<div id="webtronics_buttons">
+		<img id="webtronics_file_open" title="import file" src="./buttons/open.png" />
+		<img id="webtronics_new" title ="clear the drawing area" src="./buttons/new.png" />
+		<img id='webtronics_chips_open' title="make chips" src="./buttons/icbut.png" />
+		<img id="webtronics_parts_open" title="get parts" src="./buttons/disc.png"/>
+		<img id="webtronics_zoom"  title="click this to zoom out, select area to zoom in"  src="./buttons/zoom.png"/>
+		<img id="webtronics_select" title="Select shapes" src="./buttons/select.png" />
+		<!--img id="webtronics_rotate" title ="select 1 part and click to rotate part" src="./buttons/rotate.png" /-->
+		<img id="webtronics_wire" title="click to start wire"  src="./buttons/wire.png" />
+		<img id="webtronics_text" title="add text"  src="./buttons/text.png" />
+		<img  id="webtronics_delete" title="Delete selected shape" src="./buttons/delete.png" />
+		<img  id="webtronics_save" title="Save the file" src="./buttons/save.png" />
+	</div>
 	<!--<img  id="webtronics_netlist" title="Create a netlist" src="./buttons/net.png" />-->
+	<div id="webtronics_settings"> 	
+		<form> 
+			<input type="checkbox" id="webtronics_connections" > show connections 
+			<input type="checkbox" id="webtronics_graph" > show graph 
+			<!--<input type="checkbox" id="webtronics_invert" />Invert colors-->
+		</form>
+	</div>
+	<div id="webtronics_value_box" ><input id="webtronics_value" />value/part#</div>
 
-	<!--form id="webtronics_settings"-->
-		<input type="checkbox" id="webtronics_connections" > show connections 
-		<input type="checkbox" id="webtronics_graph" > show graph 
-		<!--<input type="checkbox" id="webtronics_invert" />Invert colors-->
-	<!--/form-->
 </div>
+
+
+
 <!--
 display area
 -->
@@ -69,6 +77,7 @@ parts box
 	<option  value="./symbols/polar-cap.svg" >polar cap</option>
 	<option  value="./symbols/varicap.svg" >vari cap</option>
 	<option  value="./symbols/resistor.svg" >resistor</option>
+	<option  value="./symbols/testresistor.svg" >testresistor</option>
 
 	<option  value="./symbols/vresistor.svg" >potentiometer</option>
 	<option  value="./symbols/vari-resistor.svg" >variable resistor</option>

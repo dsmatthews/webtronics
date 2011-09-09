@@ -1,8 +1,6 @@
 
 
-div * {
-	vertical-align: middle;
-	}
+div * {vertical-align: middle;}
 
 	
 div img {
@@ -10,21 +8,34 @@ div img {
 	border:2px solid grey;
 	}
 
-
-
 #webtronics_main_window{
 	font-family:verdana,arial;
 	font-size:10pt;
 	background-color:#C0C0C0;
 }
+
 #webtronics_toolbar{
-	width:auto;
-	height:auto;
-	background-color:inherit;
+	height:40px;
 	}
 
+#webtronics_buttons{
+	float:left;
+	height:40px;
+}
+
+#webtronics_settings{
+	float:left;
+	height:40px;
+}
+
+#webtronics_value_box{
+	float:left;
+	height:40px;
+	display:none;
+}
 
 #webtronics_diagram_area{	
+	vertical-align: middle;
 	width:auto;
 	height:auto;
 	overflow:scroll;

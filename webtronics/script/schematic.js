@@ -378,9 +378,24 @@ Schematic.prototype.showTracker = function(elem) {
 		tracked.appendChild(svg);
 	
 	}
+	this.info.appendChild(tracked);
+/*show value window*/
+	if(this.selected.length==1&&this.selected[0].tagName=='g'){
+		$('webtronics_value').clear();
+		$('webtronics_value_box').style.display='block';
+		if(!$('value'+this.selected[0].id)){
+			if(this.selected[0].getAttribute('partvalue')==null)this.selected[0].setAttribute('partvalue','');
+			svg=this.createtext(this.selected[0].getAttribute('partvalue'),'black',rect.x,rect.y);
+			svg.id='value'+this.selected[0].id;
+			this.svgRoot.appendChild(svg);
+		}
+		$('webtronics_value').value=this.selected[0].getAttribute('partvalue');
+		
+	}
+	else $('webtronics_value_box').hide();
 
- this.info.appendChild(tracked);
 }
+
 
 Schematic.prototype.clearinfo=function(){
 	this.remove(this.info);
@@ -390,6 +405,8 @@ Schematic.prototype.clearinfo=function(){
 	this.showallconnects();
 
 }
+
+
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
 	
@@ -402,12 +419,15 @@ Schematic.prototype.removeTracker=function(){
 		}while(tracker)
 		
 	}	
-	
+	$('webtronics_value_box').hide();
 }
 
 Schematic.prototype.remove = function(shape) {
 	if(shape){  
 	this.hideconnects();
+	if(shape.tagName=='g'&&$('value'+shape.id)){
+		shape.parentNode.removeChild($('value'+shape.id));
+	}
 	shape.parentNode.removeChild(shape);
 	shape=null;
 	this.showallconnects()
@@ -416,7 +436,6 @@ Schematic.prototype.remove = function(shape) {
 
 Schematic.prototype.newdoc = function(){
 	this.setzoom(1);
-	
 	this.remove(this.svgRoot);	
 	this.init(this.container);	
 }
@@ -565,13 +584,12 @@ Schematic.prototype.getPart=function(){
 
                                 var rect=this.tracker(part);
                                 if(Utils.rectsIntersect(rect,this.selectionRect)){
-					this.select(part);
-                                                
+									this.select(part);               
                                 }
                         }
                 }
         }
-};
+}
 
 
 Schematic.prototype.realPosition=function(event){
@@ -628,7 +646,6 @@ if(!this.drag){
 				this.info.appendChild(svg);
 
 			}
-							
 		}
 /*clicked on background  in select mode ,remove selection*/
 		else if(this.mode=='select'||this.mode=='zoom'){
@@ -650,6 +667,7 @@ if(!this.drag){
 					if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
 				}
 				if(!this.drag)this.unselect();
+
 			}
 		}
 	}
@@ -896,8 +914,11 @@ Schematic.prototype.getgroup =function(elem){
 		this.mouseDown.y=0;
 		
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')');
-		 
+		newelem.setAttribute('partvalue',''); 
 		this.changeid(newelem);
+
+		this.select(this.createtext(newelem.getAttribute('partvalue'),'black',0,0));
+		this.selected[0].id='value'+newelem.id;
 		this.select(newelem);
 		this.drag=1;
 }
