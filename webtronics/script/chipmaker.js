@@ -185,7 +185,7 @@ drawchip:function(h,v,elem){
 	svg.setAttributeNS(null, 'cy', start+10);	
 	svg.setAttributeNS(null, 'r', 3);
 	//svg.setAttributeNS(null, 'stroke', 'black');
-	svg.id = 'shape:' + createUUID();
+	chipG.id = 'U:' + createUUID();
 	chipG.setAttribute('connects',pins.join(';'));
 	chipG.appendChild(svg);
 

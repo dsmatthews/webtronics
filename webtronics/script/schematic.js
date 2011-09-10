@@ -683,6 +683,10 @@ Schematic.prototype.dragSelection=function(x ,y){
 		floating = document.createElementNS(this.svgNs, 'g');
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
+	/*if a part is selected also get label*/
+			if(this.selected[i].tagName=='g'&&$('value'+this.selected[i].id)){
+				floating.appendChild($('value'+this.selected[i].id));
+			}
 		}
 
 		var tracked=$('schematic_tracker');
@@ -917,8 +921,8 @@ Schematic.prototype.getgroup =function(elem){
 		newelem.setAttribute('partvalue',''); 
 		this.changeid(newelem);
 
-		this.select(this.createtext(newelem.getAttribute('partvalue'),'black',0,0));
-		this.selected[0].id='value'+newelem.id;
+		var tag=this.createtext(newelem.getAttribute('partvalue'),'black',0,0);
+		tag.id='value'+newelem.id;
 		this.select(newelem);
 		this.drag=1;
 }
