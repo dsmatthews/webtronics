@@ -383,13 +383,12 @@ Schematic.prototype.showTracker = function(elem) {
 	if(this.selected.length==1&&this.selected[0].tagName=='g'){
 		$('webtronics_value').clear();
 		$('webtronics_value_box').style.display='block';
-		if(!$('value'+this.selected[0].id)){
+		if(!$('value:'+this.selected[0].id)){
 			if(this.selected[0].getAttribute('partvalue')==null)this.selected[0].setAttribute('partvalue','');
 			svg=this.createtext(this.selected[0].getAttribute('partvalue'),'black',rect.x,rect.y);
-			svg.id='value'+this.selected[0].id;
+			svg.id='value:'+this.selected[0].id;
 			this.svgRoot.appendChild(svg);
-		}
-		$('webtronics_value').value=this.selected[0].getAttribute('partvalue');
+		}		$('webtronics_value').value=this.selected[0].getAttribute('partvalue');
 		
 	}
 	else $('webtronics_value_box').hide();
@@ -425,8 +424,8 @@ Schematic.prototype.removeTracker=function(){
 Schematic.prototype.remove = function(shape) {
 	if(shape){  
 	this.hideconnects();
-	if(shape.tagName=='g'&&$('value'+shape.id)){
-		shape.parentNode.removeChild($('value'+shape.id));
+	if(shape.tagName=='g'&&$('value:'+shape.id)){
+		shape.parentNode.removeChild($('value:'+shape.id));
 	}
 	shape.parentNode.removeChild(shape);
 	shape=null;
@@ -684,8 +683,8 @@ Schematic.prototype.dragSelection=function(x ,y){
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 	/*if a part is selected also get label*/
-			if(this.selected[i].tagName=='g'&&$('value'+this.selected[i].id)){
-				floating.appendChild($('value'+this.selected[i].id));
+			if(this.selected[i].tagName=='g'&&$('value:'+this.selected[i].id)){
+				floating.appendChild($('value:'+this.selected[i].id));
 			}
 		}
 
@@ -920,27 +919,30 @@ Schematic.prototype.getgroup =function(elem){
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')');
 		newelem.setAttribute('partvalue',''); 
 		this.changeid(newelem);
-
+		
 		var tag=this.createtext(newelem.getAttribute('partvalue'),'black',0,0);
-		tag.id='value'+newelem.id;
+		tag.id='value:'+newelem.id;
+		
 		this.select(newelem);
 		this.drag=1;
 }
 
 Schematic.prototype.getfile =function(elem){
 this.unselect();
-ch=elem.childNodes;
 
+
+ch=elem.childNodes;
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
-		/*get rid  of empty text*/
+/*get rid  of empty text*/
+/*delete values*/
+
 		if(ch[i-1].tagName=='circle'||
 			ch[i-1].tagName=='line'||
-			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes())||
+			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&!this.getparttype(ch[i-1])=='value')||
 			ch[i-1].tagName=='g'){
-//check for duplicate id
-			if(lookforid(ch[i-1].id,$$('body')[0]))
-				this.changeid(ch[i-1]);
+/*just change all ids*/
+			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
 			this.select(newelem);
