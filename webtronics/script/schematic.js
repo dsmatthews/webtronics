@@ -506,6 +506,8 @@ Schematic.prototype.deleteSelection = function() {
 	if(!this.selected.length)return; 
 /*delete selected nodes*/  
 	for(var i=this.selected.length;i>0;i--){
+		if(this.selected[i-1].tagName=='g'&&$('value:'+this.selected[i-1].id))
+			this.remove($('value:'+this.selected[i-1].id));
 		this.remove(this.selected[i-1]);
 	 	this.selected.pop();
 	}
