@@ -13,8 +13,7 @@
   <g
 	stroke='black'
 	stroke-width='2px' 
-     id="g2180" connects="0,10;50,10" >
-       id="B">
+     id="vdc" connects="0,10;50,10" >
       <path
          d="M 0.52060644,9.4284105 L 17.226322,9.5051335"
          id="path5009"
