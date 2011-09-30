@@ -952,7 +952,7 @@ for(var i= ch.length;i>0;i--){
 /*find the value set the id to the new id */								
 			var oldvalue = elem.ownerDocument.getElementById('value:'+oldid);
 			if(oldvalue!=null){
-				console.log('found value');
+				//console.log('found value');
 				var newvalue= document.importNode(oldvalue,true);
 				this.svgRoot.appendChild(newvalue);
 				this.select(newvalue);
