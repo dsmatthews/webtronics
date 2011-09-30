@@ -48,6 +48,7 @@ function Schematic(elem) {
 	this.mode = '';
 /*array of nodes*/
 	this.selected = Array();
+	this.copybuffer=null;
 /*selecting rectangle*/
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
@@ -152,7 +153,7 @@ Schematic.prototype.parseMatrix=function(group){
 	var matrix={a:1,b:0,c:0,d:1,e:0,f:0};
 
 	try{
-		matrix=group.getTransformToElement(this.svgRoot);
+		matrix=group.getTransformToElement(group.parentNode);
 	}
 	catch(e){
 		return matrix;
@@ -499,9 +500,6 @@ Schematic.prototype.getMarkup = function() {
 //**********************************************************************
 
 
-
-
-
 Schematic.prototype.deleteSelection = function() {
 	if(!this.selected.length)return; 
 /*delete selected nodes*/  
@@ -609,10 +607,9 @@ Schematic.prototype.realPosition=function(event){
 Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
 	var real=this.realPosition(event);
-//	this.lastclick.x=this.mouseDown.x;
-//	this.lastclick.y=this.mouseDown.y;
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
+	if (!Event.isLeftClick(event))return;
 	  
 		if (this.mode == 'line') {
 			if($('templine1')){
@@ -732,7 +729,7 @@ Schematic.prototype.move = function(shape, x, y) {
 			shape.setAttributeNS(null,'transform','matrix(1,0,0,1,'+(point.x+x)+','+ (point.y+y)+')');
 		}
 		else {
-			shape.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+			shape.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+(matrix.e+x)+','+(matrix.f+y)+')');
 		}	
 
 	}
@@ -931,8 +928,6 @@ Schematic.prototype.getgroup =function(elem){
 
 Schematic.prototype.getfile =function(elem){
 this.unselect();
-
-
 ch=elem.childNodes;
 for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
@@ -941,32 +936,54 @@ for(var i= ch.length;i>0;i--){
 
 		if(ch[i-1].tagName=='circle'||
 			ch[i-1].tagName=='line'||
-			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&!this.getparttype(ch[i-1])=='value')||
-			ch[i-1].tagName=='g'){
-/*just change all ids*/
+			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&this.getparttype(ch[i-1])!='value'))
+			{
 			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
 			this.select(newelem);
+		}
+/*first put the elements in the document then change the id*/
+		if(ch[i-1].tagName=='g'){
+			var oldid=ch[i-1].id
+			var newelem	= document.importNode(ch[i-1],true);
+			this.svgRoot.appendChild(newelem);
+			this.changeid(newelem);		
+/*find the value set the id to the new id */								
+			var oldvalue = elem.ownerDocument.getElementById('value:'+oldid);
+			if(oldvalue!=null){
+				console.log('found value');
+				var newvalue= document.importNode(oldvalue,true);
+				this.svgRoot.appendChild(newvalue);
+				this.select(newvalue);
+				newvalue.id='value:'+newelem.id;		
+			}
+			this.select(newelem);
+
 		}
 	}
 
 	
 }
 
-
-function lookforid(id,node){
-	var found=false;
-	if(!id)return false;	
-
-
-	if(node.id){
-		if(node.id==id)found=true; 	
+Schematic.prototype.copy=function(){
+	this.copybuffer=document.createElementNS(this.svgNs, 'g');
+	for(var i=0;i<this.selected.length;i++){
+		var svgnode=this.selected[i].cloneNode(true);
+		var newnode=this.copybuffer.appendChild(svgnode);
+		//var point=this.parseXY(newnode);
+		//this.move(newnode,(point.x-this.mouseDown.x),(point.y-this.mouseDown.y));
 	}
-	if(!found)if(node.hasChildNodes())found= lookforid(id,node.childNodes[0]);
-	if(!found)if(node.nextSibling)found= lookforid(id,node.nextSibling);
-	return found;
 }
+
+Schematic.prototype.paste=function(){
+	this.getfile(this.copybuffer);
+	this.drag=1;
+	this.remove(this.copybuffer);
+}
+
+
+
 
 function createUUID()
 {

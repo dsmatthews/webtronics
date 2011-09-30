@@ -108,6 +108,28 @@ var webtronics={
 
 
 	Event.observe(window, 'load', function() {
+/*replace context menu*/
+		var myLinks = [
+				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
+				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
+/*
+				{separator: true},
+				{name: 'Reload', callback: function(){alert('Reload function called')}},
+				{name: 'Disabled option', disabled: true},
+				{name: 'Toggle previous option', callback: function(){
+				        var item = oLinks.find(function(l){return l.name == 'Disabled option'});
+				        item.disabled = item.disabled == false ? true : false;
+
+				}}
+*/
+		];
+		new Proto.Menu({
+				selector: '.drawing', // context menu will be shown when element with class name of "contextmenu" is clicked
+				className: 'menu', // this is a class which will be attached to menu container (used for css styling)
+				menuItems: myLinks // array of menu items
+		});
+
+
 
 		var url=window.location.search.toQueryParams();
 		document.onselectstart = function() {return false;} 
@@ -196,7 +218,7 @@ var webtronics={
 			});
 		Event.observe($('webtronics_new'), 'click', function() {
 			webtronics.setMode('webtronics_select','select','Selection');
-			input_box=confirm("Click OK to Continue");
+			input_box=confirm("Click OK to Clear the Drawing.");
 			if (input_box==true)webtronics.circuit.newdoc();
 			});
 		Event.observe($('webtronics_chips_open'), 'click', function() {

@@ -2,11 +2,11 @@
 
 div * {vertical-align: middle;}
 
-	
 div img {
 	padding:2px;
 	border:2px solid grey;
 	}
+
 
 #webtronics_main_window{
 	font-family:verdana,arial;
@@ -53,7 +53,7 @@ div img {
  }
  
 #webtronics_parts_box{
-			display:none; 
+		display:none; 
       position:absolute; 
       left:200px; 
       top:10px; 
@@ -123,5 +123,65 @@ div img {
 	background-color:inherit; 
 	padding: 5px;
   }
+
+/*menu style*/
+div.menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+       /* font-family: verdana;*/
+}
+div.menu a {
+        display: block;
+        text-decoration: none;
+        cursor: default;
+        outline: none;
+        font-size: 11px;
+}
+.menu .separator {
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        display: block;
+        font-size: 1px;
+}
+.menu ul, .menu li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+}
+.menu li {
+        list-style-position: outside;
+}
+.menu {
+        width: 12em;
+        background: #F4F5EB;
+        border-top: 1px solid #ddd;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #666;
+        border-bottom: 1px solid #666;
+        padding: 2px 0;
+}
+.menu a {
+        color: #555;
+        padding: 4px 15px;
+        margin: 0 2px;
+}
+.menu a:hover {
+        background: #006;
+        color: #fff;
+}
+.menu a.disabled {
+        color: #bbb;
+}
+.menu a.disabled:hover {
+        background: #F4F5EB;
+        color: #bbb;
+}
+.menu .separator {
+        border-bottom: 1px solid #fff;
+        background: #999;
+        margin: 2px 4px;
+}
   
-  
+
