@@ -349,9 +349,10 @@ var webtronics={
 		});
 /*part number / value */
 		Event.observe($('webtronics_value'),'keyup',function(){
+			/*if there  is a value do this stuff*/
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_value').value);
-			$('value:'+webtronics.circuit.selected[0].id).removeChild($('value:'+webtronics.circuit.selected[0].id).firstChild);
-			$('value:'+webtronics.circuit.selected[0].id).appendChild(document.createTextNode($('webtronics_value').value));
+			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			
 		});
 
 

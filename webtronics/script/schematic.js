@@ -514,18 +514,31 @@ Schematic.prototype.deleteSelection = function() {
 }
 
 
+Schematic.prototype.createvalue=function(elem){
+/*create value text if attribute exists*/
+	var value=elem.getAttribute('partvalue');
+	if(value){
+		if(!$('value:'+elem.id)){
+			box=this.tracker(elem);	
+			var svg=this.createtext(value,'black',box.x,box.y);
+			svg.id='value:'+elem.id;
+			this.svgRoot.appendChild(svg);
+		}
+		else{
+				$('value:'+elem.id).removeChild($('value:'+elem.id).firstChild);
+				$('value:'+elem.id).appendChild(document.createTextNode(value));
+			
+		}	
+	}
+/* if there is no value and a value text exists remove it*/	
+	else if($('value:'+elem.id))this.remove($('value:'+elem.id));
+}
+
 Schematic.prototype.select = function(elem) {
 
 
   	this.selected.push(elem);
-/*create value text node*/
-	if(elem.tagName=='g'&&!$('value:'+elem.id)){
-		box=this.tracker(elem);	
-		if(elem.getAttribute('partvalue')==null)elem.setAttribute('partvalue','');
-		var svg=this.createtext(elem.getAttribute('partvalue'),'black',box.x,box.y);
-		svg.id='value:'+elem.id;
-		this.svgRoot.appendChild(svg);
-	}
+	if(elem.tagName=='g'&&!$('value:'+elem.id))this.createvalue(elem);
  	this.showTracker(this.selected[this.selected.length-1]);
 	
 }
@@ -620,7 +633,9 @@ if(!this.drag){
 				var y2=$('templine1').getAttributeNS(null,'y2');
 				if(!(x1==x2&&y1==y2)){
 					var svg=this.createline('black', x1, y1,x2, y2);
-					svg.id='line'+createUUID();
+					/*since the id is never used don't create one
+					svg.id='line:'+createUUID();
+					*/
 					this.svgRoot.appendChild(svg);
 					this.remove($('templine1'));
 					this.connect(x1, y1);
@@ -919,9 +934,6 @@ Schematic.prototype.getgroup =function(elem){
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')');
 		newelem.setAttribute('partvalue',''); 
 		this.changeid(newelem);
-		
-		var tag=this.createtext(newelem.getAttribute('partvalue'),'black',0,0);
-		tag.id='value:'+newelem.id;
 		this.select(newelem);
 		this.drag=1;
 }
@@ -949,14 +961,16 @@ for(var i= ch.length;i>0;i--){
 			var newelem	= document.importNode(ch[i-1],true);
 			this.svgRoot.appendChild(newelem);
 			this.changeid(newelem);		
-/*find the value set the id to the new id */								
-			var oldvalue = elem.ownerDocument.getElementById('value:'+oldid);
-			if(oldvalue!=null){
-				//console.log('found value');
-				var newvalue= document.importNode(oldvalue,true);
-				this.svgRoot.appendChild(newvalue);
-				this.select(newvalue);
-				newvalue.id='value:'+newelem.id;		
+/*if there is a partvalue attribute find the value, set the id to the new id */								
+			if(newelem.getAttribute('partvalue')){
+				var oldvalue = elem.ownerDocument.getElementById('value:'+oldid);
+				if(oldvalue!=null){
+					//console.log('found value');
+					var newvalue= document.importNode(oldvalue,true);
+					this.svgRoot.appendChild(newvalue);
+					this.select(newvalue);
+					newvalue.id='value:'+newelem.id;		
+				}
 			}
 			this.select(newelem);
 
