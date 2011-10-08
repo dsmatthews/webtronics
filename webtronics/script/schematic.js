@@ -113,10 +113,11 @@ Schematic.prototype.init = function(elem) {
 Schematic.prototype.addtools=function(){
 	if($(this.zoomtools))this.remove(this.zoomtools);
 	this.zoomtools=document.createElementNS(this.svgNs,'svg');
-	this.svgRoot.appendChild(this.zoomtools);
 	this.zoomtools.setAttribute('xmlns:svg',this.svgNs);
 	this.zoomtools.setAttribute('xmlns:xlink',"http://www.w3.org/1999/xlink");
 	this.zoomtools.id='webtronics_zoomtools';
+	this.zoomtools.setAttribute('width',this.container.offsetWidth);
+	this.zoomtools.setAttribute('height',this.container.offsetHeight);			
 
 /*add the image tools*/
 	var normal=document.createElementNS(this.svgNs,'image');
@@ -145,18 +146,22 @@ Schematic.prototype.addtools=function(){
 	Event.observe(grow,"click", function(e){
 			this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
 			this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+
 			this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*2);
 			this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
 			this.showbackground();
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(grow);
+	this.svgRoot.appendChild(this.zoomtools);
 }
 
 Schematic.prototype.showbackground=function(){
 	if(this.background)this.remove(this.background);
 	this.background=document.createElementNS(this.svgNs,'g');
 	this.svgRoot.insertBefore(this.background,this.drawing);
-	this.background.appendChild( this.createrect('white',1,0,0,this.svgRoot.getAttribute('width'),this.svgRoot.getAttribute('height')));		
+	var canvas=	this.createrect('white',1,0,0,this.svgRoot.getAttribute('width'),this.svgRoot.getAttribute('height'));
+	canvas.id='canvas';
+	this.background.appendChild(canvas);
 	this.background.id='background';
 	var matrix=this.parseMatrix(this.drawing);
 	this.background.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
@@ -907,28 +912,30 @@ Schematic.prototype.onDrag = function(event) {
 }
 
 Schematic.prototype.onWheel=function(event){
-	var real=this.realPosition(event);
-	var scale=1;
-	var wheel=0;
-	if(event.wheelDelta)wheel=-event.wheelDelta;
-	else wheel=event.detail;
-	var matrix = this.parseMatrix(this.drawing);
+	if(Event.element(event)!=this.svgRoot){
+		var real=this.realPosition(event);
+		var scale=1;
+		var wheel=0;
+		if(event.wheelDelta)wheel=-event.wheelDelta;
+		else wheel=event.detail;
+		var matrix = this.parseMatrix(this.drawing);
 	
-	if(wheel>0&&matrix.a<2){
-		scale=1.2;
-	}
-	else if(wheel<0&&matrix.a>0.3){
-		scale=0.8;
-	}
-		matrix=matrix.scale(scale);
-		matrix.e=(this.container.offsetWidth/2)-(real.x*matrix.a);
-		matrix.f=(this.container.offsetHeight/2)-(real.y*matrix.a);
-		//this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*scale);
-		//this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*scale);
-		//console.log(matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f);
-		this.drawing.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-		this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-		this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+		if(wheel>0&&matrix.a<2){
+			scale=1.2;
+		}
+		else if(wheel<0&&matrix.a>0.3){
+			scale=0.8;
+		}
+			matrix=matrix.scale(scale);
+			matrix.e=(this.container.offsetWidth/2)-(real.x*matrix.a);
+			matrix.f=(this.container.offsetHeight/2)-(real.y*matrix.a);
+			//this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*scale);
+			//this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*scale);
+			//console.log(matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f);
+			this.drawing.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+			this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+			this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+	}	
 }
 
 Schematic.prototype.getparttype=function(elem){
