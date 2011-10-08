@@ -64,7 +64,7 @@ Schematic.prototype.isconnect=function(pin,radius,x,y){
 
 Schematic.prototype.isconnects=function(radius,x,y){
 
-	var parts=this.svgRoot.childNodes;
+	var parts=this.drawing.childNodes;
 	for(var i=0; i<parts.length; i++){
 		if(parts[i].tagName=='g'){
 			var pins=this.getconnects(parts[i]);
@@ -103,7 +103,7 @@ Schematic.prototype.moveconnects=function(elem,x,y){
 Schematic.prototype.showallconnects=function(){
 	if(this.connections){	
 		//var parts=this.svgRoot.getElementsByTagName('g');
-		parts=this.svgRoot.childNodes;
+		parts=this.drawing.childNodes;
 		for(var i=0 ;i<parts.length;i++){
 			if(parts[i].tagName=='g'){
 				//console.log(parts[i].id);

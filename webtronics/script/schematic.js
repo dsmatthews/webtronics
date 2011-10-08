@@ -38,8 +38,17 @@ function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
 	this.container = elem;
 	this.grid = 10;
+	this.width=640;
+	this.height=480;
+	
 /*main svg element*/	
 	this.svgRoot = null;
+/* group to hold drawing*/
+	this.drawing=null;
+/* group to hold background*/
+	this.background=null;
+/*svg layer for zoom tools*/
+	this.zoomtools=null;
 /*group to display information*/
 	this.info=null;
 	this.connections=false;
@@ -61,73 +70,17 @@ function Schematic(elem) {
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
 	this.onDragListener = this.onDrag.bindAsEventListener(this);	
-//	this.onWheelListener=this.onWheel.bindAsEventListener(this);
-
-//	Event.observe(this.container, "mousewheel",this.onWheelListener);
-//	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
+	this.onWheelListener = this.onWheel.bindAsEventListener(this);	
+	Event.observe(this.container, "mousewheel",this.onWheelListener);
+	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
 	Event.observe(this.container, "mousemove", this.onDragListener); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
 
-}
-
-
-
-
-Schematic.prototype.zoomtorect = function(rect){
-	if(rect.width<0){
-		rect.width=Math.abs(rect.width);
-		rect.x=rect.x-rect.width;
-	}
-	if(rect.height<0){
-		rect.height=Math.abs(rect.height);
-		rect.y=rect.y-rect.height;
-	}
-
-
-
-	var maxv =Math.max(rect.width,rect.height)
-	this.zoomRatio=this.container.offsetWidth/maxv;
-	if(this.zoomRatio>8){
-		this.zoomRatio=1;
-		this.viewoffset.x=0;
-		this.viewoffset.y=0;
-		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ this.container.offsetWidth +' '+this.container.offsetWidth );
-		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
-		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
- 	}
-	else{
-		this.viewoffset.x=rect.x*this.zoomRatio;
-		this.viewoffset.y=rect.y*this.zoomRatio;
-		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
-		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
-		this.svgRoot.setAttributeNS(null,'viewBox',rect.x+' '+ rect.y +' '+ maxv +' '+maxv );
-	}
-}
-	
-Schematic.prototype.setzoom=function(reset){
-	var svgsize=this.tracker(this.svgRoot);
-
-	if(this.zoomRatio<.5||this.zoomRatio>1||reset){
-		this.zoomRatio=1;
-		this.viewoffset.x=0;
-		this.viewoffset.y=0;
-		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ this.container.offsetWidth +' '+this.container.offsetWidth );
-		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
-		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
- 	}
-	else{
-		this.zoomRatio-=.1;
-		this.viewoffset.x=0;
-		this.viewoffset.y=0;
-		this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
-		this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
-		var zoom=this.container.offsetWidth/this.zoomRatio;
-		this.svgRoot.setAttributeNS(null,'viewBox',0+' '+ 0 +' '+ zoom +' '+zoom );
-	}
-
 
 }
+
+
 
 
 Schematic.prototype.init = function(elem) {
@@ -136,19 +89,90 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
+	this.svgRoot.setAttribute('width',this.container.offsetWidth);
+	this.svgRoot.setAttribute('height',this.container.offsetHeight);
 	this.container.appendChild(this.svgRoot);
-	this.svgRoot.setAttributeNS(null,'width',this.container.offsetWidth);
-	this.svgRoot.setAttributeNS(null,'height',this.container.offsetWidth);
 /*set colors*/
-//	this.svgRoot.style.backgroundColor="#ffffff";
-	this.container.style.backgroundColor="#ffffff";
+	this.svgRoot.style.backgroundColor="inherit";
+	this.container.style.backgroundColor="inherit";
+/*create main group for pan/zoom*/		
+	this.drawing=document.createElementNS(this.svgNs,'g');
+	this.drawing.id='all parts';
+	this.svgRoot.appendChild(this.drawing);
+/* create group for user info such as selection boxes */
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
+/*add the background*/
+	this.graph=false
+	this.showbackground();
+/*add the toolbar*/
+	this.addtools();
+}
 
+Schematic.prototype.addtools=function(){
+	if($(this.zoomtools))this.remove(this.zoomtools);
+	this.zoomtools=document.createElementNS(this.svgNs,'svg');
+	this.svgRoot.appendChild(this.zoomtools);
+	this.zoomtools.setAttribute('xmlns:svg',this.svgNs);
+	this.zoomtools.setAttribute('xmlns:xlink',"http://www.w3.org/1999/xlink");
+	this.zoomtools.id='webtronics_zoomtools';
+
+/*add the image tools*/
+	var normal=document.createElementNS(this.svgNs,'image');
+	normal.setAttribute('x',0);
+	normal.setAttribute('y',0);
+	normal.setAttribute('width',32);
+	normal.setAttribute('height',32);
+	normal.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','./buttons/normal.png');
+/* make sure the mouse events don't go through the image*/
+	Event.observe(normal,"mousedown", function(e){e.stopPropagation();}.bind(this));
+	Event.observe(normal,"mouseup", function(e){e.stopPropagation();}.bind(this));
+	Event.observe(normal,"click", function(e){
+			this.drawing.setAttribute('transform','matrix(1,0,0,1,0,0)');
+			this.background.setAttribute('transform','matrix(1,0,0,1,0,0)');
+			this.info.setAttribute('transform','matrix(1,0,0,1,0,0)');
+			e.stopPropagation();}.bind(this));
+	this.zoomtools.appendChild(normal);
+	var grow=document.createElementNS(this.svgNs,'image');
+	grow.setAttribute('x',this.container.offsetWidth-32);
+	grow.setAttribute('y',this.container.offsetHeight-32);
+	grow.setAttribute('width',32);
+	grow.setAttribute('height',32);
+	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','./buttons/grow.png');
+	Event.observe(grow,"mousedown", function(e){e.stopPropagation();}.bind(this));
+	Event.observe(grow,"mouseup", function(e){e.stopPropagation();}.bind(this));
+	Event.observe(grow,"click", function(e){
+			this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
+			this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+			this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*2);
+			this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+			this.showbackground();
+			e.stopPropagation();}.bind(this));
+	this.zoomtools.appendChild(grow);
+}
+
+Schematic.prototype.showbackground=function(){
+	if(this.background)this.remove(this.background);
+	this.background=document.createElementNS(this.svgNs,'g');
+	this.svgRoot.insertBefore(this.background,this.drawing);
+	this.background.appendChild( this.createrect('white',1,0,0,this.svgRoot.getAttribute('width'),this.svgRoot.getAttribute('height')));		
+	this.background.id='background';
+	var matrix=this.parseMatrix(this.drawing);
+	this.background.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	
+if(this.graph){
+	var graph=document.createElementNS(this.svgNs,'g');
+	this.background.appendChild(graph);
+	graph.id='graph';
+	for(var x=0;x<this.svgRoot.getAttribute('width');x+=this.grid){
+		graph.appendChild(this.createline('lightgrey',0.5,x,0,x,this.svgRoot.getAttribute('height')));
 	}
-
+	for(var y=0;y<this.svgRoot.getAttribute('height');y+=this.grid){
+		graph.appendChild(this.createline('lightgrey',0.5,0,y,this.svgRoot.getAttribute('width'),y));
+	}
+	}
+}
 Schematic.prototype.parseMatrix=function(group){
 	var matrix={a:1,b:0,c:0,d:1,e:0,f:0};
 
@@ -173,7 +197,7 @@ Schematic.prototype.addtext=function(str){
 	var lines=str.split('\n');
 	for(var i=0; i<lines.length;i++){
 		var svg =this.createtext(lines[i],'black',this.mouseDown.x,this.mouseDown.y+(i*12));
-		this.svgRoot.appendChild(svg);
+		this.drawing.appendChild(svg);
 		this.select(svg);
 		}
 	this.drag=1;
@@ -237,19 +261,25 @@ Schematic.prototype.tracker = function(elem) {
 	if(elem&&(elem.nodeType==1)){	
 		try{
 			var bbox=elem.getBBox();
+//		var bbox=elem.getBoundingClientRect()
 		}
 		catch(e){
-			/*do nothing*/
+			return {x:0,y:0,width:0,height:0};
 			}
 		var box={x:0,y:0,width:0,height:0};
 		if(bbox){
 			box.x=bbox.x;
 			box.y=bbox.y;
+
 			box.width=bbox.width;
 			box.height=bbox.height;	
+			
 		}
-		if(elem.tagName=='g'||elem.tagName=='svg'){
 
+		if(elem.tagName=='g'||elem.tagName=='svg'){
+/*newer versions of firefox need this recursive part to get the right bounding box for some reason
+otherwise the box width and height are zero if it only contains lines*/
+			//if(box.width==0||box.height==0){
 				for(var i= elem.childNodes.length;i>0;i--){
 					if(elem.childNodes[i-1].nodeType==1){
 						var chbox=this.tracker(elem.childNodes[i-1]);
@@ -259,9 +289,10 @@ Schematic.prototype.tracker = function(elem) {
 						box.height=Math.max(chbox.y+chbox.height,box.height);
 						}	
 					}
+			//}
 
-			var matrix=this.parseMatrix(elem);
 /*gets corrected bounding box*/
+			var matrix=this.parseMatrix(elem);
 			var tleft=this.svgRoot.createSVGPoint();
 			var bright=this.svgRoot.createSVGPoint();
 			tleft.x=box.x;
@@ -276,11 +307,11 @@ Schematic.prototype.tracker = function(elem) {
 			rect.y=Math.min(tleft.y,bright.y);
 			rect.width=Math.max(tleft.x,bright.x)-rect.x;			
 			rect.height=Math.max(tleft.y,bright.y)-rect.y;			
-	
 
 
 		}
 		else{
+
 			rect.x=box.x-1;
 			rect.y=box.y-1;
 			rect.width=box.width+2;
@@ -288,8 +319,10 @@ Schematic.prototype.tracker = function(elem) {
 
 
 		}		
-	elem.rect=rect;
-	return rect;
+	//elem.rect=rect;
+	//return rect;
+	return rect; 
+
 	}
 }
 
@@ -354,7 +387,7 @@ Schematic.prototype.showTracker = function(elem) {
 
   var tracked = document.createElementNS(this.svgNs, 'g');
   tracked.setAttributeNS(null, 'id', 'schematic_tracker');
-	var svg=this.createrect('blue',rect.x,rect.y,rect.width,rect.height);
+	var svg=this.createrect('blue',0.35,rect.x,rect.y,rect.width,rect.height);
 	tracked.appendChild(svg)
 
 /*add gadgets*/
@@ -397,7 +430,11 @@ Schematic.prototype.clearinfo=function(){
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
 	this.svgRoot.appendChild(this.info);
+	var matrix=this.parseMatrix(this.drawing);
+	this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+	this.info
 	this.showallconnects();
+	if($('invertfilter'))this.info.setAttribute('filter','url(#invertfilter)');
 
 }
 
@@ -427,49 +464,39 @@ Schematic.prototype.remove = function(shape) {
 }
 
 Schematic.prototype.newdoc = function(){
-	this.setzoom(1);
+	//this.setzoom(1);
 	this.remove(this.svgRoot);	
 	this.init(this.container);	
 }
 
 
 Schematic.prototype.invertcolors =function(check){
-
+/* I can't get this to work in all browsers but it looks real good in firefox*/
 	if(check){
 		if(!$('invertfilter')){
-			this.svgRoot.style.backgroundColor="#000000";
-			this.svgRoot.setAttribute('stroke','white');
-/*			var defs=$$('defs')[0];
+			var defs=$$('defs')[0];
 			if(!defs)defs=document.createElementNS(this.svgNs ,'defs');
-			var fe = document.createElementNS(this.svgNs ,'feComponentTransfer');
-			var filter=document.createElementNS(this.svgNs ,'feFuncR');
-			filter.setAttributeNS(null,'type','table');
-			filter.setAttributeNS(null,'tableValues','1 0');
-			fe.appendChild(filter);	
-			filter=document.createElementNS(this.svgNs ,'feFuncG');
-			filter.setAttributeNS(null,'type','table');
-			filter.setAttributeNS(null,'tableValues','1 0');
-			fe.appendChild(filter);	
-			filter=document.createElementNS(this.svgNs ,'feFuncB');
-			filter.setAttributeNS(null,'type','table');
-			filter.setAttributeNS(null,'tableValues','1 0');
-			fe.appendChild(filter);	
 			filter=document.createElementNS(this.svgNs ,'filter');
 			filter.setAttributeNS(null,'id','invertfilter');
-			filter.appendChild(fe);
+			var fecm=document.createElementNS(this.svgNs ,'feColorMatrix');
+			fecm.setAttributeNS(null,'values',"-1  0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0");
+			filter.appendChild(fecm);
 			defs.appendChild(filter);
 			this.svgRoot.appendChild(defs);
-			this.svgRoot.setAttribute('filter','url(#invertfilter)');
-*/
+			this.drawing.setAttribute('filter','url(#invertfilter)');
+			this.background.setAttribute('filter','url(#invertfilter)');
+			this.info.setAttribute('filter','url(#invertfilter)');
 		}
+
 	}
 	else {
-//		this.remove($('invertfilter'));
-//		this.svgRoot.removeAttributeNS(null,'filter');
-		this.svgRoot.style.backgroundColor="#ffffff";
-		this.svgRoot.setAttribute('stroke','black');
+		this.remove($('invertfilter'));
+		this.drawing.removeAttribute('filter');
+		this.background.removeAttribute('filter');
+		this.info.removeAttribute('filter');
 	}
 }
+
 
 Schematic.prototype.showconnections=function(check){
 	if(check){
@@ -485,12 +512,16 @@ Schematic.prototype.showconnections=function(check){
 
 
 Schematic.prototype.getMarkup = function() {
-	this.setzoom(true);
-	this.svgRoot.removeChild($('information'));
-	var svg=this.svgRoot.cloneNode(true);
-	this.svgRoot.appendChild(this.info);
-	svg.removeAttributeNS(null,'viewBox');
-	var svgsize=this.tracker(this.svgRoot);
+	var svg = document.createElementNS(this.svgNs, "svg");
+	svg.setAttribute('xmlns',this.svgNs);
+	for(var ch=0;ch<this.drawing.childNodes.length;ch++){
+		svg.appendChild(this.drawing.childNodes[ch].cloneNode(true));
+	}
+/*need to remove the matrix to get the right size*/
+	var matrix=this.parseMatrix(this.drawing);
+	this.drawing.removeAttribute('transform');
+	var svgsize=this.tracker(this.drawing);
+	this.drawing.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	svg.style.backgroundColor="#ffffff";
 	svg.setAttributeNS(null,'width',svgsize.width+10);
 	svg.setAttributeNS(null,'height',svgsize.height+10);
@@ -522,7 +553,7 @@ Schematic.prototype.createvalue=function(elem){
 			box=this.tracker(elem);	
 			var svg=this.createtext(value,'black',box.x,box.y);
 			svg.id='value:'+elem.id;
-			this.svgRoot.appendChild(svg);
+			this.drawing.appendChild(svg);
 		}
 		else{
 				$('value:'+elem.id).removeChild($('value:'+elem.id).firstChild);
@@ -564,7 +595,7 @@ Schematic.prototype.connect =function(x1,y1){
 		this.remove($('templine1'));
 		return;
 	}
-	var lines=this.svgRoot.childNodes;	
+	var lines=this.drawing.childNodes;	
         for(var i=0;i<lines.length;i++){
                 if(lines[i].tagName=='line'){
                         var lx1=lines[i].getAttributeNS(null,"x1")-0;                       
@@ -576,9 +607,9 @@ Schematic.prototype.connect =function(x1,y1){
 				(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
                                 (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
                                         this.remove(lines[i]);
-					this.svgRoot.appendChild(this.createline('black',lx1,ly1,x1,y1));
-					this.svgRoot.appendChild(this.createline('black',x1,y1,lx2,ly2));
-					this.svgRoot.appendChild(this.createdot('black',x1,y1));
+					this.drawing.appendChild(this.createline('black',2,lx1,ly1,x1,y1));
+					this.drawing.appendChild(this.createline('black',2,x1,y1,lx2,ly2));
+					this.drawing.appendChild(this.createdot('black',x1,y1));
 					this.remove($('templine1'));
 					return;
                                 }
@@ -589,8 +620,8 @@ Schematic.prototype.connect =function(x1,y1){
 /*check if selection rectangle overlaps part*/
 Schematic.prototype.getPart=function(){
 
-        for(var i=0;i<this.svgRoot.childNodes.length;i++){
-                var part=this.svgRoot.childNodes[i];
+        for(var i=0;i<this.drawing.childNodes.length;i++){
+                var part=this.drawing.childNodes[i];
                 if(part.nodeType==1){
                         if(part.id!='information'&&part.parentNode.id!='information'){
 
@@ -605,14 +636,14 @@ Schematic.prototype.getPart=function(){
 
 
 Schematic.prototype.realPosition=function(event){
-	var real={x:0,y:0};
+	var real=this.svgRoot.createSVGPoint();
 	var offset = this.container.cumulativeOffset();
-	var soffset=this.container.cumulativeScrollOffset();
 /*this section gets the pointer position relative to the window and scrollbars
  * I'm using this for now until something better comes up
  */
-	real.x=Math.round((Event.pointerX(event)-offset[0]+this.container.scrollLeft+this.viewoffset.x)/this.zoomRatio);
-	real.y=Math.round((Event.pointerY(event)-offset[1]+this.container.scrollTop+this.viewoffset.y)/this.zoomRatio);
+	var matrix=this.parseMatrix(this.drawing);
+	real.x=(Event.pointerX(event)-offset[0]-matrix.e)/matrix.a;
+	real.y=(Event.pointerY(event)-offset[1]-matrix.f)/matrix.a;
 	return real;
 }
 
@@ -632,16 +663,16 @@ if(!this.drag){
 				var x2=$('templine1').getAttributeNS(null,'x2');
 				var y2=$('templine1').getAttributeNS(null,'y2');
 				if(!(x1==x2&&y1==y2)){
-					var svg=this.createline('black', x1, y1,x2, y2);
+					var svg=this.createline('black',2, x1, y1,x2, y2);
 					/*since the id is never used don't create one
 					svg.id='line:'+createUUID();
 					*/
-					this.svgRoot.appendChild(svg);
+					this.drawing.appendChild(svg);
 					this.remove($('templine1'));
 					this.connect(x1, y1);
 					if($('templine2'))$('templine2').id='templine1';					
 					else{
-						svg = this.createline('blue', x2, y2,x2,y2);
+						svg = this.createline('blue',2, x2, y2,x2,y2);
 						svg.id = 'templine1';
 						svg.setAttributeNS(null,'stroke-dasharray','3,2');
 						this.info.appendChild(svg);
@@ -653,7 +684,7 @@ if(!this.drag){
 			}
 	/*create temperary line*/
 			else{
-				var svg = this.createline('blue', this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
+				var svg = this.createline('blue',2, this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
 				svg.id = 'templine1';
 				svg.setAttributeNS(null,'stroke-dasharray','3,2');
 				this.info.appendChild(svg);
@@ -672,7 +703,7 @@ if(!this.drag){
 				if(selection)this.remove(selection);
 				selection=$('schematic_selection');	
 			}while(selection);
-			selection = this.createrect('blue',real.x,real.y,0,0);
+			selection = this.createrect('blue',0.35,real.x,real.y,0,0);
 			selection.id='schematic_selection';
 			this.info.appendChild(selection);
 			if(this.mode=='select'){
@@ -763,7 +794,7 @@ Schematic.prototype.dropSelection=function(){
 		/*move other parts*/
 		this.move(floating.childNodes[i-1],matrix.e, matrix.f);
 		if(floating.childNodes[i-1].id!='schematic_tracker'){
-			this.svgRoot.insertBefore(floating.childNodes[i-1],this.svgRoot.childNodes[0]);
+			this.drawing.insertBefore(floating.childNodes[i-1],this.drawing.childNodes[0]);
 		}
 		else {
 			this.info.appendChild(floating.childNodes[i-1]);
@@ -838,22 +869,7 @@ Schematic.prototype.onDrag = function(event) {
 			}
 		}
 	}
-	else if(this.mode=='zoom'){
-		var selection = $('schematic_selection');
-		if (selection) {
-			//if(this.selected.length)this.unselect();
-			this.selectionRect.width=real.x-this.selectionRect.x;
-			this.selectionRect.height=real.y-this.selectionRect.y;
-			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
-			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
-			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 
-
-
-		}
-	}
-			
 		
 		
 	else if (this.mode=='line'){
@@ -867,7 +883,7 @@ Schematic.prototype.onDrag = function(event) {
 				
 				this.resize($('templine1'), x, y, mouseAt.x, y);
 				this.remove($('templine2'));	
-				var svg = this.createline('blue', mouseAt.x, y, mouseAt.x, mouseAt.y);
+				var svg = this.createline('blue',2, mouseAt.x, y, mouseAt.x, mouseAt.y);
 				svg.id = 'templine2';
 				svg.setAttributeNS(null,'stroke-dasharray','3,2');
 				this.info.appendChild(svg);
@@ -878,7 +894,7 @@ Schematic.prototype.onDrag = function(event) {
 							
 				this.resize($('templine1'), x, y, x, mouseAt.y);
 				this.remove($('templine2'));	
-				var svg = this.createline('blue', x, mouseAt.y, mouseAt.x, mouseAt.y);
+				var svg = this.createline('blue',2, x, mouseAt.y, mouseAt.x, mouseAt.y);
 				svg.id = 'templine2';
 				svg.setAttributeNS(null,'stroke-dasharray','3,2');
 				this.info.appendChild(svg);
@@ -892,22 +908,27 @@ Schematic.prototype.onDrag = function(event) {
 
 Schematic.prototype.onWheel=function(event){
 	var real=this.realPosition(event);
+	var scale=1;
 	var wheel=0;
 	if(event.wheelDelta)wheel=-event.wheelDelta;
 	else wheel=event.detail;
+	var matrix = this.parseMatrix(this.drawing);
 	
-	if(wheel>0&&this.zoomRatio>.5){
-		this.zoomRatio-=.1;
-		}
-	else if(wheel<0&&this.zoomRatio<3)this.zoomRatio+=.1;
-	var size=Math.max(this.container.offsetWidth,this.container.offsetHeight);	
-	//var rect={x:(this.container.offsetWidth-real.x),y:(this.container.offsetHeight-real.y),w:size,h:size}; 
-	this.viewoffset.x=(this.container.offsetWidth-Event.pointerX(event))*this.zoomRatio;
-	this.viewoffset.y=(this.container.offsetHeight-Event.pointerY(event))*this.zoomRatio;
-	this.svgRoot.setAttributeNS(null,'width',size);
-	this.svgRoot.setAttributeNS(null,'height',size);
-	this.svgRoot.setAttributeNS(null,'viewBox',(this.container.offsetWidth-Event.pointerX(event))+' '+ (this.container.offsetHeight-Event.pointerY(event)) +' '+ size*this.zoomRatio +' '+size*this.zoomRatio );
-
+	if(wheel>0&&matrix.a<2){
+		scale=1.2;
+	}
+	else if(wheel<0&&matrix.a>0.3){
+		scale=0.8;
+	}
+		matrix=matrix.scale(scale);
+		matrix.e=(this.container.offsetWidth/2)-(real.x*matrix.a);
+		matrix.f=(this.container.offsetHeight/2)-(real.y*matrix.a);
+		//this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*scale);
+		//this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*scale);
+		//console.log(matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f);
+		this.drawing.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+		this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+		this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 }
 
 Schematic.prototype.getparttype=function(elem){
@@ -927,7 +948,7 @@ Schematic.prototype.changeid=function(elem){
 Schematic.prototype.getgroup =function(elem){
 		this.unselect();
 		var newelem=document.importNode(elem,true);
-		this.svgRoot.appendChild(newelem);
+		this.drawing.appendChild(newelem);
 		this.mouseDown.x=0;
 		this.mouseDown.y=0;
 		
@@ -952,14 +973,14 @@ for(var i= ch.length;i>0;i--){
 			{
 			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
-			this.svgRoot.appendChild(newelem);
+			this.drawing.appendChild(newelem);
 			this.select(newelem);
 		}
 /*first put the elements in the document then change the id*/
 		if(ch[i-1].tagName=='g'){
 			var oldid=ch[i-1].id
 			var newelem	= document.importNode(ch[i-1],true);
-			this.svgRoot.appendChild(newelem);
+			this.drawing.appendChild(newelem);
 			this.changeid(newelem);		
 /*if there is a partvalue attribute find the value, set the id to the new id */								
 			if(newelem.getAttribute('partvalue')){
@@ -967,7 +988,7 @@ for(var i= ch.length;i>0;i--){
 				if(oldvalue!=null){
 					//console.log('found value');
 					var newvalue= document.importNode(oldvalue,true);
-					this.svgRoot.appendChild(newvalue);
+					this.drawing.appendChild(newvalue);
 					this.select(newvalue);
 					newvalue.id='value:'+newelem.id;		
 				}
@@ -985,17 +1006,20 @@ Schematic.prototype.copy=function(){
 	for(var i=0;i<this.selected.length;i++){
 		var svgnode=this.selected[i].cloneNode(true);
 		var newnode=this.copybuffer.appendChild(svgnode);
+		//console.log('copying');
 		//var point=this.parseXY(newnode);
 		//this.move(newnode,(point.x-this.mouseDown.x),(point.y-this.mouseDown.y));
 	}
 }
 
 Schematic.prototype.paste=function(){
-	this.getfile(this.copybuffer);
-	this.drag=1;
-	this.remove(this.copybuffer);
+	if(this.copybuffer){
+		//console.log('pasting');
+		this.getfile(this.copybuffer);
+		this.drag=1;
+		this.remove(this.copybuffer);
+	}
 }
-
 
 
 

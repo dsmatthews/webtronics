@@ -23,7 +23,6 @@ var webtronics={
 			var buffer=20;
 			var realsize=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight-buffer;
 			$('webtronics_diagram_area').style.height = realsize+'px';
-		
 		},
 
 		getMarkup:function() {
@@ -41,10 +40,12 @@ var webtronics={
 		setMode:function(button,mode, status){
 
 			var imgs = $('webtronics_toolbar').getElementsByTagName('img');
+
 			for (var i=0; i<imgs.length; i++) {
-				imgs[i].style.backgroundColor = '';
+				imgs[i].className = 'normal_button';
 			}
-			$(button).style.backgroundColor = 'grey';
+			$(button).className = 'pressed_button';
+
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
 
 			if(mode!='select'){
@@ -181,11 +182,9 @@ var webtronics={
 			}
 				
 
-			
-
+		webtronics.setsize();
 		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
-		webtronics.setsize();
 		if(code){
 			var xmlDoc=webtronics.docfromtext(Utils.decode64(code));
 			if(!xmlDoc)alert("data opening error");
@@ -237,12 +236,14 @@ var webtronics={
 			$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
 
 			});
+/*
 		Event.observe($('webtronics_zoom'), 'click', function() {
 				//set zoom to 1
 				webtronics.circuit.clearinfo();
 				webtronics.circuit.setzoom(false);
 				webtronics.setMode('webtronics_zoom','zoom', 'Zoom');
 			});
+*/
 		Event.observe($('webtronics_select'), 'click', function() {
 				webtronics.circuit.clearinfo();
 				webtronics.setMode('webtronics_select','select', 'Selection');
@@ -269,24 +270,21 @@ var webtronics={
 				webtronics.showMarkup();
 				});
 		}
-/*	
-	$('webtronics_invert').checked=false;
-		Event.observe($('webtronics_invert'),'click',function(){
+	
+		$('webtronics_invert').checked=false;
+			Event.observe($('webtronics_invert'),'click',function(){
 				webtronics.circuit.invertcolors($('webtronics_invert').checked);
 			});
-*/				
+				
 		$('webtronics_graph').checked=false;
 		Event.observe($('webtronics_graph'),'click',function(){
 		if($('webtronics_graph').checked){
-			$('webtronics_diagram_area').style.backgroundImage = 'url('+graphPath+')';
-			//console.log(graphpath);
-			//$('webtronics_diagram_area').style.backgroundSize = webtronics.circuit.zoomRatio*100+'%';
+			webtronics.circuit.graph=true;
+			webtronics.circuit.showbackground();									
 		}
 		else{
-						
-			//$('webtronics_diagram_area').style.background='none';
-			$('webtronics_diagram_area').setAttributeNS(null,'style',"background-color:'white'");
-			webtronics.setsize();
+			webtronics.circuit.graph=false;
+			webtronics.circuit.remove($('graph'));
 		}
 	
 					
@@ -360,5 +358,6 @@ var webtronics={
 });
 	Event.observe(window, 'resize', function() {
 		webtronics.setsize();
+		webtronics.circuit.addtools();	
 	});
 

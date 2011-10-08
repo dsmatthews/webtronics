@@ -11,7 +11,7 @@ Schematic.prototype.createtext = function(str,color,x,y){
 	return svg;
 }
 
-Schematic.prototype.createline = function(lineColor,left, top,right,bottom){
+Schematic.prototype.createline = function(lineColor,lineWidth,left, top,right,bottom){
   var svg;
 
 				
@@ -26,20 +26,20 @@ Schematic.prototype.createline = function(lineColor,left, top,right,bottom){
   if (lineColor.length == 0)
     lineColor = 'none';
   svg.setAttributeNS(null, 'stroke', lineColor);
-  svg.setAttributeNS(null, 'stroke-width', 2);
+  svg.setAttributeNS(null, 'stroke-width', lineWidth);
       
   return svg;
 
 }
 
-Schematic.prototype.createrect = function(color,x, y,width,height){
+Schematic.prototype.createrect = function(color,opacity,x, y,width,height){
 
  	var svg = document.createElementNS(this.svgNs, 'rect');
 	svg.setAttributeNS(null, 'x', x);
  	svg.setAttributeNS(null, 'y', y);
   	svg.setAttributeNS(null, 'width', width);
   	svg.setAttributeNS(null, 'height', height);
-	svg.setAttributeNS(null, 'fill-opacity', .35);
+	svg.setAttributeNS(null, 'fill-opacity', opacity);
  	svg.setAttributeNS(null, 'fill', color);
   	svg.setAttributeNS(null, 'stroke', color);
   	svg.setAttributeNS(null, 'stroke-width', '1');
