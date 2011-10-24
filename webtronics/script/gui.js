@@ -103,32 +103,18 @@ var webtronics={
 		webtronics.setMode('webtronics_select','select','Selection');
 		},
 	
+		openProperties:function(){
+			$('webtronics_properties_form').style.display = "block";
+
+		},
+
+
 }
 
 
 
 
 	Event.observe(window, 'load', function() {
-/*replace context menu*/
-		var myLinks = [
-				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
-				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
-/*
-				{separator: true},
-				{name: 'Reload', callback: function(){alert('Reload function called')}},
-				{name: 'Disabled option', disabled: true},
-				{name: 'Toggle previous option', callback: function(){
-				        var item = oLinks.find(function(l){return l.name == 'Disabled option'});
-				        item.disabled = item.disabled == false ? true : false;
-
-				}}
-*/
-		];
-		new Proto.Menu({
-				selector: '.drawing', // context menu will be shown when element with class name of "contextmenu" is clicked
-				className: 'menu', // this is a class which will be attached to menu container (used for css styling)
-				menuItems: myLinks // array of menu items
-		});
 
 
 
@@ -205,12 +191,37 @@ var webtronics={
 
 		}
 
-
 		$('webtronics_open_file').style.left = $('webtronics_file_open').offsetLeft+'px';
 		$('webtronics_open_file').style.top = $('webtronics_file_open').offsetTop+'px';
 		$('webtronics_open_file').style.width = $('webtronics_file_open').offsetWidth+'px';
 		$('webtronics_open_file').style.height = $('webtronics_file_open').offsetHeight+'px';
+
+/*replace context menu*/
+		var myLinks = [
+				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
+				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
+				{separator: true},
+				{name:'Properties',disabled: true,callback:function(){
+					webtronics.openProperties()
+					$('webtronics_properties_form').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_properties_form').offsetWidth/2)+'px';
+					$('webtronics_properties_form').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_properties_form').offsetHeight/2)+'px';
+				}},
+/*
+				{name: 'Disabled option', disabled: true},
+				{name: 'Toggle previous option', callback: function(){
+				        var item = myLinks.find(function(l){return l.name == 'Properties';});
+				        item.disabled = (item.disabled == false ? true : false);
+						}},
+*/
+		];
+		var rightclickmenu=new Proto.Menu({
+
+				selector: '#webtronics_diagram_area', // context menu will be shown when element with class name of "contextmenu" is clicked
+				className: 'contextmenu', // this is a class which will be attached to menu container (used for css styling)
+				menuItems: myLinks // array of menu items
+		});
 /*menu events*/		
+
 		Event.observe($('webtronics_file_open'), 'click', function() {
 			$('webtronics_open_text').style.display = "block";
 			webtronics.setMode('webtronics_file_open','select','Selection');
@@ -236,14 +247,6 @@ var webtronics={
 			$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
 
 			});
-/*
-		Event.observe($('webtronics_zoom'), 'click', function() {
-				//set zoom to 1
-				webtronics.circuit.clearinfo();
-				webtronics.circuit.setzoom(false);
-				webtronics.setMode('webtronics_zoom','zoom', 'Zoom');
-			});
-*/
 		Event.observe($('webtronics_select'), 'click', function() {
 				webtronics.circuit.clearinfo();
 				webtronics.setMode('webtronics_select','select', 'Selection');
@@ -268,6 +271,11 @@ var webtronics={
 			Event.observe($('webtronics_save'), 'click', function() {
 				webtronics.circuit.clearinfo();
 				webtronics.showMarkup();
+				});
+		}
+		if($('webtronics_netlist')){
+			Event.observe($('webtronics_netlist'), 'click', function() {
+				webtronics.circuit.createnetlist();
 				});
 		}
 	
@@ -296,7 +304,24 @@ var webtronics={
 				webtronics.circuit.showconnections($('webtronics_connections').checked);
 						
 				});
+/*properties events*/		
+		Event.observe($('webtronics_properties_ok'), 'click', function() {
+			$('webtronics_properties_form').hide();
+		});
+		Event.observe($('webtronics_partvalue'),'keyup',function(){
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_partvalue').value);
+			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			
+		});
+/*
+		Event.observe($('webtronics_partmodel'),'keyup',function(){
 		
+		});
+		
+*/
+
+
+
 /*parts box events*/		
 		Event.observe($('webtronics_part'), 'change', function() {
 			webtronics.changeimage($('webtronics_part').value);
@@ -345,14 +370,6 @@ var webtronics={
 
 			$('webtronics_open_text').hide();
 		});
-/*part number / value */
-		Event.observe($('webtronics_value'),'keyup',function(){
-			/*if there  is a value do this stuff*/
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_value').value);
-			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-			
-		});
-
 
 	
 });

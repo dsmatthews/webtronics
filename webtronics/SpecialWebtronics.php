@@ -175,52 +175,56 @@ class WebtronicsUploadForm extends UploadForm {
 
 	$editorpath=$wgScriptPath.'/extensions/webtronics';
 
-	$htmlout="<div id='webtronics_main_window' >
+	$htmlout=
+
+
+
+"<div id='webtronics_main_window' >
 
 	<link rel='stylesheet' href='$editorpath/schematic.css' type='text/css' />
-
+	<script type='text/javascript' > var webtronicsPath='$editorpath';</script>
 	<script type='text/javascript' src='$editorpath/script/prototype.js'></script>
 	<script type='text/javascript' src='$editorpath/script/schematic.js'></script>
 	<script type='text/javascript' src='$editorpath/script/primatives.js'></script>
 	<script type='text/javascript' src='$editorpath/script/connections.js'></script>
 	<script type='text/javascript' src='$editorpath/script/chipmaker.js'></script>
 
-	<script type='text/javascript' > var graphPath='$editorpath/graph.jpg';</script>
 	<script type='text/javascript' src='$editorpath/script/gui.js'></script>
-	
+	<script type='text/javascript' src='$editorpath/script/proto.menu.js' ></script>
+
 
 	<!--
 	toolbar
 	-->
-	<div  id='webtronics_toolbar' >
-		<div id='webtronics_buttons'>
-			<img id='webtronics_file_open' title='import file' src='$editorpath/buttons/open.png' />
-			<img id='webtronics_new' title ='clear the drawing area' src='$editorpath/buttons/new.png' />
-			<img id='webtronics_chips_open' title='make chips' src='$editorpath/buttons/icbut.png' />
-			<img id='webtronics_parts_open' title='get parts' src='$editorpath/buttons/disc.png'/>
-			<img id='webtronics_zoom'  title='click this to zoom out, select area to zoom in'  src='$editorpath/buttons/zoom.png'/>
-			<img id='webtronics_select' title='Select shapes' src='$editorpath/buttons/select.png' />
-			<img id='webtronics_wire' title='click to start wire'  src='$editorpath/buttons/wire.png' />
-			<img id='webtronics_text' title='add text'  src='$editorpath/buttons/text.png' />
-			<img  id='webtronics_delete' title='Delete selected shape' src='$editorpath/buttons/delete.png' />
-			<img  id='webtronics_save' title='Save the file' src='$editorpath/buttons/save.png' />
-		</div>
-		<!--<img  id='webtronics_netlist' title='Create a netlist' src='$editorpath/buttons/net.png' />-->
-		<div id='webtronics_settings'> 	
-			<form> 
-				<input type='checkbox' id='webtronics_connections' > show connections 
-				<input type='checkbox' id='webtronics_graph' > show graph 
-				<!--<input type='checkbox' id='webtronics_invert' />Invert colors-->
-			</form>
-		</div>
-		<div id='webtronics_value_box' ><input id='webtronics_value' />value/part#</div>
-
+<div  id='webtronics_toolbar' >
+	<div id='webtronics_buttons'>
+		<img id='webtronics_file_open' class='normal_button' title='import file' src='$editorpath/buttons/open.png' />
+		<img id='webtronics_new' class='normal_button' title ='clear the drawing area' src='$editorpath/buttons/new.png' />
+		<img id='webtronics_chips_open' class='normal_button' title='make chips' src='$editorpath/buttons/icbut.png' />
+		<img id='webtronics_parts_open' class='normal_button' title='get parts' src='$editorpath/buttons/disc.png'/>
+		<img id='webtronics_select' class='normal_button' title='Select shapes' src='$editorpath/buttons/select.png' />
+		<img id='webtronics_wire' class='normal_button' title='click to start wire'  src='$editorpath/buttons/wire.png' />
+		<img id='webtronics_text' class='normal_button' title='add text'  src='$editorpath/buttons/text.png' />
+		<img  id='webtronics_delete' class='normal_button' title='Delete selected shape' src='$editorpath/buttons/delete.png' />
+		<img  id='webtronics_save' class='normal_button' title='Save the file' src='$editorpath/buttons/save.png' />
 	</div>
+	<!--<img  id='webtronics_netlist' title='Create a netlist' src='$editorpath/buttons/net.png' />-->
+	<div id='webtronics_settings'> 	
+		<form> 
+			<input type='checkbox' id='webtronics_connections' >connections 
+			<input type='checkbox' id='webtronics_graph' >graph 
+			<input type='checkbox' id='webtronics_invert' >Invert
+		</form>
+	</div>
+	<div id='webtronics_value_box' ><input id='webtronics_value' />value/part#</div>
+
+</div>
+
 	<!--
 	display area
 	-->
 
-	  <div id='webtronics_diagram_area' >
+	  <div id='webtronics_diagram_area' class='drawing'>
 	  </div>
 
 	<!--

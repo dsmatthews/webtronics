@@ -1,7 +1,7 @@
 
 
 div * {vertical-align: middle;}
-
+/*toolbar*/
 .normal_button {
 	padding:2px;
 	border-style:solid;
@@ -20,8 +20,10 @@ div * {vertical-align: middle;}
 
 
 #webtronics_main_window{
+
 	font-family:verdana,arial;
 	font-size:10pt;
+
 	background-color:#009900;
 	border:2px solid #009900;
 
@@ -45,65 +47,34 @@ div * {vertical-align: middle;}
 	height:40px;
 }
 
+/*
 #webtronics_value_box{
 	float:left;
 	height:40px;
 	display:none;
 }
-
-#webtronics_diagram_area{	
-	vertical-align: middle;
-	width:auto;
-	height:auto;
-	/*overflow:scroll;*/
-	overflow:hidden;
-	cursor:crosshair;
-	position:relative;
-	border:1px solid black;
-	background-color:blue;
-	
+*/
+/*popups*/
+#webtronics_properties_form{
+		display:none; 
+      position:absolute; 
+      left:200px; 
+      top:10px; 
+      border-style: solid; 
+		border-radius:20px;
+      background-color:inherit; 
+      padding: 5px;
 }
-
-#webtronics_status_bar{
-	 width:auto;
-	 height:auto ;
-	 background-color:inherit;
- }
- 
 #webtronics_parts_box{
 		display:none; 
       position:absolute; 
       left:200px; 
       top:10px; 
       border-style: solid; 
-	border-radius:20px;
+		border-radius:20px;
       background-color:inherit; 
       padding: 5px;
       }
-#webtronics_part_display{
-	padding:5px;
-	margin-bottom:5px;
-	background-color:#ffffff;
-	border:1px solid black;
-	}	
-   
-#webtronics_open_file{ 
-	/*display:none;*/ 
-	filter: alpha(opacity=0);
- 	opacity: 0;
-	overflow:hidden;
-	position:absolute; 
-	left:200px; 
-	top:10px; 
-	border-style: none; 
-	background-color:inherit; 
-	padding: none;   
-   }   
-
-#webtronics_open_file_selector{
-	font-size:30pt;
-}
- 
 #webtronics_chips_box{
 	display:none; 
 	position:absolute; 
@@ -114,14 +85,6 @@ div * {vertical-align: middle;}
 	background-color:inherit; 
 	padding: 5px;
   }
-  
-#webtronics_chip_display{
-	width:300px;
-	height:300px;
-	border:1px solid black;
-	background-color:#ffffff
-  } 
-
 #webtronics_add_text{ 
 	display:none; 
 	position:absolute; 
@@ -142,36 +105,94 @@ div * {vertical-align: middle;}
 	padding: 5px;
   }
 
+
+/*display areas*/
+
+#webtronics_diagram_area{	
+	vertical-align: middle;
+	width:auto;
+	height:auto;
+	/*overflow:scroll;*/
+	overflow:hidden;
+	cursor:crosshair;
+	position:relative;
+	border:1px solid black;
+	background-color:blue;
+	
+}
+#webtronics_part_display{
+	padding:5px;
+	margin-bottom:5px;
+	background-color:#ffffff;
+	border:1px solid black;
+	}	
+#webtronics_chip_display{
+	width:300px;
+	height:300px;
+	border:1px solid black;
+	background-color:#ffffff
+  } 
+
+
+
+#webtronics_status_bar{
+	 width:auto;
+	 height:auto ;
+	 background-color:inherit;
+ }
+ 
+
+/*
+ this is the open file selector.
+it is transparent above the open file button
+*/   
+#webtronics_open_file{ 
+	filter: alpha(opacity=0);
+ 	opacity: 0;
+	overflow:hidden;
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: none; 
+	background-color:inherit; 
+	padding: none;   
+   }   
+
+#webtronics_open_file_selector{
+	font-size:30pt;
+}
+ 
+  
 /*menu style*/
-div.menu {
+div.contextmenu {
         position: absolute;
         top: 0;
         left: 0;
        /* font-family: verdana;*/
 }
-div.menu a {
+div.contextmenu a {
         display: block;
         text-decoration: none;
         cursor: default;
         outline: none;
         font-size: 11px;
 }
-.menu .separator {
+.contextmenu .separator {
         height: 1px;
         padding: 0;
         overflow: hidden;
         display: block;
         font-size: 1px;
 }
-.menu ul, .menu li {
+.contextmenu ul, .contextmenu li {
         margin: 0;
         padding: 0;
         list-style: none;
 }
-.menu li {
+.contextmenu li {
         list-style-position: outside;
 }
-.menu {
+.contextmenu {
         width: 12em;
         background: #F4F5EB;
         border-top: 1px solid #ddd;
@@ -180,23 +201,23 @@ div.menu a {
         border-bottom: 1px solid #666;
         padding: 2px 0;
 }
-.menu a {
+.contextmenu a {
         color: #555;
         padding: 4px 15px;
         margin: 0 2px;
 }
-.menu a:hover {
+.contextmenu a:hover {
         background: #006;
         color: #fff;
 }
-.menu a.disabled {
+.contextmenu a.disabled {
         color: #bbb;
 }
-.menu a.disabled:hover {
+.contextmenu a.disabled:hover {
         background: #F4F5EB;
         color: #bbb;
 }
-.menu .separator {
+.contextmenu .separator {
         border-bottom: 1px solid #fff;
         background: #999;
         margin: 2px 4px;

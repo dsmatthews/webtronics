@@ -40,7 +40,7 @@ function Schematic(elem) {
 	this.grid = 10;
 	this.width=640;
 	this.height=480;
-	
+	this.fontsize=12;
 /*main svg element*/	
 	this.svgRoot = null;
 /* group to hold drawing*/
@@ -58,6 +58,7 @@ function Schematic(elem) {
 /*array of nodes*/
 	this.selected = Array();
 	this.copybuffer=null;
+	this.wirenodes=Array();
 /*selecting rectangle*/
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
@@ -91,13 +92,14 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
 	this.svgRoot.setAttribute('width',this.container.offsetWidth);
 	this.svgRoot.setAttribute('height',this.container.offsetHeight);
+
 	this.container.appendChild(this.svgRoot);
 /*set colors*/
 	this.svgRoot.style.backgroundColor="inherit";
 	this.container.style.backgroundColor="inherit";
 /*create main group for pan/zoom*/		
 	this.drawing=document.createElementNS(this.svgNs,'g');
-	this.drawing.id='all parts';
+	this.drawing.id='drawing';
 	this.svgRoot.appendChild(this.drawing);
 /* create group for user info such as selection boxes */
 	this.info=document.createElementNS(this.svgNs,'g');
@@ -125,7 +127,7 @@ Schematic.prototype.addtools=function(){
 	normal.setAttribute('y',0);
 	normal.setAttribute('width',32);
 	normal.setAttribute('height',32);
-	normal.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','./buttons/normal.png');
+	normal.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href',webtronicsPath+'/buttons/normal.png');
 /* make sure the mouse events don't go through the image*/
 	Event.observe(normal,"mousedown", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(normal,"mouseup", function(e){e.stopPropagation();}.bind(this));
@@ -140,7 +142,7 @@ Schematic.prototype.addtools=function(){
 	grow.setAttribute('y',this.container.offsetHeight-32);
 	grow.setAttribute('width',32);
 	grow.setAttribute('height',32);
-	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','./buttons/grow.png');
+	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href',webtronicsPath+'/buttons/grow.png');
 	Event.observe(grow,"mousedown", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"mouseup", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"click", function(e){
@@ -198,13 +200,17 @@ Schematic.prototype.addtext=function(str){
 	this.unselect();
 	this.mouseDown.x=0;
 	this.mouseDown.y=0;
+
 	str=str.replace(/(^\s*|\s*$)/g, "");
 	var lines=str.split('\n');
 	for(var i=0; i<lines.length;i++){
-		var svg =this.createtext(lines[i],'black',this.mouseDown.x,this.mouseDown.y+(i*12));
+		var svg =this.createtext(lines[i],'black',this.mouseDown.x,this.mouseDown.y+(i*this.fontsize));
 		this.drawing.appendChild(svg);
 		this.select(svg);
 		}
+
+/* Wow this part is frustrating */
+
 	this.drag=1;
 	
 }
@@ -266,16 +272,15 @@ Schematic.prototype.tracker = function(elem) {
 	if(elem&&(elem.nodeType==1)){	
 		try{
 			var bbox=elem.getBBox();
-//		var bbox=elem.getBoundingClientRect()
 		}
 		catch(e){
 			return {x:0,y:0,width:0,height:0};
 			}
+
 		var box={x:0,y:0,width:0,height:0};
 		if(bbox){
 			box.x=bbox.x;
 			box.y=bbox.y;
-
 			box.width=bbox.width;
 			box.height=bbox.height;	
 			
@@ -315,15 +320,21 @@ otherwise the box width and height are zero if it only contains lines*/
 
 
 		}
-		else{
+		else if (elem.tagName=='line'){
 
 			rect.x=box.x-1;
 			rect.y=box.y-1;
 			rect.width=box.width+2;
 			rect.height=box.height+2;
-
-
 		}		
+		else {
+
+			rect.x=box.x;
+			rect.y=box.y;
+			rect.width=box.width;
+			rect.height=box.height;
+
+		}
 	//elem.rect=rect;
 	//return rect;
 	return rect; 
@@ -391,18 +402,20 @@ Schematic.prototype.showTracker = function(elem) {
 	var rect=this.tracker(elem);
 
   var tracked = document.createElementNS(this.svgNs, 'g');
-  tracked.setAttributeNS(null, 'id', 'schematic_tracker');
+  tracked.setAttributeNS(null, 'class', 'schematic_tracker');
 	var svg=this.createrect('blue',0.35,rect.x,rect.y,rect.width,rect.height);
 	tracked.appendChild(svg)
 
 /*add gadgets*/
 	if(elem.tagName=='g'){
 		svg=this.createtext('rotate','blue',rect.x+rect.width,rect.y);
-		svg.rotatorfor=elem;
+//		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
+			var data = $A(arguments);
+			data.shift();							
 			this.mode='rotate';
-			this.rotate(e.target.rotatorfor);
-			e.stopPropagation();}.bind(this));
+			this.rotate(data[0]);
+			e.stopPropagation();}.bindAsEventListener(this,elem));
 		tracked.appendChild(svg);
 
 	}
@@ -411,21 +424,25 @@ Schematic.prototype.showTracker = function(elem) {
 		svg=this.createtext('flip','blue',rect.x,rect.y+rect.height+10);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
+			var data = $A(arguments);
+			data.shift();							
 			this.mode='rotate';
-			this.flip(e.target.rotatorfor);
-			e.stopPropagation();}.bind(this));
+			this.flip(data[0]);
+			e.stopPropagation();}.bindAsEventListener(this,elem));
 		tracked.appendChild(svg);
 	
 	}
 	this.info.appendChild(tracked);
-/*show value window*/
 	if(this.selected.length==1&&this.selected[0].tagName=='g'){
-		$('webtronics_value').clear();
-		$('webtronics_value_box').style.display='block';
-		$('webtronics_value').value=this.selected[0].getAttribute('partvalue');
-		
+		$('webtronics_partvalue').clear();
+		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','enabled');
+		$('webtronics_partvalue').value=this.selected[0].getAttribute('partvalue');
 	}
-	else $('webtronics_value_box').hide();
+	else{
+		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
+	}
+
+
 
 }
 
@@ -446,17 +463,13 @@ Schematic.prototype.clearinfo=function(){
 
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
-	
-	var tracker=$('schematic_tracker')
-	if(tracker){
-		do{
-		this.remove(tracker);
-		tracker=$('schematic_tracker');
-
-		}while(tracker)
-		
-	}	
-	$('webtronics_value_box').hide();
+	/*id's are supposed to be unique*/
+	var tracker=$$('.schematic_tracker');
+	for(var i=0;i<tracker.length;i++){
+		if(tracker[i].parentNode!=null)tracker[i].parentNode.removeChild(tracker[i]);
+	}
+	$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
+	//$('webtronics_value_box').hide();
 }
 
 Schematic.prototype.remove = function(shape) {
@@ -469,7 +482,6 @@ Schematic.prototype.remove = function(shape) {
 }
 
 Schematic.prototype.newdoc = function(){
-	//this.setzoom(1);
 	this.remove(this.svgRoot);	
 	this.init(this.container);	
 }
@@ -549,7 +561,6 @@ Schematic.prototype.deleteSelection = function() {
 	this.removeTracker();
 }
 
-
 Schematic.prototype.createvalue=function(elem){
 /*create value text if attribute exists*/
 	var value=elem.getAttribute('partvalue');
@@ -569,6 +580,7 @@ Schematic.prototype.createvalue=function(elem){
 /* if there is no value and a value text exists remove it*/	
 	else if($('value:'+elem.id))this.remove($('value:'+elem.id));
 }
+
 
 Schematic.prototype.select = function(elem) {
 
@@ -736,15 +748,14 @@ Schematic.prototype.dragSelection=function(x ,y){
 			if(this.selected[i].tagName=='g'&&$('value:'+this.selected[i].id)){
 				floating.appendChild($('value:'+this.selected[i].id));
 			}
+			if(this.selected[i].tagName=='g'&&$('number:'+this.selected[i].id)){
+				floating.appendChild($('number:'+this.selected[i].id));
+			}
 		}
 
-		var tracked=$('schematic_tracker');
-		do{
-			if(tracked){
-				floating.appendChild(tracked);
-				tracked=$('schematic_tracker');
-			}
-		}while(tracked);
+		var tracked=$$('.schematic_tracker');
+
+		for(var i=0;i<tracked.length;i++)floating.appendChild(tracked[i]);
 
 		floating.setAttributeNS(null, 'id', 'schematic_floating');
 	  this.info.appendChild(floating);
@@ -798,7 +809,7 @@ Schematic.prototype.dropSelection=function(){
 	for(var i=floating.childNodes.length;i>0;i--){
 		/*move other parts*/
 		this.move(floating.childNodes[i-1],matrix.e, matrix.f);
-		if(floating.childNodes[i-1].id!='schematic_tracker'){
+		if(floating.childNodes[i-1].getAttribute('class')!='schematic_tracker'){
 			this.drawing.insertBefore(floating.childNodes[i-1],this.drawing.childNodes[0]);
 		}
 		else {
@@ -936,6 +947,7 @@ Schematic.prototype.onWheel=function(event){
 			this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 			this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	}	
+	Event.stop(event);
 }
 
 Schematic.prototype.getparttype=function(elem){
@@ -1044,7 +1056,9 @@ function createUUID()
   }).join('-');
 }
 
+
 var Utils = {
+
 
 
 	"encode64" : function(input) {
