@@ -165,21 +165,8 @@ Schematic.prototype.createnetlist=function(){
 				if(!wires[0])wires[0]=new Array();
 				for(var k=0;k<wire.length;k++)wires[0].push(wire[k]);
 			}
-/*connect namewires*/
-			else if(this.getparttype(parts[i]).toLowerCase()=='wire'){
-				var a=false;
-				for(var k=0;k<wires.length;k++){
-					if(parts[i].getAttribute('partvalue')==wires[k].n){
-						var a=true;
-						for(var l =0;l<wire.length;l++)wires[k].push(wire[l]);	
 
-					}
-				}				
-				if(!a){
-					nodecount++;
-					wires.push(wire);
-					wires[wires.length-1].n=parts[i].getAttribute('partvalue');
-				}
+			else if(this.getparttype(parts[i]).toLowerCase()=='wire'){
 	
 			}
 		
@@ -194,9 +181,9 @@ Schematic.prototype.createnetlist=function(){
 		}
 		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
 			this.getparttype(parts[i]).toLowerCase()!='wire'){
-			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0]+' ');
+			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0].toUpperCase()+' ');
 			for(var j=0;j<nodes.length;j++)models[i]+=nodes[j]+' ';
-			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1];
+			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1].toUpperCase();
 		}
 	}
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
