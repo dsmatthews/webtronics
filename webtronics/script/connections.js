@@ -38,6 +38,7 @@ Schematic.prototype.sortnetlist=function(list){
 	var R=new Array();
 	var U=new Array();
 	var V=new Array();
+	var wire=new Array();
 	
 	for(var i=0;i<list.length;i++){
 		var type=this.getparttype(list[i]).toLowerCase();
@@ -45,8 +46,11 @@ Schematic.prototype.sortnetlist=function(list){
 			G.push(list[i]);
 		}
 		else if(type=='v'){
-			V.push(list[i]);			
+			V.push(list[i]);
 		}
+		else if(type=='wire'){
+			wire.push(list[i]);			
+		}		
 		else if(type=='b'){
 			B.push(list[i]);
 		}
@@ -77,9 +81,6 @@ Schematic.prototype.sortnetlist=function(list){
 		else if(type=='u'){	
 			U.push(list[i]);
 		}
-		else if(type=='v'){
-			V.push(list[i]);
-		}
 		else {
 			console.log ('unknown device');
 		}
@@ -90,6 +91,7 @@ Schematic.prototype.sortnetlist=function(list){
 		return (anum.slice(1)-0)-(bnum.slice(1)-0);
 		};
 	V.sort(sortfunction);
+	wire.sort(sortfunction);
 	B.sort(sortfunction);
  	C.sort(sortfunction);
 	D.sort(sortfunction);
@@ -103,6 +105,7 @@ Schematic.prototype.sortnetlist=function(list){
 	var newlist=new Array();
 	G.each(function(item){newlist.push(item)});		
 	V.each(function(item){newlist.push(item)});		
+	wire.each(function(item){newlist.push(item)});		
 	B.each(function(item){newlist.push(item)});		
 	C.each(function(item){newlist.push(item)});		
 	D.each(function(item){newlist.push(item)});		
@@ -116,14 +119,32 @@ Schematic.prototype.sortnetlist=function(list){
 	return newlist;
 }
 
+Schematic.prototype.connectwires=function(){
+	var namewires=new Array();
+	$$('#drawing > g').each(function(i){if(i.id.split(':',1)[0].toLowerCase()=='wire')namewires.push(i);});
+	for(var i=0;i<namewires.length;i++){
+		for(var j=i;j<namewires.length;j++){
+			if(namewires[i].getAttribute('partvalue')==namewires[j].getAttribute('partvalue')){
+				var pin1 =this.getconnects(namewires[i]);
+				var pin2= this.getconnects(namewires[j]); 
+				var line= this.createline('red',1,pin1[0].x,pin1[0].y,pin2[0].x,pin2[0].y);
+				line.setAttributeNS(null,'class','namewire');
+				this.info.appendChild(line);
+			}
+		}
+	}
+}
+
 Schematic.prototype.createnetlist=function(){
 	parts=this.sortnetlist($$('#drawing > g'));
 	wires=new Array();
 	nodecount=1;
+	this.connectwires();
 	var models=new Array();
 	for(var i=0;i<parts.length; i++){
 		var pins=this.getconnects(parts[i]);
 		var nodes =new Array();
+		console.log(this.getparttype(parts[i]));
 		for(var j=0 ;j<pins.length;j++){
 			var wire=this.followwires(null,pins[j]);
 			var found=-1;
@@ -143,7 +164,24 @@ Schematic.prototype.createnetlist=function(){
 				if(!wires[0])wires[0]=new Array();
 				for(var k=0;k<wire.length;k++)wires[0].push(wire[k]);
 			}
+/*connect namewires*/
+			else if(this.getparttype(parts[i]).toLowerCase()=='wire'){
+				var a=false;
+				for(var k=0;k<wires.length;k++){
+					if(parts[i].getAttribute('partvalue')==wires[k].n){
+						var a=true;
+						for(var l =0;l<wire.length;l++)wires[k].push(wire[l]);	
 
+					}
+				}				
+				if(!a){
+					nodecount++;
+					wires.push(wire);
+					wires[wires.length-1].n=parts[i].getAttribute('partvalue');
+				}
+	
+			}
+		
 			else if(found<0){
 				nodes[j]=nodecount;
 				nodecount++;
@@ -153,14 +191,18 @@ Schematic.prototype.createnetlist=function(){
 				nodes[j]=found;
 			}
 		}
-		if(this.getparttype(parts[i]).toLowerCase()!='gnd'){
+		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
+			this.getparttype(parts[i]).toLowerCase()!='wire'){
 			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0]+' ');
 			for(var j=0;j<nodes.length;j++)models[i]+=nodes[j]+' ';
 			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1];
 		}
 	}
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
-	else alert(models.join('\n'));
+	else alert(models.compact().join('\n'));
+
+	var connector=$$('.namewire')
+	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 
 }
 
@@ -168,7 +210,7 @@ Schematic.prototype.followwires=function(wirelist,pin){
 	if(wirelist==null)wirelist=new Array();
 	var points=new Array();
 	points.push(pin);	
-	var lines =$$('#drawing > line');
+	var lines =$$('#drawing > line, #information > .namewire');
 	for(var i =0 ;i<lines.length;i++){
 		var point1={x:lines[i].getAttribute('x1'),y:lines[i].getAttribute('y1')};
 		var point2={x:lines[i].getAttribute('x2'),y:lines[i].getAttribute('y2')};
@@ -261,35 +303,24 @@ Schematic.prototype.moveconnects=function(elem,x,y){
 Schematic.prototype.showallconnects=function(){
 
 	if(this.connections){	
-//	this.createNodes();
-		//var parts=this.svgRoot.getElementsByTagName('g');
-		parts=$$('#drawing > g');
+		var parts=$$('#drawing > g');
 		for(var i=0 ;i<parts.length;i++){
-				//console.log(parts[i].id);
 				var pins=this.getconnects(parts[i]);
 				if(pins){
 					for(var j=0;j<pins.length;j++){
 						var svg=this.createdot('red',pins[j].x,pins[j].y);
 						svg.setAttribute('class',"schematic_connector");
-/*for debugging
-						
-						Event.observe(svg,'mouseover',function(e){
-							var data = $A(arguments);
-							data.shift();							
-							var wires=this.followlines(null,data[0]);
-							for(var i=0;i<wires.length;i++)this.select(wires[i]);
-						}.bindAsEventListener(this,pins[j]));
-*/
 						this.info.appendChild(svg);
 					}
 				}
 		}
+	this.connectwires();
 	}
 }
 
 Schematic.prototype.hideconnects=function(){
 
-	var connector=$$('.schematic_connector')
+	var connector=$$('#information .schematic_connector,#information .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 }
 
