@@ -181,13 +181,13 @@ Schematic.prototype.createnetlist=function(){
 		}
 		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
 			this.getparttype(parts[i]).toLowerCase()!='wire'){
-			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0].toUpperCase()+' ');
+			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0]+' ');
 			for(var j=0;j<nodes.length;j++)models[i]+=nodes[j]+' ';
-			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1].toUpperCase();
+			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1];
 		}
 	}
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
-	else alert(models.compact().join('\n'));
+	else alert(models.compact().join('\n').toUpperCase());
 
 	var connector=$$('.namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
