@@ -145,7 +145,7 @@ Schematic.prototype.createnetlist=function(){
 	for(var i=0;i<parts.length; i++){
 		var pins=this.getconnects(parts[i]);
 		var nodes =new Array();
-		console.log(this.getparttype(parts[i]));
+//		console.log(this.getparttype(parts[i]));
 		for(var j=0 ;j<pins.length;j++){
 			var wire=this.followwires(null,pins[j]);
 			var found=-1;
@@ -189,7 +189,7 @@ Schematic.prototype.createnetlist=function(){
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
 	else alert(models.compact().join('\n').toUpperCase());
 
-	var connector=$$('.namewire')
+	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 
 }
