@@ -810,7 +810,7 @@ Schematic.prototype.dropSelection=function(){
 		/*move other parts*/
 		this.move(floating.childNodes[i-1],matrix.e, matrix.f);
 		if(floating.childNodes[i-1].getAttribute('class')!='schematic_tracker'){
-			this.drawing.insertBefore(floating.childNodes[i-1],this.drawing.childNodes[0]);
+			this.drawing.appendChild(floating.childNodes[i-1]);
 		}
 		else {
 			this.info.appendChild(floating.childNodes[i-1]);
