@@ -62,7 +62,7 @@ function Schematic(elem) {
 /*selecting rectangle*/
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
-
+	this.wlist=['path','circle','rect','line','text','g','tspan'];
 	this.mouseDown={x:0,y:0};
 	this.viewoffset={x:0,y:0};
 	
@@ -978,10 +978,30 @@ Schematic.prototype.getgroup =function(elem){
 		this.drag=1;
 }
 
+Schematic.prototype.sanitize=function(elem){
+	var script=(new XMLSerializer()).serializeToString(elem).extractScripts(); 
+	if(script!='')return script;
+	var elems=elem.getElementsByTagName('*');
+	for(var i=0;i<elems.length;i++){
+		var count=0;
+		for(;count<this.wlist.length;count++){
+			if(elems[i].tagName==this.wlist[count])break;
+		}
+		if(count==this.wlist.length)return elems[i].tagName;	
+	} 
+	return '';
+}
+
 Schematic.prototype.getfile =function(elem){
-this.unselect();
-ch=elem.childNodes;
-for(var i= ch.length;i>0;i--){
+	this.unselect();
+	var result=this.sanitize(elem)
+	if(result!=''){
+		alert ('this file contains \n'+result+ '\n unacceptable elements\n');
+		return;
+	}
+
+	ch=elem.childNodes;
+	for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 /*get rid  of empty text*/
 /*delete values*/
