@@ -220,6 +220,15 @@ var webtronics={
 				className: 'contextmenu', // this is a class which will be attached to menu container (used for css styling)
 				menuItems: myLinks // array of menu items
 		});
+
+		Event.observe(window, 'resize', function() {
+			webtronics.setsize();
+			webtronics.circuit.addtools();	
+		});
+
+
+
+
 /*menu events*/		
 
 		Event.observe($('webtronics_file_open'), 'click', function() {
@@ -373,8 +382,4 @@ var webtronics={
 
 	
 });
-	Event.observe(window, 'resize', function() {
-		webtronics.setsize();
-		webtronics.circuit.addtools();	
-	});
 
