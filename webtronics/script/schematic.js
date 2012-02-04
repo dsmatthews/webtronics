@@ -40,6 +40,8 @@ function Schematic(elem) {
 	this.grid = 10;
 	this.width=640;
 	this.height=480;
+	this.maxwidth=2000;
+	this.maxheight=2000;
 	this.fontsize=12;
 /*main svg element*/	
 	this.svgRoot = null;
@@ -120,7 +122,7 @@ Schematic.prototype.addtools=function(){
 	this.zoomtools.id='webtronics_zoomtools';
 	this.zoomtools.setAttribute('width',this.container.offsetWidth);
 	this.zoomtools.setAttribute('height',this.container.offsetHeight);			
-
+	
 /*add the image tools*/
 	var normal=document.createElementNS(this.svgNs,'image');
 	normal.setAttribute('x',0);
@@ -138,20 +140,22 @@ Schematic.prototype.addtools=function(){
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(normal);
 	var grow=document.createElementNS(this.svgNs,'image');
-	grow.setAttribute('x',this.container.offsetWidth-32);
-	grow.setAttribute('y',this.container.offsetHeight-32);
+	grow.setAttribute('x',(this.container.offsetWidth<this.svgRoot.getAttribute('width')?this.container.offsetWidth:this.svgRoot.getAttribute('width'))-32);
+	grow.setAttribute('y',(this.container.offsetHeight<this.svgRoot.getAttribute('height')?this.container.offsetHeight:this.svgRoot.getAttribute('height'))-32);
 	grow.setAttribute('width',32);
 	grow.setAttribute('height',32);
 	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href',webtronicsPath+'/buttons/grow.png');
 	Event.observe(grow,"mousedown", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"mouseup", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"click", function(e){
-			this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
-			this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
-
-			this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*2);
-			this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+			if(this.svgRoot.getAttribute('width')<this.maxwidth&this.svgRoot.getAttribute('height')<this.maxheight){
+				this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
+				this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+				this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*2);
+				this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+			}
 			this.showbackground();
+			this.addtools();
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(grow);
 	this.svgRoot.appendChild(this.zoomtools);
