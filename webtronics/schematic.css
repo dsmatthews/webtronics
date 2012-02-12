@@ -155,10 +155,7 @@ div#webtronics_add_text{
 	position:absolute; 
 	left:200px; 
 	top:10px; 
-	border-radius:20px;
-	border-style: solid; 
-	background-color:inherit; 
-	padding: 5px;      
+	border-style: none; 
 }
 div#webtronics_open_text{ 
 	display:none; 
@@ -227,8 +224,19 @@ div#webtronics_status_bar{
 	-webkit-user-select:none;
 	-ms-user-select:none;
 }
- 
-
+div#webtronics_disable{
+	filter: alpha(opacity=.5);
+	opacity:.5;
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	background-color:black; 
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+}
 /*
  this is the open file selector.
 it is transparent above the open file button

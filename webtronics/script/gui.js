@@ -130,6 +130,13 @@ var webtronics={
 */
 		},
 
+		disablepage:function(){
+			var div=document.createElement('div');
+			div.id="webtronics_disable";
+			div.onselectstart=function(){return false;};
+			$('webtronics_main_window').insertBefore(div,$("webtronics_chips_box"));
+
+		},
 
 		returnpart:function(){
 			//if(!xmlDoc)alert('something broke');
@@ -186,6 +193,7 @@ var webtronics={
 				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1)&&window.FileList){
 				$('webtronics_open_file_selector').form.reset();
 				$('webtronics_open_file_selector').onchange=function(){
+		
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
 					var xmlDoc=Utils.docfromtext(txt);
 					var node=xmlDoc.getElementsByTagName('svg')[0];
@@ -315,6 +323,7 @@ var webtronics={
 			if (input_box==true)webtronics.circuit.newdoc();
 			});
 		Event.observe($('webtronics_chips_open'), 'click', function() {
+			webtronics.disablepage();
 //			$('webtronics_chips_box').reset();
 			webtronics.circuit.clearinfo();
 			webtronics.setMode('webtronics_chips_open','select','Selection');
@@ -324,6 +333,7 @@ var webtronics={
 			$('webtronics_chips_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_chips_box').offsetHeight/2)+'px';
 			});
 		if($('webtronics_parts_open')){
+			webtronics.disablepage();
 			Event.observe($('webtronics_parts_open'), 'click', function() {
 				webtronics.setMode('webtronics_parts_open','select','Selection');
 				$('webtronics_parts_box').style.display = "block";
@@ -342,11 +352,7 @@ var webtronics={
 			});
 		Event.observe($('webtronics_text'), 'click', function() {
 			webtronics.circuit.clearinfo();
-			webtronics.setMode('webtronics_text','select', 'Selection');
-			$('webtronics_add_text').style.display = "block";
-			$('webtronics_add_text').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_add_text').offsetWidth/2)+'px';
-			$('webtronics_add_text').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_add_text').offsetHeight/2)+'px';
-
+			webtronics.setMode('webtronics_text','text', 'Text');
 			});
 		if($('webtronics_undo')){
 			Event.observe($('webtronics_undo'),'click',function(){
@@ -406,10 +412,12 @@ var webtronics={
 /*properties events*/		
 		Event.observe($('webtronics_properties_ok'), 'click', function() {
 			$('webtronics_properties_form').hide();
+			$("webtronics_main_window").removeChild($("webtronics_disable"));
 		});
 		Event.observe($('webtronics_partvalue'),'keyup',function(){
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_partvalue').value);
 			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			$("webtronics_main_window").removeChild($("webtronics_disable"));
 			
 		});
 
@@ -423,25 +431,29 @@ var webtronics={
 			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
 		});
 		Event.observe($('webtronics_chip_ok'), 'click', function() {
+			$("webtronics_main_window").removeChild($("webtronics_disable"));
 			webtronics.returnchip();
 			//chipmaker.clear();
 		});
 		Event.observe($('webtronics_chip_cancel'), 'click', function() {
-
+			$("webtronics_main_window").removeChild($("webtronics_disable"));
 			$('webtronics_chips_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		});
 /*text add events*/
-		Event.observe($('webtronics_text_ok'), 'click', function() {
-			webtronics.circuit.addtext($('webtronics_comment').value);
-			$('webtronics_add_text').hide();
-			webtronics.setMode('webtronics_select','select','Selection');
-		});
-		Event.observe($('webtronics_text_cancel'), 'click', function() {
-			webtronics.setMode('webtronics_select','select','Selection');
-
-			$('webtronics_add_text').hide();
-		});
+		if($("webtronics_text_ok")){
+			Event.observe($('webtronics_text_ok'), 'click', function() {
+				webtronics.circuit.addtext($('webtronics_comment').value);
+				$('webtronics_add_text').hide();
+				webtronics.setMode('webtronics_select','select','Selection');
+			});
+		}
+		if($("webtronics_text_cancel")){
+			Event.observe($('webtronics_text_cancel'), 'click', function() {
+				webtronics.setMode('webtronics_select','select','Selection');
+				$('webtronics_add_text').hide();
+			});
+		}
 /*text open events*/
 		Event.observe($('webtronics_open_text_ok'), 'click', function() {
 			$('webtronics_open_text').hide();

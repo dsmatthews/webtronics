@@ -4,7 +4,6 @@
  -----------------------------------------------------------------------------
  Created by an electronics hobbyist
  Based on Richdraw by Mark Finkle 
- Also with help from svg-edit 
  -----------------------------------------------------------------------------
  Copyright (c) 2006 Mark Finkle
 
@@ -89,7 +88,9 @@ function Schematic(elem) {
 
 Schematic.prototype.undo=function(){
 	if(this.undolevel>0){
-		if(this.undolevel>0)this.undolevel--;
+		this.removeTracker()
+		this.addhistory();
+		this.undolevel-=2;
 		console.log("undo "+ this.undolevel);
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
@@ -106,8 +107,9 @@ Schematic.prototype.addhistory=function(){
 
 Schematic.prototype.redo=function(){
 	if(this.history[this.undolevel+1]){
+		this.removeTracker()
 		if(this.undolevel<10)this.undolevel++;
-		console.log("redo "+ this.undolevel+ 'history '+this.history.length);
+		console.log("redo "+ this.undolevel+ ' history '+this.history.length);
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
 		this.drawing=$("webtronics_drawing");
@@ -233,8 +235,8 @@ Schematic.prototype.parseMatrix=function(group){
 Schematic.prototype.addtext=function(str){
 
 	this.unselect();
-	this.mouseDown.x=0;
-	this.mouseDown.y=0;
+//	this.mouseDown.x=0;
+//	this.mouseDown.y=0;
 
 	str=str.replace(/(^\s*|\s*$)/g, "");
 	var lines=str.split('\n');
@@ -767,6 +769,27 @@ if(!this.drag){
 
 			}
 		}
+		else if(this.mode=='text'){
+			if($('webtronics_add_text').style.display == 'none'||$('webtronics_add_text').style.display==""){
+				$('webtronics_add_text').style.display = "block";
+				$('webtronics_add_text').style.left = Event.pointerX(event)+'px';//($('webtronics_main_window').offsetWidth/2)-($('webtronics_add_text').offsetWidth/2)+'px';
+				$('webtronics_add_text').style.top = Event.pointerY(event)+'px';//($('webtronics_main_window').offsetHeight/2)-($('webtronics_add_text').offsetHeight/2)+'px';
+				$('webtronics_comment').value='';
+			}
+			else{
+				console.log($('webtronics_add_text').style.display);
+				if($('webtronics_comment').value){
+					this.addtext($('webtronics_comment').value);
+					$('webtronics_add_text').hide();
+					webtronics.setMode('webtronics_select','select','Selection');
+				}
+				else{
+					webtronics.setMode('webtronics_select','select','Selection');
+					$('webtronics_add_text').hide();
+				}	
+			}
+		}
+
 	}
 	return false;
 
@@ -855,6 +878,7 @@ Schematic.prototype.dropSelection=function(){
 		}
 	}
 	this.remove(floating);	
+	this.addhistory();
 }
 
 
