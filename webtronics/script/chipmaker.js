@@ -26,7 +26,7 @@ drawchip:function(h,v,elem){
 
 	container.appendChild(svgRoot);
 	}
-	var chipG = 	svgRoot.getElementsByTagName("g")[0];
+	var chipG = svgRoot.getElementsByTagName("g")[0];
 	if(!chipG){
 		chipG=container.ownerDocument.createElementNS(svgNamespace, 'g');
 		chipG.setAttributeNS(null, 'stroke', 'black');

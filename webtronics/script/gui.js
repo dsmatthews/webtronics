@@ -4,25 +4,17 @@ var webtronics={
 
 
 		
-		docfromtext:function(txt){
-			var xmlDoc;
-			if (window.DOMParser){
-				parser=new DOMParser();
-				xmlDoc=parser.parseFromString(txt,"text/xml");
-			}
-			else{ // Internet Explorer
-				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-				xmlDoc.async="false";
-				xmlDoc.loadXML(txt);
-			} 
-			return xmlDoc;
-		},
 
 		setsize:function(){
 		
-			var buffer=20;
-			var realsize=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight-buffer;
-			$('webtronics_diagram_area').style.height = realsize+'px';
+			var buffer=30;
+			var realheight=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight;
+			var realwidth=window.innerWidth-$('webtronics_side_bar').offsetWidth;
+			$('webtronics_center').style.width = window.offsetWidth+'px';
+			$('webtronics_center').style.height = realheight-buffer+'px';
+			$('webtronics_diagram_area').style.width = realwidth-buffer+'px';
+			$('webtronics_diagram_area').style.height = realheight-buffer+'px';
+			$('webtronics_parts_list').style.height=realheight-$('webtronics_part_display').offsetHeight-buffer+'px';
 		},
 
 		getMarkup:function() {
@@ -58,40 +50,91 @@ var webtronics={
 		},
 
 		changeimage:function(Name){
-			$('webtronics_part_display').parentNode.removeChild($('webtronics_part_display'));
-			var embed=document.createElement('embed');
-			embed.src=Name;
-			embed.width=70;
-			embed.height=70;
-			embed.id='webtronics_part_display'
-			$('webtronics_parts_box').appendChild(embed);
-		},
 
-		openfile:function(Name){
-			var xmldoc;
-			new Ajax.Request(Name,{
-			method:'get',
-			asynchronous:false,
-			contentType:"text/xml",
-			onSuccess: function(transport){
-				/*this overrides the mimetype to xml for ie9*/
-				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-				},
-			onFailure: function(){ alert('Something went wrong...'); },
-			onException: function(req,exception) {
-				alert(exception);
-				return true;
-				}, 
-			});
-			return xmldoc;
-		},
-
-		returnpart:function(Name){
-			var xmlDoc=webtronics.openfile(Name);
-			//if(!xmlDoc)alert('something broke');
+			var xmlDoc=Utils.openfile(Name);
 			var group=xmlDoc.getElementsByTagName('g')[0];
+			var svg=$$('#webtronics_part_display > svg')[0];
+			if(svg)$('webtronics_part_display').removeChild(svg);
+			svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+			group.setAttributeNS(null,'transform',
+				'translate('+($('webtronics_part_display').offsetWidth/2)+','+($('webtronics_part_display').offsetHeight/2)+')');	
+			svg.appendChild(group);
+			$('webtronics_part_display').appendChild(svg);
+			var gotpart=false;	
+			
+			Event.observe($('webtronics_part_display'),'mousedown',function(e){
+				webtronics.returnpart();
+				gotpart=true
+			});			
+
+			Event.observe($('webtronics_part_display'),'mouseup',function(e){
+				if(gotpart)webtronics.circuit.deleteSelection();
+				else console.log('broke');
+			});			
+
+
+
+
+/*
+	Event.observe($('webtronics_diagram_area'),'dragenter',function(e){
+		console.log(e.dataTransfer.types[0]);
+			webtronics.returnpart();
+	});
+
+	Event.observe($('webtronics_diagram_area'),'dragover',function(e){
+		e.dataTransfer.effectAllowed = "copy";
+		e.dataTransfer.dropEffect="copy";
+		e.preventDefault();
+	});
+
+	Event.observe($('webtronics_diagram_area'),'drop',function(e){
+			var data = e.dataTransfer.getData("text/plain");
+			console.log(data);
+			var xmlDoc=Utils.openfile(data);
+			this.getgroup(xmlDoc.getElementsByTagName('g')[0]);
+			//this.fakeclick();
+			e.preventDefault();
+	}.bind(this));
+
+
+			Event.observe($('webtronics_part_display'),'mouseover',function(e){
+				if(window.getSelection) { // FF, Safari, Opera
+					var sel = window.getSelection();
+					var range = document.createRange();
+					range.selectNode($('webtronics_part_display'));
+					sel.removeAllRanges();
+					sel.addRange(range);
+				} else { // IE
+					document.selection.empty();
+					var range = document.body.createTextRange($('webtronics_part_display'));
+					range.moveToElementText($('webtronics_part_display'));
+					range.select();
+		       };
+			});
+         
+			Event.observe($('webtronics_part_display'),'dragstart',function(e){
+				//console.log('dragstart');
+				e.dataTransfer.setData("text/plain", Name);
+				e.dataTransfer.setDragImage(svg, $('webtronics_part_display').offsetWidth/2, $('webtronics_part_display').offsetHeight/2);
+			});
+
+			Event.observe($('webtronics_part_display'),'dragend',function(e){
+				webtronics.returnpart();
+				var evt = document.createEvent("MouseEvents");
+				var screenx=$('webtronics_part_display').offsetLeft;
+				var screeny=$('webtronics_part_display').offsetTop;
+				evt.initMouseEvent("dragend", true, true, window,
+				1, screenx, screeny, 0, 0, false, false, false, false, 0, null);
+				if(!$('webtronics_diagram_area').dispatchEvent(evt))alert('not working');
+			});
+*/
+		},
+
+
+		returnpart:function(){
+			//if(!xmlDoc)alert('something broke');
+			var group=$$('#webtronics_part_display>svg>g')[0];
 			webtronics.circuit.getgroup(group);
-			$('webtronics_parts_box').hide();
 			webtronics.setMode('webtronics_select','select','Selection');
 		},	
 
@@ -119,7 +162,6 @@ var webtronics={
 
 
 		var url=window.location.search.toQueryParams();
-		document.onselectstart = function() {return false;} 
 		var file=url['file'];
 		var code = url['code'];
 		/* test file read capability*/
@@ -128,7 +170,7 @@ var webtronics={
 				$('webtronics_open_file_selector').onchange=function(){
 					var textReader = new FileReader();
 					textReader.onloadend=function(){
-						var xmlDoc=webtronics.docfromtext(textReader.result);
+						var xmlDoc=Utils.docfromtext(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
 							var node=xmlDoc.getElementsByTagName('svg')[0];
@@ -145,7 +187,7 @@ var webtronics={
 				$('webtronics_open_file_selector').form.reset();
 				$('webtronics_open_file_selector').onchange=function(){
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
-					var xmlDoc=webtronics.docfromtext(txt);
+					var xmlDoc=Utils.docfromtext(txt);
 					var node=xmlDoc.getElementsByTagName('svg')[0];
 					if(!node){alert("svg node not found");}
 					else webtronics.circuit.getfile(node);
@@ -159,7 +201,7 @@ var webtronics={
 			else {
 				$('webtronics_open_file').hide();
 				$('webtronics_open_text_ok').onclick=function(){
-					var xmlDoc=webtronics.docfromtext($('webtronics_svg_code').value);
+					var xmlDoc=Utils.docfromtext($('webtronics_svg_code').value);
 					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					//$('webtronics_open_text').reset();
 					$('webtronics_open_text').hide();
@@ -172,7 +214,7 @@ var webtronics={
 		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		if(code){
-			var xmlDoc=webtronics.docfromtext(Utils.decode64(code));
+			var xmlDoc=Utils.docfromtext(Utils.decode64(code));
 			if(!xmlDoc)alert("data opening error");
 			else{
 					var node=xmlDoc.getElementsByTagName('svg')[0]
@@ -181,7 +223,7 @@ var webtronics={
 				}
 		}
 		else if(file){
-				var xmlDoc=webtronics.openfile(file);
+				var xmlDoc=Utils.openfile(file);
 				if(!xmlDoc){alert("file opening error");}
 				else{
 					var node=xmlDoc.getElementsByTagName('svg')[0]
@@ -191,11 +233,18 @@ var webtronics={
 
 		}
 
+
 		$('webtronics_open_file').style.left = $('webtronics_file_open').offsetLeft+'px';
 		$('webtronics_open_file').style.top = $('webtronics_file_open').offsetTop+'px';
 		$('webtronics_open_file').style.width = $('webtronics_file_open').offsetWidth+'px';
 		$('webtronics_open_file').style.height = $('webtronics_file_open').offsetHeight+'px';
 
+/*
+		$('webtronics_draggable').style.left=$('webtronics_part_display').offsetLeft+'px';
+		$('webtronics_draggable').style.top=$('webtronics_part_display').offsetTop+'px';
+		$('webtronics_draggable').style.width=$('webtronics_part_display').offsetWidth+'px';
+		$('webtronics_draggable').style.height=$('webtronics_part_display').offsetHeight+'px';
+*/
 /*replace context menu*/
 		var myLinks = [
 				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
@@ -227,10 +276,35 @@ var webtronics={
 		});
 
 
+	$('webtronics_toolbar').onselectstart = function() {return false;} 
+	$('webtronics_diagram_area').onselectstart = function() {return false;} 
+	$('webtronics_side_bar').onselectstart = function() {return false;} 
+
+/*parts list*/
+	var category=$$('#webtronics_parts_list > div >p');
+	for(var i=0;i<category.length;i++){
+		Event.observe(category[i],'click',function(e){
+			var menuitems=$$('#webtronics_parts_list > div');
+			var li=Event.element(e).parentNode.getElementsByTagName('div');
+			for(var j=0;j<menuitems.length;j++){
+				var list=menuitems[j].getElementsByTagName('div');
+				if(li[0]!=list[0])list[0].style.display='none';
+			}
+			if(li[0].style.display=='block')li[0].style.display='none';
+			else li[0].style.display='block';
+		});
+	}
+	var part=$$('#webtronics_parts_list>div>div');
+	for(var i=0;i<part.length;i++){
+		Event.observe(part[i],'click',function(e){
+			var pname=Event.element(e).firstChild.nodeValue;
+			var category=Event.element(e).parentNode.parentNode.firstChild.innerHTML.match(/.*/);
+			webtronics.changeimage('./symbols/'+category+'/'+pname+'.svg');
+		});
+	}
 
 
 /*menu events*/		
-
 		Event.observe($('webtronics_file_open'), 'click', function() {
 			$('webtronics_open_text').style.display = "block";
 			webtronics.setMode('webtronics_file_open','select','Selection');
@@ -249,20 +323,22 @@ var webtronics={
 			$('webtronics_chips_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_chips_box').offsetWidth/2)+'px';
 			$('webtronics_chips_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_chips_box').offsetHeight/2)+'px';
 			});
-		Event.observe($('webtronics_parts_open'), 'click', function() {
-			webtronics.setMode('webtronics_parts_open','select','Selection');
-			$('webtronics_parts_box').style.display = "block";
-			$('webtronics_parts_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_parts_box').offsetWidth/2)+'px';
-			$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
+		if($('webtronics_parts_open')){
+			Event.observe($('webtronics_parts_open'), 'click', function() {
+				webtronics.setMode('webtronics_parts_open','select','Selection');
+				$('webtronics_parts_box').style.display = "block";
+				$('webtronics_parts_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_parts_box').offsetWidth/2)+'px';
+				$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
 
-			});
+				});
+		}
 		Event.observe($('webtronics_select'), 'click', function() {
 				webtronics.circuit.clearinfo();
 				webtronics.setMode('webtronics_select','select', 'Selection');
 			});
 		Event.observe($('webtronics_wire'), 'click', function() {
 				webtronics.circuit.clearinfo();
-				webtronics.setMode('webtronics_wire','line');
+				webtronics.setMode('webtronics_wire','line','Wire');
 			});
 		Event.observe($('webtronics_text'), 'click', function() {
 			webtronics.circuit.clearinfo();
@@ -272,8 +348,21 @@ var webtronics={
 			$('webtronics_add_text').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_add_text').offsetHeight/2)+'px';
 
 			});
+		if($('webtronics_undo')){
+			Event.observe($('webtronics_undo'),'click',function(){
+				webtronics.circuit.undo();
+
+			});
+		}
+		if($('webtronics_redo')){
+			Event.observe($('webtronics_redo'),'click',function(){
+				webtronics.circuit.redo();
+			});
+		}
+
 		Event.observe($('webtronics_delete'), 'click', function() {
 			webtronics.circuit.clearinfo();
+			webtronics.circuit.addhistory();
 			webtronics.circuit.deleteSelection();
 			});
 		if($('webtronics_save')){
@@ -288,11 +377,12 @@ var webtronics={
 				});
 		}
 	
-		$('webtronics_invert').checked=false;
+		if($('webtronics_invert')){
+			$('webtronics_invert').checked=false;
 			Event.observe($('webtronics_invert'),'click',function(){
 				webtronics.circuit.invertcolors($('webtronics_invert').checked);
 			});
-				
+		}		
 		$('webtronics_graph').checked=false;
 		Event.observe($('webtronics_graph'),'click',function(){
 		if($('webtronics_graph').checked){
@@ -322,26 +412,8 @@ var webtronics={
 			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
 			
 		});
-/*
-		Event.observe($('webtronics_partmodel'),'keyup',function(){
-		
-		});
-		
-*/
 
 
-
-/*parts box events*/		
-		Event.observe($('webtronics_part'), 'change', function() {
-			webtronics.changeimage($('webtronics_part').value);
-			});
-		Event.observe($('webtronics_part_ok'), 'click', function() {
-			webtronics.returnpart($('webtronics_part').value);
-			});
-		Event.observe($('webtronics_part_cancel'), 'click', function() {
-			$('webtronics_parts_box').hide();
-			webtronics.setMode('webtronics_select','select','Selection');
-			});
 
 /*chip box events*/
 		Event.observe($('webtronics_vert_pins'), 'change', function() {

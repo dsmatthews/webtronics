@@ -62,6 +62,8 @@ function Schematic(elem) {
 	this.copybuffer=null;
 	this.wirenodes=Array();
 /*selecting rectangle*/
+	this.history=new Array(10);
+	this.undolevel=0;	
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
 	this.wlist=['path','circle','rect','line','text','g','tspan'];
@@ -72,15 +74,44 @@ function Schematic(elem) {
 
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
-	this.onDragListener = this.onDrag.bindAsEventListener(this);	
+//	this.onDragStartListener=this.onDragStart.bindAsEventListener(this);	
+	this.onMouseMove = this.onMouseMove.bindAsEventListener(this);	
 	this.onWheelListener = this.onWheel.bindAsEventListener(this);	
 	Event.observe(this.container, "mousewheel",this.onWheelListener);
 	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
-	Event.observe(this.container, "mousemove", this.onDragListener); 
+	Event.observe(this.container, "dragover", this.onMouseMove);
+//	Event.observe(this.container, "drop", this.onDragStart);
+	Event.observe(this.container, "mousemove", this.onMouseMove); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
 
+}
 
+Schematic.prototype.undo=function(){
+	if(this.undolevel>0){
+		if(this.undolevel>0)this.undolevel--;
+		console.log("undo "+ this.undolevel);
+		this.remove($("webtronics_drawing"));
+		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
+		this.drawing=$("webtronics_drawing");
+	}
+}
+
+Schematic.prototype.addhistory=function(){
+	console.log("saving "+ this.undolevel);
+	this.history[this.undolevel]=$('webtronics_drawing').cloneNode(true);
+	if(this.undolevel>=10)this.history.shift();
+	else this.undolevel++;
+}
+
+Schematic.prototype.redo=function(){
+	if(this.history[this.undolevel+1]){
+		if(this.undolevel<10)this.undolevel++;
+		console.log("redo "+ this.undolevel+ 'history '+this.history.length);
+		this.remove($("webtronics_drawing"));
+		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
+		this.drawing=$("webtronics_drawing");
+	}
 }
 
 
@@ -92,8 +123,8 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
-	this.svgRoot.setAttribute('width',this.container.offsetWidth);
-	this.svgRoot.setAttribute('height',this.container.offsetHeight);
+	this.svgRoot.setAttribute('width',2000);
+	this.svgRoot.setAttribute('height',2000);
 
 	this.container.appendChild(this.svgRoot);
 /*set colors*/
@@ -101,7 +132,7 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.backgroundColor="inherit";
 /*create main group for pan/zoom*/		
 	this.drawing=document.createElementNS(this.svgNs,'g');
-	this.drawing.id='drawing';
+	this.drawing.id='webtronics_drawing';
 	this.svgRoot.appendChild(this.drawing);
 /* create group for user info such as selection boxes */
 	this.info=document.createElementNS(this.svgNs,'g');
@@ -168,7 +199,7 @@ Schematic.prototype.showbackground=function(){
 	var canvas=	this.createrect('white',1,0,0,this.svgRoot.getAttribute('width'),this.svgRoot.getAttribute('height'));
 	canvas.id='canvas';
 	this.background.appendChild(canvas);
-	this.background.id='background';
+	this.background.id='webtronics_background';
 	var matrix=this.parseMatrix(this.drawing);
 	this.background.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	
@@ -553,6 +584,7 @@ Schematic.prototype.getMarkup = function() {
 
 
 Schematic.prototype.deleteSelection = function() {
+	this.drag=0;
 	if(!this.selected.length)return; 
 /*delete selected nodes*/  
 	for(var i=this.selected.length;i>0;i--){
@@ -740,7 +772,9 @@ if(!this.drag){
 
 }
 
-
+Schematic.prototype.onDragStart=function(event){
+alert('dragging');
+}
 
 Schematic.prototype.dragSelection=function(x ,y){
 	var floating=$('schematic_floating');
@@ -861,7 +895,7 @@ Schematic.prototype.onMouseUp = function(event) {
 }
 
 
-Schematic.prototype.onDrag = function(event) {
+Schematic.prototype.onMouseMove = function(event) {
 
 	var real=this.realPosition(event);
 	mouseAt={x:0,y:0}
@@ -969,6 +1003,7 @@ Schematic.prototype.changeid=function(elem){
 
 
 Schematic.prototype.getgroup =function(elem){
+		if(this.drag)return;
 		this.unselect();
 		var newelem=document.importNode(elem,true);
 		this.drawing.appendChild(newelem);
@@ -997,6 +1032,7 @@ Schematic.prototype.sanitize=function(elem){
 }
 
 Schematic.prototype.getfile =function(elem){
+	webtronics.circuit.addhistory();
 	this.unselect();
 	var result=this.sanitize(elem)
 	if(result!=''){
@@ -1082,7 +1118,38 @@ function createUUID()
 
 
 var Utils = {
+		docfromtext:function(txt){
+			var xmlDoc;
+			if (window.DOMParser){
+				parser=new DOMParser();
+				xmlDoc=parser.parseFromString(txt,"text/xml");
+			}
+			else{ // Internet Explorer
+				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+				xmlDoc.async="false";
+				xmlDoc.loadXML(txt);
+			} 
+			return xmlDoc;
+		},
 
+		openfile:function(Name){
+			var xmldoc;
+			new Ajax.Request(Name,{
+			method:'get',
+			asynchronous:false,
+			contentType:"text/xml",
+			onSuccess: function(transport){
+				/*this overrides the mimetype to xml for ie9*/
+				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				},
+			onFailure: function(){ alert('Something went wrong...'); },
+			onException: function(req,exception) {
+				alert(exception);
+				return true;
+				}, 
+			});
+			return xmldoc;
+		},
 
 
 	"encode64" : function(input) {

@@ -1,50 +1,113 @@
-
-
-div * {vertical-align: middle;}
-/*toolbar*/
 .normal_button {
 	padding:2px;
 	border-style:solid;
 	border-width:2px;
 	border-color:black;
-	background-color:#009900;
+	background-color:#e7e7e7;
 	}
 
 .pressed_button {
 	padding:2px;
 	border-style:solid;
 	border-width:2px;
-	border-color:#009900;
-	background-color:#006600;
+	border-color:#black;
+	background-color:#bfbfbf;
 	}
 
 
-#webtronics_main_window{
+div#webtronics_main_window{
 
 	font-family:verdana,arial;
 	font-size:10pt;
-
-	background-color:#009900;
-	border:2px solid #009900;
+	height:100%;
+	background-color:#e7e7e7;
+	border:2px solid #e7e7e7;
 
 }
 
-#webtronics_toolbar{
-	height:40px;
+
+/*list menu */
+div#webtronics_center{
+	float:center;
+	overflow:hidden;
+
+	background-color:inherit;
+	border:2px solid #000000;
+}
+
+
+div#webtronics_side_bar{
+	float:left;
+	width: 132px;
+	overflow: hidden;
+}
+
+
+
+
+div#webtronics_parts_list{
+	display:block;
+	height:auto;
 	border-style:solid;
 	border-width:2px;
-	border-color:#009900;
+	border-color:black;
+	overflow:auto;
+	cursor:pointer;
+}
+
+div#webtronics_parts_list p{
+	cursor:arrow;
+}
+
+
+div#webtronics_parts_list>div>div{
+	display:none;
+	background-color:#ffffff;
+}
+
+div#webtronics_parts_list>div{
+	background-color:#cfcfcf;
+	border-style:solid;
+	border-width:2px;
+	border-color:black;
+}
+
+div#webtronics_parts_list *{
+	margin:0px;
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+}
+
+
+
+
+div#webtronics_toolbar{
+	height:40px;
+	width:100%;
+	border-style:solid;
+	border-width:2px;
+	border-color:#000000;
+	overflow:hide;
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
 	}
 
 
-#webtronics_buttons{
+
+
+
+div#webtronics_buttons{
 	float:left;
 	height:40px;
+
 }
 
-#webtronics_settings{
+div#webtronics_settings{
 	float:left;
 	height:40px;
+	
 }
 
 /*
@@ -55,27 +118,29 @@ div * {vertical-align: middle;}
 }
 */
 /*popups*/
-#webtronics_properties_form{
-		display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-		border-radius:20px;
-      background-color:inherit; 
-      padding: 5px;
+div#webtronics_properties_form{
+	display:none; 
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	border-radius:20px;
+	background-color:inherit; 
+	padding: 5px;
 }
-#webtronics_parts_box{
-		display:none; 
-      position:absolute; 
-      left:200px; 
-      top:10px; 
-      border-style: solid; 
-		border-radius:20px;
-      background-color:inherit; 
-      padding: 5px;
+
+div#webtronics_parts_box{
+	display:none; 
+	position:absolute; 
+	left:200px; 
+	top:10px; 
+	border-style: solid; 
+	border-radius:20px;
+	background-color:inherit; 
+	padding: 5px;
       }
-#webtronics_chips_box{
+
+div#webtronics_chips_box{
 	display:none; 
 	position:absolute; 
 	left:200px; 
@@ -85,7 +150,7 @@ div * {vertical-align: middle;}
 	background-color:inherit; 
 	padding: 5px;
   }
-#webtronics_add_text{ 
+div#webtronics_add_text{ 
 	display:none; 
 	position:absolute; 
 	left:200px; 
@@ -95,7 +160,7 @@ div * {vertical-align: middle;}
 	background-color:inherit; 
 	padding: 5px;      
 }
-#webtronics_open_text{ 
+div#webtronics_open_text{ 
 	display:none; 
 	position:absolute; 
 	left:200px; 
@@ -108,24 +173,42 @@ div * {vertical-align: middle;}
 
 /*display areas*/
 
-#webtronics_diagram_area{	
-	vertical-align: middle;
-	width:auto;
-	height:auto;
-	/*overflow:scroll;*/
+#webtronics_diagram_area {	
+	float:right;
 	overflow:hidden;
 	cursor:crosshair;
-	position:relative;
 	border:1px solid black;
-	background-color:blue;
+	background-color:grey;
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
 	
 }
+#webtronics_diagram_area *{	
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+	
+}
+
 #webtronics_part_display{
-	padding:5px;
-	margin-bottom:5px;
+	width:100%;
+	height:132px;
 	background-color:#ffffff;
-	border:1px solid black;
-	}	
+
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+
+}
+#webtronics_part_display>svg{
+/*
+	-moz-user-select:all;
+	-webkit-user-select:all;
+	-ms-user-select:all;
+*/
+}	
+
 #webtronics_chip_display{
 	width:300px;
 	height:300px;
@@ -135,18 +218,22 @@ div * {vertical-align: middle;}
 
 
 
-#webtronics_status_bar{
-	 width:auto;
+div#webtronics_status_bar{
+	float:left;
+	 width:100%;
 	 height:auto ;
 	 background-color:inherit;
- }
+ 	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+}
  
 
 /*
  this is the open file selector.
 it is transparent above the open file button
 */   
-#webtronics_open_file{ 
+div#webtronics_open_file{ 
 	filter: alpha(opacity=0);
  	opacity: 0;
 	overflow:hidden;
@@ -158,7 +245,7 @@ it is transparent above the open file button
 	padding: none;   
    }   
 
-#webtronics_open_file_selector{
+div#webtronics_open_file_selector{
 	font-size:30pt;
 }
  

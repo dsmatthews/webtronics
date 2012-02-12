@@ -1,137 +1,165 @@
-<!DOCTYPE HTML>
-<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"-->
-<html>
-<head>
-<link rel="stylesheet" href="schematic.css" type="text/css" />
-<script type="text/javascript" >var webtronicsPath = './'</script>
+<!DOCTYPE html>
+<html><head>
+
+
+<link rel="stylesheet" href="schematic.css" type="text/css">
+<script type="text/javascript">var webtronicsPath = './'</script>
 <script type="text/javascript" src="./script/prototype.js"></script>
 <script type="text/javascript" src="./script/schematic.js"></script>
 <script type="text/javascript" src="./script/primatives.js"></script>
 <script type="text/javascript" src="./script/connections.js"></script>
 <script type="text/javascript" src="./script/chipmaker.js"></script>
 <script type="text/javascript" src="./script/gui.js"></script>
-<script type="text/javascript" src="./script/proto.menu.js"></script>
-
-</head>
-
-<body >
-<div id="webtronics_main_window" >
-<?php include("save.php"); ?>
+<script type="text/javascript" src="./script/proto.menu.js"></script></head><body>
+<div id="webtronics_main_window">
 <!--
 toolbar
 -->
-<div  id="webtronics_toolbar" >
-	<div id="webtronics_buttons">
-		<img id="webtronics_file_open" class="normal_button" title="import file" src="./buttons/open.png" />
-		<img id="webtronics_new" class="normal_button" title ="clear the drawing area" src="./buttons/new.png" />
-		<img id='webtronics_chips_open' class="normal_button" title="make chips" src="./buttons/icbut.png" />
-		<img id="webtronics_parts_open" class="normal_button" title="get parts" src="./buttons/disc.png"/>
-		<img id="webtronics_select" class="normal_button" title="Select shapes" src="./buttons/select.png" />
-		<img id="webtronics_wire" class="normal_button" title="click to start wire"  src="./buttons/wire.png" />
-		<img id="webtronics_text" class="normal_button" title="add text"  src="./buttons/text.png" />
-		<img  id="webtronics_delete" class="normal_button" title="Delete selected shape" src="./buttons/delete.png" />
-		<img  id="webtronics_save" class="normal_button" title="Save the file" src="./buttons/save.png" />
-		<img  id="webtronics_netlist" class="normal_button" title="view the netlist" src="./buttons/netlist.png" />
+	<div id="webtronics_toolbar">
+		<div id="webtronics_buttons">
+			<img id="webtronics_file_open" class="normal_button" title="import file" src="./buttons/open.png">
+			<img id="webtronics_new" class="normal_button" title="clear the drawing area" src="./buttons/new.png">
+			<img id="webtronics_chips_open" class="normal_button" title="make chips" src="./buttons/icbut.png">
+			<img id="webtronics_select" class="normal_button" title="Select shapes" src="./buttons/select.png">
+			<img id="webtronics_wire" class="normal_button" title="click to start wire" src="./buttons/wire.png">
+			<img id="webtronics_text" class="normal_button" title="add text" src="./buttons/text.png">
+			<img id="webtronics_delete" class="normal_button" title="Delete selected shape" src="./buttons/delete.png">
+			<img id="webtronics_undo" class="normal_button" title="undo last action" src="./buttons/undo.png">
+			<img id="webtronics_redo" class="normal_button" title="redo last action" src="./buttons/redo.png">
+			<img id="webtronics_save" class="normal_button" title="Save the file" src="./buttons/save.png">
+			<img id="webtronics_netlist" class="normal_button" title="view the netlist" src="./buttons/netlist.png">
+		</div>
+		<div id="webtronics_settings"> 	
+			<form> 
+				connections<input id="webtronics_connections" type="checkbox"><br> 
+				graph<input id="webtronics_graph" type="checkbox"> 
+				<!--input type="checkbox" id="webtronics_invert">Invert-->
+			</form>
+		</div>
+
 	</div>
-	<div id="webtronics_settings"> 	
-		<form> 
-			<input type="checkbox" id="webtronics_connections" >connections 
-			<input type="checkbox" id="webtronics_graph" >graph 
-			<input type="checkbox" id="webtronics_invert">Invert
-		</form>
+<!--this section should be generated on the server -->
+<div id="webtronics_center" >
+	<div id="webtronics_side_bar" >
+		<div id="webtronics_part_display" title="drag this part" >    </div>
+		<div id="webtronics_parts_list" >
+			<div><p>amplifier</p>
+				<div>
+					<p>op-amp</p>
+				</div>
+			</div>
+			<div><p>audio</p>
+				<div>
+					<p>speaker</p>
+				</div>
+			</div>
+			<div><p>capacitors</p>
+				<div>
+					<p>capacitor</p>
+					<p>polar-cap</p>
+					<p>varicap</p>
+				</div>
+			</div>
+			<div><p>diodes</p>
+				<div>
+					<p>diode</p>
+					<p>led</p>
+					<p>photodiode</p>
+					<p>scr</p>
+					<p>triac</p>
+					<p>trigger</p>
+					<p>zener</p>
+				</div>
+			</div>
+			<div><p>inductors</p>
+				<div>
+					<p>coil</p>
+					<p>tapcoil</p>
+					<p>transformer</p>
+				</div>
+			</div>
+			<div><p>frequency</p>
+				<div>
+					<p>crystal</p>
+				</div>
+			</div>
+			<div><p>gates</p>
+				<div>
+					<p>and</p>
+					<p>or</p>
+					<p>not</p>
+					<p>nor</p>
+					<p>xor</p>
+					<p>xnor</p>
+				</div>
+			</div>
+			<div><p>ic</p>
+				<div>
+					<p>3_pins</p>
+					<p>4_pins</p>
+					<p>5_pins</p>
+				</div>
+			</div>
+			<div><p>power</p>
+				<div>		
+					<p>ac</p>
+					<p>battery</p>
+					<p>ground</p>
+					<p>positive</p>
+				</div>
+			</div>	
+			<div><p>resistors</p>
+				<div>
+					<p>photo-resistor</p>
+					<p>resistor</p>
+					<p>potentiometer</p>
+					<p>vari-resistor</p>
+				</div>
+			</div>
+			<div><p>switches</p>
+				<div>
+					<p>ncpb</p>
+					<p>nopb</p>
+					<p>spst-relay</p>
+					<p>spst-switch</p>
+				</div>
+			</div>	
+			<div><p>transistors</p>
+				<div>
+					<p>njfet</p>
+					<p>nmosfet</p>
+					<p>npn</p>
+					<p>phototrans</p>
+					<p>pjfet</p>
+					<p>pmosfet</p>
+					<p>pnp</p>
+				</div>
+			</div>
+		</div>
 	</div>
-	<!--div id="webtronics_value_box" ><input id="webtronics_value" />value/part#</div-->
-
-</div>
-
-
 
 <!--
 display area
 -->
 
-<div id="webtronics_diagram_area">
+	<div id="webtronics_diagram_area">	
 
+	</div>
 </div>
-
 <!--
 status bar
 -->
   
  <div id="webtronics_status_bar">Mode: Draw Rectangle</div>
 
- <!--
-parts box
--->
 
-<div id="webtronics_parts_box">
-
-<img  id="webtronics_part_ok" src="./buttons/ok.png" />
-<img  id="webtronics_part_cancel" src="./buttons/cancel.png" />
-
-<form >
-
-<select id="webtronics_part" size="10">
-
-	<option  value="./symbols/capacitor.svg" >capacitor</option>
-	<option  value="./symbols/polar-cap.svg" >polar cap</option>
-	<option  value="./symbols/varicap.svg" >vari cap</option>
-	<option  value="./symbols/resistor.svg" >resistor</option>
-	<!--option  value="./symbols/testresistor.svg" >testresistor</option-->
-	<option  value="./symbols/vresistor.svg" >potentiometer</option>
-	<option  value="./symbols/vari-resistor.svg" >variable resistor</option>
-	<option  value="./symbols/coil.svg" >inductor</option>
-	<option  value="./symbols/transformer.svg" >transformer</option>
-	<option  value="./symbols/battery.svg" >battery</option>
-	<option  value="./symbols/ac.svg" >ac-source</option>
-	<option  value="./symbols/gnd.svg" >ground</option>
-	<option  value="./symbols/positive.svg" >positive</option>
-	<option  value="./symbols/diode.svg" >diode</option>
-	<option  value="./symbols/led.svg" >led</option>
-	<option  value="./symbols/zener.svg" >zener diode</option>
-	<option  value="./symbols/scr.svg" >scr</option>
-	<option  value="./symbols/triac.svg" >triac</option>
-	<option  value="./symbols/trigger.svg" >trigger diode</option>
-	<option value="./symbols/npn.svg"  >npn bjt</option>
-	<option value="./symbols/pnp.svg" >pnp bjt</option>
-	<option  value="./symbols/njfet.svg" >njfet </option>
-	<option  value="./symbols/pjfet.svg" >pjfet</option>
-	<option  value="./symbols/nmosfet.svg" >nmosfet</option>
-	<option  value="./symbols/pmosfet.svg" >pmosfet</option>
-	<option  value="./symbols/ncpb.svg" >ncpb</option>
-	<option  value="./symbols/nopb.svg" >nopb</option>
-	<option  value="./symbols/tapcoil.svg" >tapped inductor</option>
-	<option  value="./symbols/phototrans.svg" >phototransistor</option>
-	<option  value="./symbols/photodiode.svg" >photodiode</option>
-	<option  value="./symbols/photo-res.svg" >photo resistor</option>
-	<option  value="./symbols/crystal.svg" >crystal</option>
-	<option  value="./symbols/spst-switch.svg" >spst switch</option>
-	<option  value="./symbols/op-amp.svg" >op-amp</option>
-	<option  value="./symbols/spst-relay.svg" >spst-relay</option>
-	<option  value="./symbols/speaker.svg" >speaker</option>
-	<option  value="./symbols/3_pins.svg" >3 pins</option>
-	<option  value="./symbols/4_pins.svg" >4 pins</option>
-	<option  value="./symbols/5_pins.svg" >5 pins</option>
-	<option  value="./symbols/INVERTER.svg" >NOT</option>
-	<option  value="./symbols/AND.svg" >AND</option>
-	<option  value="./symbols/NAND.svg" >NAND</option>
-	<option  value="./symbols/OR.svg" >OR</option>
-	<option  value="./symbols/NOR.svg" >NOR</option>
-	<option  value="./symbols/XOR.svg" >XOR</option>
-	<option  value="./symbols/XNOR.svg" >XNOR</option>
-
-</select>
-</form>
-<br>
-<embed   src="./symbols/capacitor.svg" id="webtronics_part_display" type="image/svg+xml" width="70" height="70" />	
-<br></div>
 <!--
 open files
 -->
-<div id="webtronics_open_file" title="import file" >
+<div id="webtronics_open_file" title="import file">
 
 <form>
-<input type="file" id="webtronics_open_file_selector" />
+<input id="webtronics_open_file_selector" type="file">
 <!--img  id="webtronics_open_file_cancel" src="./buttons/cancel.png" /-->
  </form>
 
@@ -142,115 +170,115 @@ open files
 make chips
 -->
 
-<div id="webtronics_chips_box">
+<div id="webtronics_chips_box" >
   <div id="webtronics_chip_display" >
   </div>
 	<form>
 <br>
 	<select id="webtronics_vert_pins">
-		<option value=1>1</option>
-		<option value=2>2</option>
-		<option value=3>3</option>
-		<option value=4>4</option>
-		<option value=5>5</option>
-		<option value=6>6</option>
-		<option value=7>7</option>
-		<option value=8>8</option>
-		<option value=9>9</option>
-		<option value=10>10</option>
-		<option value=11>11</option>
-		<option value=12>12</option>
-		<option value=13>13</option>
-		<option value=14>14</option>
-		<option value=15>15</option>
-		<option value=16>16</option>
-		<option value=17>17</option>
-		<option value=18>18</option>
-		<option value=19>19</option>
-		<option value=20>20</option>
-		<option value=21>21</option>
-		<option value=22>22</option>
-		<option value=23>23</option>
-		<option value=24>24</option>
-		<option value=25>25</option>
-		<option value=26>26</option>
-		<option value=27>27</option>
-		<option value=28>28</option>
-		<option value=29>29</option>
-		<option value=30>30</option>
-		<option value=31>31</option>
-		<option value=32>32</option>
-		<option value=33>33</option>
-		<option value=34>34</option>
-		<option value=35>35</option>
-		<option value=36>36</option>
-		<option value=37>37</option>
-		<option value=38>38</option>
-		<option value=39>39</option>
-		<option value=40>40</option>
-		<option value=41>41</option>
-		<option value=42>42</option>
-		<option value=43>43</option>
-		<option value=44>44</option>
-		<option value=45>45</option>
-		<option value=46>46</option>
-		<option value=47>47</option>
-		<option value=48>48</option>
-		<option value=49>49</option>
-		<option value=50>50</option>
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+		<option value="6">6</option>
+		<option value="7">7</option>
+		<option value="8">8</option>
+		<option value="9">9</option>
+		<option value="10">10</option>
+		<option value="11">11</option>
+		<option value="12">12</option>
+		<option value="13">13</option>
+		<option value="14">14</option>
+		<option value="15">15</option>
+		<option value="16">16</option>
+		<option value="17">17</option>
+		<option value="18">18</option>
+		<option value="19">19</option>
+		<option value="20">20</option>
+		<option value="21">21</option>
+		<option value="22">22</option>
+		<option value="23">23</option>
+		<option value="24">24</option>
+		<option value="25">25</option>
+		<option value="26">26</option>
+		<option value="27">27</option>
+		<option value="28">28</option>
+		<option value="29">29</option>
+		<option value="30">30</option>
+		<option value="31">31</option>
+		<option value="32">32</option>
+		<option value="33">33</option>
+		<option value="34">34</option>
+		<option value="35">35</option>
+		<option value="36">36</option>
+		<option value="37">37</option>
+		<option value="38">38</option>
+		<option value="39">39</option>
+		<option value="40">40</option>
+		<option value="41">41</option>
+		<option value="42">42</option>
+		<option value="43">43</option>
+		<option value="44">44</option>
+		<option value="45">45</option>
+		<option value="46">46</option>
+		<option value="47">47</option>
+		<option value="48">48</option>
+		<option value="49">49</option>
+		<option value="50">50</option>
 	</select>
-	<select id="webtronics_hor_pins" >
-		<option value=0>0</option>
-		<option value=4>4</option>
-		<option value=5>5</option>
-		<option value=6>6</option>
-		<option value=7>7</option>
-		<option value=8>8</option>
-		<option value=9>9</option>
-		<option value=10>10</option>
-		<option value=11>11</option>
-		<option value=12>12</option>
-		<option value=13>13</option>
-		<option value=14>14</option>
-		<option value=15>15</option>
-		<option value=16>16</option>
-		<option value=17>17</option>
-		<option value=18>18</option>
-		<option value=19>19</option>
-		<option value=20>20</option>
-		<option value=21>21</option>
-		<option value=22>22</option>
-		<option value=23>23</option>
-		<option value=24>24</option>
-		<option value=25>25</option>
-		<option value=26>26</option>
-		<option value=27>27</option>
-		<option value=28>28</option>
-		<option value=29>29</option>
-		<option value=30>30</option>
-		<option value=31>31</option>
-		<option value=32>32</option>
-		<option value=33>33</option>
-		<option value=34>34</option>
-		<option value=35>35</option>
-		<option value=36>36</option>
-		<option value=37>37</option>
-		<option value=38>38</option>
-		<option value=39>39</option>
-		<option value=40>40</option>
-		<option value=41>41</option>
-		<option value=42>42</option>
-		<option value=43>43</option>
-		<option value=44>44</option>
-		<option value=45>45</option>
-		<option value=46>46</option>
-		<option value=47>47</option>
-		<option value=48>48</option>
-		<option value=49>49</option>
-		<option value=50>50</option>
+	<select id="webtronics_hor_pins">
+		<option value="0">0</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+		<option value="6">6</option>
+		<option value="7">7</option>
+		<option value="8">8</option>
+		<option value="9">9</option>
+		<option value="10">10</option>
+		<option value="11">11</option>
+		<option value="12">12</option>
+		<option value="13">13</option>
+		<option value="14">14</option>
+		<option value="15">15</option>
+		<option value="16">16</option>
+		<option value="17">17</option>
+		<option value="18">18</option>
+		<option value="19">19</option>
+		<option value="20">20</option>
+		<option value="21">21</option>
+		<option value="22">22</option>
+		<option value="23">23</option>
+		<option value="24">24</option>
+		<option value="25">25</option>
+		<option value="26">26</option>
+		<option value="27">27</option>
+		<option value="28">28</option>
+		<option value="29">29</option>
+		<option value="30">30</option>
+		<option value="31">31</option>
+		<option value="32">32</option>
+		<option value="33">33</option>
+		<option value="34">34</option>
+		<option value="35">35</option>
+		<option value="36">36</option>
+		<option value="37">37</option>
+		<option value="38">38</option>
+		<option value="39">39</option>
+		<option value="40">40</option>
+		<option value="41">41</option>
+		<option value="42">42</option>
+		<option value="43">43</option>
+		<option value="44">44</option>
+		<option value="45">45</option>
+		<option value="46">46</option>
+		<option value="47">47</option>
+		<option value="48">48</option>
+		<option value="49">49</option>
+		<option value="50">50</option>
 	</select>
-<img  id="webtronics_chip_ok" src="./buttons/ok.png" />
-<img  id="webtronics_chip_cancel"  src="./buttons/cancel.png" />
+<img id="webtronics_chip_ok" src="./buttons/ok.png">
+<img id="webtronics_chip_cancel" src="./buttons/cancel.png">
  </form>
 
 </div>
@@ -263,19 +291,19 @@ add text
 <form>
 <textarea cols="50" rows="4" id="webtronics_comment"></textarea>
 <!--<input type="text" size="50" name="address" />address</br>-->
-<img  id="webtronics_text_ok" " src="./buttons/ok.png" /> 
+<img id="webtronics_text_ok" src="./buttons/ok.png"> 
 
-<img  id="webtronics_text_cancel" src="./buttons/cancel.png" />
+<img id="webtronics_text_cancel" src="./buttons/cancel.png">
 </form>
 </div>
 <!--
 properties form
 -->
-<div id= webtronics_properties_form>
+<div id="webtronics_properties_form">
 <form>
-<input id="webtronics_partvalue" />value<br>
+<input id="webtronics_partvalue">value<br>
 <!--input id="webtronics_partmodel" />model#-->
-<img  id="webtronics_properties_ok" src="./buttons/ok.png" /> 
+<img id="webtronics_properties_ok" src="./buttons/ok.png"> 
 </form>
 </div>
 
@@ -283,14 +311,12 @@ properties form
 add code text
  -->
 
-<div id="webtronics_open_text" >
+<div id="webtronics_open_text">
 <textarea cols="50" rows="4" id="webtronics_svg_code"></textarea>
-<img  id="webtronics_open_text_ok" src="./buttons/ok.png" /> 
-<img  id="webtronics_open_text_cancel" src="./buttons/cancel.png" />
+<img id="webtronics_open_text_ok" src="./buttons/ok.png"> 
+<img id="webtronics_open_text_cancel" src="./buttons/cancel.png">
 </div>
 
 
 </div>
-</body>
-</html>
-
+</body></html>

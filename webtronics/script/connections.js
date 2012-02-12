@@ -121,7 +121,7 @@ Schematic.prototype.sortnetlist=function(list){
 
 Schematic.prototype.connectwires=function(){
 	var namewires=new Array();
-	$$('#drawing > g').each(function(i){if(i.id.split(':',1)[0].toLowerCase()=='wire')namewires.push(i);});
+	$$('#webtronics_drawing > g').each(function(i){if(i.id.split(':',1)[0].toLowerCase()=='wire')namewires.push(i);});
 	for(var i=0;i<namewires.length;i++){
 		for(var j=i;j<namewires.length;j++){
 			if(namewires[i]!==namewires[j]&&namewires[i].getAttribute('partvalue')==namewires[j].getAttribute('partvalue')){
@@ -137,7 +137,7 @@ Schematic.prototype.connectwires=function(){
 }
 
 Schematic.prototype.createnetlist=function(){
-	parts=this.sortnetlist($$('#drawing > g'));
+	parts=this.sortnetlist($$('#webtronics_drawing > g'));
 	wires=new Array();
 	nodecount=1;
 	this.connectwires();
@@ -198,7 +198,7 @@ Schematic.prototype.followwires=function(wirelist,pin){
 	if(wirelist==null)wirelist=new Array();
 	var points=new Array();
 	points.push(pin);	
-	var lines =$$('#drawing > line, #information > .namewire');
+	var lines =$$('#webtronics_drawing > line, #information > .namewire');
 	for(var i =0 ;i<lines.length;i++){
 		var point1={x:lines[i].getAttribute('x1'),y:lines[i].getAttribute('y1')};
 		var point2={x:lines[i].getAttribute('x2'),y:lines[i].getAttribute('y2')};
@@ -291,7 +291,7 @@ Schematic.prototype.moveconnects=function(elem,x,y){
 Schematic.prototype.showallconnects=function(){
 
 	if(this.connections){	
-		var parts=$$('#drawing > g');
+		var parts=$$('#webtronics_drawing > g');
 		for(var i=0 ;i<parts.length;i++){
 				var pins=this.getconnects(parts[i]);
 				if(pins){
