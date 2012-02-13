@@ -1,7 +1,7 @@
 
 var webtronics={
 		circuit:null,
-
+		rightclickmenu:null,
 
 		
 
@@ -39,11 +39,18 @@ var webtronics={
 			$(button).className = 'pressed_button';
 
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
-
-			if(mode!='select'){
+			$('webtronics_add_text').hide();
+			if(mode=='select'){
+				webtronics.rightclickmenu.options.enabled=true;
+			}
+			else if(mode=='line'){
+				webtronics.rightclickmenu.options.enabled=false;
 				if(webtronics.circuit.selected){
 					webtronics.circuit.unselect();
 				}
+			}
+			else if(mode=='text'){
+				webtronics.rightclickmenu.options.enabled=false;
 			}
 			webtronics.circuit.mode=mode;
 
@@ -139,7 +146,6 @@ var webtronics={
 		},
 
 		returnpart:function(){
-			//if(!xmlDoc)alert('something broke');
 			var group=$$('#webtronics_part_display>svg>g')[0];
 			webtronics.circuit.getgroup(group);
 			webtronics.setMode('webtronics_select','select','Selection');
@@ -214,7 +220,6 @@ var webtronics={
 				$('webtronics_open_text_ok').onclick=function(){
 					var xmlDoc=Utils.docfromtext($('webtronics_svg_code').value);
 					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
-					//$('webtronics_open_text').reset();
 					$('webtronics_open_text').hide();
 				 	webtronics.setMode('webtronics_select','select', 'Selection');    
 				}
@@ -222,7 +227,35 @@ var webtronics={
 				
 
 		webtronics.setsize();
+
+
 		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
+/*replace context menu*/
+		var myLinks = [
+				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
+				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
+				{separator: true},
+				{name:'Properties',disabled: true,callback:function(){
+					webtronics.openProperties()
+					$('webtronics_properties_form').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_properties_form').offsetWidth/2)+'px';
+
+					$('webtronics_properties_form').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_properties_form').offsetHeight/2)+'px';
+				}},
+/*
+
+				{name: 'Disabled option', disabled: true},
+				{name: 'Toggle previous option', callback: function(){
+				        var item = myLinks.find(function(l){return l.name == 'Properties';});
+				        item.disabled = (item.disabled == false ? true : false);
+
+						}},
+*/
+		];
+		webtronics.rightclickmenu=new Proto.Menu({
+				selector: '#webtronics_diagram_area', // context menu will be shown when element with class name of "contextmenu" is clicked
+				className: 'contextmenu', // this is a class which will be attached to menu container (used for css styling)
+				menuItems: myLinks // array of menu items
+		});
 	 	webtronics.setMode('webtronics_select','select', 'Selection');    
 		if(code){
 			var xmlDoc=Utils.docfromtext(Utils.decode64(code));
@@ -250,36 +283,6 @@ var webtronics={
 		$('webtronics_open_file').style.width = $('webtronics_file_open').offsetWidth+'px';
 		$('webtronics_open_file').style.height = $('webtronics_file_open').offsetHeight+'px';
 
-/*
-		$('webtronics_draggable').style.left=$('webtronics_part_display').offsetLeft+'px';
-		$('webtronics_draggable').style.top=$('webtronics_part_display').offsetTop+'px';
-		$('webtronics_draggable').style.width=$('webtronics_part_display').offsetWidth+'px';
-		$('webtronics_draggable').style.height=$('webtronics_part_display').offsetHeight+'px';
-*/
-/*replace context menu*/
-		var myLinks = [
-				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
-				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
-				{separator: true},
-				{name:'Properties',disabled: true,callback:function(){
-					webtronics.openProperties()
-					$('webtronics_properties_form').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_properties_form').offsetWidth/2)+'px';
-					$('webtronics_properties_form').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_properties_form').offsetHeight/2)+'px';
-				}},
-/*
-				{name: 'Disabled option', disabled: true},
-				{name: 'Toggle previous option', callback: function(){
-				        var item = myLinks.find(function(l){return l.name == 'Properties';});
-				        item.disabled = (item.disabled == false ? true : false);
-						}},
-*/
-		];
-		var rightclickmenu=new Proto.Menu({
-
-				selector: '#webtronics_diagram_area', // context menu will be shown when element with class name of "contextmenu" is clicked
-				className: 'contextmenu', // this is a class which will be attached to menu container (used for css styling)
-				menuItems: myLinks // array of menu items
-		});
 
 		Event.observe(window, 'resize', function() {
 			webtronics.setsize();

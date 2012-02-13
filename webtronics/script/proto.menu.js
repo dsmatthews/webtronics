@@ -20,7 +20,8 @@ Proto.Menu = Class.create({
 			zIndex: 100,
 			beforeShow: e,
 			beforeHide: e,
-			beforeSelect: e
+			beforeSelect: e,
+			enabled:true
 		}, arguments[0] || { });
 		
 		this.shim = new Element('iframe', {
@@ -68,6 +69,7 @@ Proto.Menu = Class.create({
 	},
 	show: function(e) {
 		e.stop();
+		if(!this.options.enabled)return;
 		this.options.beforeShow(e);
 		var x = Event.pointer(e).x,
 			y = Event.pointer(e).y,

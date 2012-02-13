@@ -92,9 +92,12 @@ Schematic.prototype.undo=function(){
 		this.addhistory();
 		this.undolevel-=2;
 		console.log("undo "+ this.undolevel);
+		this.unselect()
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
 		this.drawing=$("webtronics_drawing");
+		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
+		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 	}
 }
 
@@ -110,9 +113,12 @@ Schematic.prototype.redo=function(){
 		this.removeTracker()
 		if(this.undolevel<10)this.undolevel++;
 		console.log("redo "+ this.undolevel+ ' history '+this.history.length);
+		this.unselect()
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
 		this.drawing=$("webtronics_drawing");
+		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
+		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 	}
 }
 
@@ -233,24 +239,18 @@ Schematic.prototype.parseMatrix=function(group){
 
 
 
-Schematic.prototype.addtext=function(str){
+Schematic.prototype.addtext=function(str,x,y){
 
 	this.unselect();
-//	this.mouseDown.x=0;
-//	this.mouseDown.y=0;
 
 	str=str.replace(/(^\s*|\s*$)/g, "");
 	var lines=str.split('\n');
 	for(var i=0; i<lines.length;i++){
-		var svg =this.createtext(lines[i],'black',this.mouseDown.x,this.mouseDown.y+(i*this.fontsize));
+		var svg =this.createtext(lines[i],'black',x,y+(i*this.fontsize));
 		this.drawing.appendChild(svg);
 		this.select(svg);
 		}
 
-/* Wow this part is frustrating */
-
-	this.drag=1;
-	
 }
 
 
@@ -327,7 +327,6 @@ Schematic.prototype.tracker = function(elem) {
 		if(elem.tagName=='g'||elem.tagName=='svg'){
 /*newer versions of firefox need this recursive part to get the right bounding box for some reason
 otherwise the box width and height are zero if it only contains lines*/
-			//if(box.width==0||box.height==0){
 				for(var i= elem.childNodes.length;i>0;i--){
 					if(elem.childNodes[i-1].nodeType==1){
 						var chbox=this.tracker(elem.childNodes[i-1]);
@@ -337,7 +336,6 @@ otherwise the box width and height are zero if it only contains lines*/
 						box.height=Math.max(chbox.y+chbox.height,box.height);
 						}	
 					}
-			//}
 
 /*gets corrected bounding box*/
 			var matrix=this.parseMatrix(elem);
@@ -692,25 +690,31 @@ Schematic.prototype.getPart=function(){
 }
 
 
-Schematic.prototype.realPosition=function(event){
+Schematic.prototype.realPosition=function(x,y){
 	var real=this.svgRoot.createSVGPoint();
 	var offset = this.container.cumulativeOffset();
 /*this section gets the pointer position relative to the window and scrollbars
  * I'm using this for now until something better comes up
  */
 	var matrix=this.parseMatrix(this.drawing);
-	real.x=(Event.pointerX(event)-offset[0]-matrix.e)/matrix.a;
-	real.y=(Event.pointerY(event)-offset[1]-matrix.f)/matrix.a;
+	real.x=(x-offset[0]-matrix.e)/matrix.a;
+	real.y=(y-offset[1]-matrix.f)/matrix.a;
 	return real;
 }
 
 /*mousedown event handler*/
 Schematic.prototype.onMouseDown = function(event){
 if(!this.drag){
-	var real=this.realPosition(event);
+	var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
-	if (!Event.isLeftClick(event))return;
+	if (!Event.isLeftClick(event)){
+		if (this.mode == 'line') {
+			this.remove($("templine1"));	
+			this.remove($("templine2"));	
+		}
+		return;
+	}
 	  
 		if (this.mode == 'line') {
 			if($('templine1')){
@@ -774,21 +778,20 @@ if(!this.drag){
 		else if(this.mode=='text'){
 			if($('webtronics_add_text').style.display == 'none'||$('webtronics_add_text').style.display==""){
 				$('webtronics_add_text').style.display = "block";
-				$('webtronics_add_text').style.left = Event.pointerX(event)+'px';//($('webtronics_main_window').offsetWidth/2)-($('webtronics_add_text').offsetWidth/2)+'px';
-				$('webtronics_add_text').style.top = Event.pointerY(event)+'px';//($('webtronics_main_window').offsetHeight/2)-($('webtronics_add_text').offsetHeight/2)+'px';
+				$('webtronics_add_text').style.left = Event.pointerX(event)+'px';
+				$('webtronics_add_text').style.top = Event.pointerY(event)+'px';
 				$('webtronics_comment').value='';
 			}
 			else{
-				console.log($('webtronics_add_text').style.display);
 				if($('webtronics_comment').value){
-					this.addtext($('webtronics_comment').value);
+					var textpos =this.realPosition($('webtronics_add_text').offsetLeft,$('webtronics_add_text').offsetTop);
+					this.addtext($('webtronics_comment').value,textpos.x,textpos.y);
 					$('webtronics_add_text').hide();
-					webtronics.setMode('webtronics_select','select','Selection');
 				}
 				else{
-					webtronics.setMode('webtronics_select','select','Selection');
 					$('webtronics_add_text').hide();
 				}	
+				webtronics.setMode('webtronics_select','select','Selection');
 			}
 		}
 
@@ -923,7 +926,7 @@ Schematic.prototype.onMouseUp = function(event) {
 
 Schematic.prototype.onMouseMove = function(event) {
 
-	var real=this.realPosition(event);
+	var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
 	mouseAt={x:0,y:0}
 	mouseAt.x = Math.round(real.x / this.grid) * this.grid;
 	mouseAt.y =Math.round(real.y / this.grid) * this.grid;
@@ -939,7 +942,6 @@ Schematic.prototype.onMouseMove = function(event) {
 		var selection = $('schematic_selection');
 		if (selection) {
 
-			//if(this.selected.length)this.unselect();
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
@@ -988,7 +990,7 @@ Schematic.prototype.onMouseMove = function(event) {
 
 Schematic.prototype.onWheel=function(event){
 	if(Event.element(event)!=this.svgRoot){
-		var real=this.realPosition(event);
+		var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
 		var scale=1;
 		var wheel=0;
 		if(event.wheelDelta)wheel=-event.wheelDelta;
@@ -1004,9 +1006,7 @@ Schematic.prototype.onWheel=function(event){
 			matrix=matrix.scale(scale);
 			matrix.e=(this.container.offsetWidth/2)-(real.x*matrix.a);
 			matrix.f=(this.container.offsetHeight/2)-(real.y*matrix.a);
-			//this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*scale);
-			//this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*scale);
-			//console.log(matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f);
+
 			this.drawing.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 			this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 			this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
@@ -1111,9 +1111,6 @@ Schematic.prototype.copy=function(){
 	for(var i=0;i<this.selected.length;i++){
 		var svgnode=this.selected[i].cloneNode(true);
 		var newnode=this.copybuffer.appendChild(svgnode);
-		//console.log('copying');
-		//var point=this.parseXY(newnode);
-		//this.move(newnode,(point.x-this.mouseDown.x),(point.y-this.mouseDown.y));
 	}
 }
 
