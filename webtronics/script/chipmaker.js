@@ -19,6 +19,7 @@ drawchip:function(h,v,elem){
 	var svgNamespace = 'http://www.w3.org/2000/svg';
 	var svg;
 	var container =  elem;
+	var fontsize=8;
  	var svgRoot = container.getElementsByTagName("svg")[0];
 	if(!svgRoot){
 	svgRoot=container.ownerDocument.createElementNS(svgNamespace, "svg");
@@ -30,7 +31,7 @@ drawchip:function(h,v,elem){
 	if(!chipG){
 		chipG=container.ownerDocument.createElementNS(svgNamespace, 'g');
 		chipG.setAttributeNS(null, 'stroke', 'black');
-		chipG.setAttributeNS(null, 'stroke-width', 2);
+		chipG.setAttributeNS(null, 'stroke-width', '2px');
 		svgRoot.appendChild(chipG);
 	}
   	this.clear(chipG);
@@ -57,10 +58,7 @@ drawchip:function(h,v,elem){
   	svg.setAttributeNS(null, 'width', hor);
   	svg.setAttributeNS(null, 'height', v*space);
   	svg.setAttributeNS(null, 'fill','none');
-	//svg.setAttributeNS(null, 'stroke','black');
-  	//svg.setAttributeNS(null, 'stroke-width','2px');
-  	//svg.setAttributeNS(null, 'style',"fill:white;stroke:#000000;stroke-width:2px;");
- 	
+	
 	chipG.appendChild(svg);
 /* left horizontal pins*/
 	for(;y<(v*space+start+10);y+=space){
@@ -69,16 +67,14 @@ drawchip:function(h,v,elem){
 		svg.setAttributeNS(null, 'y1', y);
 		svg.setAttributeNS(null, 'x2', pinl);
 		svg.setAttributeNS(null, 'y2', y);
-		//svg.setAttributeNS(null, 'stroke', 'black');
-		//svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
 		
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'x', 0);
 		svg.setAttributeNS(null, 'y', y);
-		svg.setAttributeNS(null, 'font-size', 8);
+		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
-		svg.setAttributeNS(null, 'stroke-width',.5);
+		svg.setAttributeNS(null, 'stroke-width','0px');
 
 		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
 		chipG.appendChild(svg);
@@ -102,19 +98,17 @@ drawchip:function(h,v,elem){
 		svg.setAttributeNS(null, 'y1',v*space+pinl);
 		svg.setAttributeNS(null, 'x2',x);
 		svg.setAttributeNS(null, 'y2',v*space+space);
-		//svg.setAttributeNS(null, 'stroke', 'black');
-		//svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
 
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
-		svg.setAttributeNS(null, 'x', x);
-		svg.setAttributeNS(null, 'y',v*space+pinl);
-		svg.setAttributeNS(null, 'font-size', 8);
+		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
-		svg.setAttributeNS(null, 'stroke-width',.5);
-		svg.setAttributeNS(null, 'transform', 'rotate(90 ' + x + ' '+ (v*space+pinl) +' )');
+		svg.setAttributeNS(null, 'stroke-width','0px');
 		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
 		chipG.appendChild(svg);
+		var box=svg.getBoundingClientRect();
+		svg.setAttributeNS(null, 'x', (x+(box.width/2)));
+		svg.setAttributeNS(null, 'y',(v*space+pinl+fontsize));
 		pins[pincount]=x+','+(v*space+space);		
 		pincount++;
 	}
@@ -134,16 +128,14 @@ drawchip:function(h,v,elem){
 		svg.setAttributeNS(null, 'y1',y2);
 		svg.setAttributeNS(null, 'x2',hor+pinl);
 		svg.setAttributeNS(null, 'y2',y2);
-		//svg.setAttributeNS(null, 'stroke', 'black');
-		//svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
 
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'x', hor);
 		svg.setAttributeNS(null, 'y', y2);
-		svg.setAttributeNS(null, 'font-size', 8);
+		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
-		svg.setAttributeNS(null, 'stroke-width',.5);
+		svg.setAttributeNS(null, 'stroke-width','0px');
 
 		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
 		chipG.appendChild(svg);
@@ -165,20 +157,17 @@ drawchip:function(h,v,elem){
 		svg.setAttributeNS(null, 'y1', 0);
 		svg.setAttributeNS(null, 'x2', x);
 		svg.setAttributeNS(null, 'y2', pinl);
-		//svg.setAttributeNS(null, 'stroke', 'black');
-		//svg.setAttributeNS(null, 'stroke-width', 2);
 		chipG.appendChild(svg);
 
 		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
-		svg.setAttributeNS(null, 'x', x);
-		svg.setAttributeNS(null, 'y', 0);
-		svg.setAttributeNS(null, 'font-size', 8);
+		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
-		svg.setAttributeNS(null, 'stroke-width',.5);
-
-		svg.setAttributeNS(null, 'transform', 'rotate(90 '+x+' 0)');
+		svg.setAttributeNS(null, 'stroke-width','0px');
 		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
 		chipG.appendChild(svg);
+		var box=svg.getBoundingClientRect();
+		svg.setAttributeNS(null, 'x', x);
+		svg.setAttributeNS(null, 'y', fontsize);
 		pins[pincount]=x+','+0;
 		pincount++;
 	}
@@ -188,7 +177,6 @@ drawchip:function(h,v,elem){
 	svg.setAttributeNS(null, 'cx', 20);
 	svg.setAttributeNS(null, 'cy', start+10);	
 	svg.setAttributeNS(null, 'r', 3);
-	//svg.setAttributeNS(null, 'stroke', 'black');
 	chipG.id = 'U:' + createUUID();
 	chipG.setAttribute('connects',pins.join(';'));
 	chipG.appendChild(svg);

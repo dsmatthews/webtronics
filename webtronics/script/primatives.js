@@ -10,7 +10,9 @@ Schematic.prototype.createtext = function(str,color,x,y){
 	svg.setAttributeNS(null, 'x', x);
 	svg.setAttributeNS(null, 'y', y);
 	svg.setAttributeNS(null, 'font-size', this.fontsize);
-	svg.setAttributeNS(null, 'stroke', color);
+	svg.setAttributeNS(null, 'fill', color);
+	svg.setAttributeNS(null, 'stroke-width', '0px');
+	
 	svg.appendChild(document.createTextNode(str));
 	return svg;
 }

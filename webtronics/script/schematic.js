@@ -98,6 +98,7 @@ Schematic.prototype.undo=function(){
 		this.drawing=$("webtronics_drawing");
 		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
 		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
+		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 	}
 }
 
@@ -119,6 +120,7 @@ Schematic.prototype.redo=function(){
 		this.drawing=$("webtronics_drawing");
 		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
 		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
+		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 	}
 }
 
@@ -1024,7 +1026,7 @@ return type;
 
 Schematic.prototype.changeid=function(elem){
 	var type=this.getparttype(elem);
-  elem.setAttribute('id',type +':'+ createUUID());
+	elem.setAttribute('id',type +':'+ createUUID());
 }
 
 
@@ -1053,7 +1055,8 @@ Schematic.prototype.sanitize=function(elem){
 			if(elems[i].tagName==this.wlist[count])break;
 		}
 		if(count==this.wlist.length)return elems[i].tagName;	
-	} 
+	}
+	 
 	return '';
 }
 
@@ -1065,13 +1068,12 @@ Schematic.prototype.getfile =function(elem){
 		alert ('this file contains \n'+result+ '\n unacceptable elements\n');
 		return;
 	}
-
 	ch=elem.childNodes;
 	for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 /*get rid  of empty text*/
 /*delete values*/
-
+//		ch.removeAttribute(id);
 		if(ch[i-1].tagName=='circle'||
 			ch[i-1].tagName=='line'||
 			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&this.getparttype(ch[i-1])!='value'))

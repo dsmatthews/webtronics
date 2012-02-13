@@ -429,7 +429,6 @@ var webtronics={
 /*properties events*/		
 		Event.observe($('webtronics_properties_ok'), 'click', function() {
 			$('webtronics_properties_form').hide();
-			$("webtronics_main_window").removeChild($("webtronics_disable"));
 		});
 		Event.observe($('webtronics_partvalue'),'keyup',function(){
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_partvalue').value);

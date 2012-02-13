@@ -14,11 +14,7 @@
      	id="Q"
 	flippable="true"
 	>
-    <path
-       d="M 36.976901,19.036987 C 36.976901,26.778191 30.227933,33.053678 21.90266,33.053678 C 13.577387,33.053678 6.8284181,26.778191 6.8284181,19.036987 C 6.8284181,11.295782 13.577387,5.0202949 21.90266,5.0202949 C 30.227933,5.0202949 36.976901,11.295782 36.976901,19.036987 L 36.976901,19.036987 z"
-       id="path2170"
-       fill='none'
- />
+	<rect id="rect2162" height="40" width="40" y="0" x="0" style="fill:none;stroke:none"/>
     <path
        d="M 15.271146,31.633176 L 15.271146,7.37878"
        id="path2178"
@@ -76,5 +72,9 @@
        id="path2416"
 	fill='none' 
 />
+ <text id="text2823" fill='black' stroke-width="0px" font-style="normal" font-size="8.19031239px" y="18.113794" x="1.0786462" font-family="Bitstream Vera Sans" >G</text>
+ <text id="text2827" fill='black' stroke-width="0px" font-style="normal" font-size="8.0008316px" y="7.4208322" x="32.072721" font-family="Bitstream Vera Sans" >D</text>
+ <text id="text2831" fill='black' stroke-width="0px" font-style="normal" font-size="8.04845715px" y="39.414978" x="32.333487" font-family="Bitstream Vera Sans" >S</text>
+
   </g>
 </svg>

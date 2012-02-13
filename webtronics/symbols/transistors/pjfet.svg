@@ -1,59 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="40.235352"
-   height="39.925488"
- >
-  <defs>
-</defs>
- <g connects="0,20;30,0;30,40"
-	stroke='black'
-	stroke-width='2px' 
-     	id="Q"
-	flippable="true"
-	>
-    <path
-       d="M 36.976901,19.036987 C 36.976901,26.778191 30.227933,33.053678 21.90266,33.053678 C 13.577387,33.053678 6.8284181,26.778191 6.8284181,19.036987 C 6.8284181,11.295782 13.577387,5.0202949 21.90266,5.0202949 C 30.227933,5.0202949 36.976901,11.295782 36.976901,19.036987 L 36.976901,19.036987 z"
-       id="path2170"
-fill='none'
-/>
-    <path
-       d="M 15.271146,31.633176 L 15.271146,7.37878"
-       id="path2178"
-/>
-    <path
-       d="M 30.587966,8.0714286 L 30.587966,0.5"
-       id="path2186"
- />
-    <path
-       d="M 30.581079,31.195586 L 30.581079,39.481301"
-       id="path2188"
-/>
-    <path
-       d="M 15.606202,25.160329 L 30.428581,25.160329 L 30.548117,31.193863"
-       id="path3564"
-	fill='none'
-/>
-    <path
-       d="M 15.724627,14.290238 L 30.650939,14.290238 L 30.650939,7.6524399"
-       id="path3566"
-       fill='none'
- />
-    <path
-       d="M 15.364201,19.910211 L 6.398249,19.910211"
-       id="path3568"
-/>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.747 40" version="1.0">
+ <g id="Q" stroke="#000" stroke-width="2px" connects="0,20;30,0;30,40" flippable="true">
+  <rect id="rect2162" height="40" width="40" y="0" x="0" style="fill:none;stroke:none"/>
+  <path id="path2178" d="M16.247,33.517v-27.223"/>
+  <path id="path3564" fill="none" d="M16.684,24.811l12.753,0.189-0.127,14.5"/>
+  <path id="path3566" fill="none" d="M16.566,13.196h12.855v-12.696"/>
+  <path id="path3568" d="M15.993,19.5h-15.493"/>
     <path
        d="M 10.59009,17.448178 L 7.0520064,19.806901 L 10.59009,22.283559"
        id="path3572"
 	fill='none'	
-/>
-    <path
-       d="M 0.7066217,19.949171 L 6.6230085,19.949171"
-       id="path4107"
-/>
-  </g>
+	/>
+ <text id="text2823" stroke-width="0px" font-weight="normal" transform="scale(1.0259472,0.974709)" font-style="normal" font-size="8.19031239px" y="18.113794" x="1.0786462" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2825" x="1.0786462" y="18.113794">G</tspan></text>
+ <text id="text2827" stroke-width="0px" font-weight="normal" transform="scale(1.0424502,0.95927847)" font-style="normal" font-size="8.0008316px" y="7.4208322" x="30.072721" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2829" x="30.072721" y="7.4208322">D</tspan></text>
+ <text id="text2831" stroke-width="0px" font-weight="normal" transform="scale(1.0372954,0.96404558)" font-style="normal" font-size="8.04845715px" y="39.414978" x="30.333487" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2833" x="30.333487" y="39.414978">S</tspan></text>
+ </g>
 </svg>
+
+

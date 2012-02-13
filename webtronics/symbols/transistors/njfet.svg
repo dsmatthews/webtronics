@@ -1,43 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="39.746616"
-   height="40"
->
-  <defs>
-</defs>
-  <g connects="0,20;30,0;30,40"
-	stroke='black'
-	stroke-width='2px' 
-     id="Q"
-	flippable="true">
-    <path
-       d="M 39.246617,20 C 39.246617,28.008129 31.859316,34.5 22.746617,34.5 C 13.633918,34.5 6.2466167,28.008129 6.2466168,20 C 6.2466167,11.991872 13.633918,5.4999997 22.746617,5.4999997 C 31.859316,5.4999997 39.246617,11.991872 39.246617,20 L 39.246617,20 z"
-       id="path2170"
-       fill='none' />
-    <path
-       d="M 16.246617,33.517129 L 16.246617,6.2943834"
-       id="path2178"
- />
-    <path
-       d="M 16.684468,24.810944 L 29.436508,24.999751 L 29.310404,39.499999"
-       id="path3564"
-	fill='none'
-/>
-    <path
-       d="M 16.566181,13.195891 L 29.420874,13.195891 L 29.420874,0.49999997"
-       id="path3566"
-	fill='none'
-/>
-    <path
-       d="M 15.993234,19.5 L 0.49999997,19.5"
-       id="path3568"
- />
-    <path
-       d="M 10.407727,15.618287 L 16.20172,19.488145 L 10.526014,23.350406"
-       id="path3572"
-/>
-  </g>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.747 40" version="1.0">
+ <g id="Q" stroke="#000" stroke-width="2px" connects="0,20;30,0;30,40" flippable="true">
+  <rect id="rect2162" height="40" width="40" y="0" x="0" style="fill:none;stroke:none"/>
+  <path id="path2178" d="M16.247,33.517v-27.223"/>
+  <path id="path3564" fill="none" d="M16.684,24.811l12.753,0.189-0.127,14.5"/>
+  <path id="path3566" fill="none" d="M16.566,13.196h12.855v-12.696"/>
+  <path id="path3568" d="M15.993,19.5h-15.493"/>
+  <path id="path3572" d="M10.408,15.618l5.794,3.87-5.676,3.862"/>
+ <text id="text2823" stroke-width="0px" font-weight="normal" transform="scale(1.0259472,0.974709)" font-style="normal" font-size="8.19031239px" y="18.113794" x="1.0786462" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2825" x="1.0786462" y="18.113794">G</tspan></text>
+ <text id="text2827" stroke-width="0px" font-weight="normal" transform="scale(1.0424502,0.95927847)" font-style="normal" font-size="8.0008316px" y="7.4208322" x="30.072721" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2829" x="30.072721" y="7.4208322">D</tspan></text>
+ <text id="text2831" stroke-width="0px" font-weight="normal" transform="scale(1.0372954,0.96404558)" font-style="normal" font-size="8.04845715px" y="39.414978" x="30.333487" font-family="Bitstream Vera Sans" fill="#000000"><tspan id="tspan2833" x="30.333487" y="39.414978">S</tspan></text>
+ </g>
 </svg>
