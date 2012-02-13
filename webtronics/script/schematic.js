@@ -202,6 +202,7 @@ Schematic.prototype.showbackground=function(){
 	canvas.id='canvas';
 	this.background.appendChild(canvas);
 	this.background.id='webtronics_background';
+	if(this.drawing.getAttribute('class')=='inv')this.background.setAttribute('class','inv');
 	var matrix=this.parseMatrix(this.drawing);
 	this.background.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	
@@ -488,6 +489,7 @@ Schematic.prototype.clearinfo=function(){
 	this.remove(this.info);
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
+	if(this.drawing.getAttribute('class')=='inv')this.info.setAttribute('class','inv');
 	this.svgRoot.appendChild(this.info);
 	var matrix=this.parseMatrix(this.drawing);
 	this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');

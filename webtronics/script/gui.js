@@ -165,7 +165,10 @@ var webtronics={
 
 
 	Event.observe(window, 'load', function() {
-
+		if (!window.console) {
+			window.console = {};
+			window.console.log = function(){};
+		}
 
 
 		var url=window.location.search.toQueryParams();
@@ -386,7 +389,18 @@ var webtronics={
 		if($('webtronics_invert')){
 			$('webtronics_invert').checked=false;
 			Event.observe($('webtronics_invert'),'click',function(){
-				webtronics.circuit.invertcolors($('webtronics_invert').checked);
+				if($('webtronics_invert').checked==true){
+					console.log('invert');
+					$("webtronics_background").setAttribute('class','inv');
+					$("webtronics_drawing").setAttribute('class','inv');
+					$("information").setAttribute('class','inv');
+				}
+				else{
+					$("webtronics_background").removeAttribute('class');
+					$('webtronics_drawing').removeAttribute('class');
+					$("information").removeAttribute('class');
+				}
+								
 			});
 		}		
 		$('webtronics_graph').checked=false;
