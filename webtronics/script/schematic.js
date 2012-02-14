@@ -1072,8 +1072,6 @@ Schematic.prototype.getfile =function(elem){
 	for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 /*get rid  of empty text*/
-/*delete values*/
-//		ch.removeAttribute(id);
 		if(ch[i-1].tagName=='circle'||
 			ch[i-1].tagName=='line'||
 			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&this.getparttype(ch[i-1])!='value'))
@@ -1083,25 +1081,26 @@ Schematic.prototype.getfile =function(elem){
 			this.drawing.appendChild(newelem);
 			this.select(newelem);
 		}
-/*first put the elements in the document then change the id*/
-		if(ch[i-1].tagName=='g'){
+		else if(ch[i-1].tagName=='g'){
+/*remove child node ids*/	
+			var c=ch[i-1].getElementsByTagName('*');
+			for(var j=0;j<c.length;j++)c[j].removeAttribute('id');
 			var oldid=ch[i-1].id
+/*change ids first because they might conflict with existing ids*/
+			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
 			this.drawing.appendChild(newelem);
-			this.changeid(newelem);		
 /*if there is a partvalue attribute find the value, set the id to the new id */								
-			if(newelem.getAttribute('partvalue')){
-				var oldvalue = elem.ownerDocument.getElementById('value:'+oldid);
+			if(ch[i-1].getAttribute('partvalue')){
+				var oldvalue = ch[i-1].ownerDocument.getElementById('value:'+oldid);
 				if(oldvalue!=null){
-					//console.log('found value');
+					oldvalue.id='value:'+ch[i-1].id;		
 					var newvalue= document.importNode(oldvalue,true);
 					this.drawing.appendChild(newvalue);
 					this.select(newvalue);
-					newvalue.id='value:'+newelem.id;		
 				}
 			}
 			this.select(newelem);
-
 		}
 	}
 

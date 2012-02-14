@@ -220,8 +220,9 @@ div#webtronics_open_text{
 	stroke:white;
 }
 
-.inv text{
+.inv circle,.inv text{
 	fill:white;
+	stroke:white;
 }
 
 
