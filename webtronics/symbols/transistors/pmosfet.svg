@@ -14,7 +14,7 @@
      	id="Q"
 	flippable="true"
 	>
-	<rect id="rect2162" height="40" width="40" y="0" x="0" style="fill:none;stroke:none"/>
+	<rect id="rect2162" height="40" width="40" y="0" x="0" visibility="hidden" />
     <path
        d="M 15.271146,31.633176 L 15.271146,7.37878"
        id="path2178"

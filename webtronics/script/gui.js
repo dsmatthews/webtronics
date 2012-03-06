@@ -2,6 +2,9 @@
 var webtronics={
 		circuit:null,
 		rightclickmenu:null,
+		Vlist:[/expression/,/^\s*url/,/javascript/],
+		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','flippable','font-size','font-weight','font-style','font-family'],
+		Elist:['path','circle','rect','line','text','g','tspan','svg'],
 
 		
 
@@ -81,62 +84,6 @@ var webtronics={
 				else console.log('broke');
 			});			
 
-
-
-
-/*
-	Event.observe($('webtronics_diagram_area'),'dragenter',function(e){
-		console.log(e.dataTransfer.types[0]);
-			webtronics.returnpart();
-	});
-
-	Event.observe($('webtronics_diagram_area'),'dragover',function(e){
-		e.dataTransfer.effectAllowed = "copy";
-		e.dataTransfer.dropEffect="copy";
-		e.preventDefault();
-	});
-
-	Event.observe($('webtronics_diagram_area'),'drop',function(e){
-			var data = e.dataTransfer.getData("text/plain");
-			console.log(data);
-			var xmlDoc=Utils.openfile(data);
-			this.getgroup(xmlDoc.getElementsByTagName('g')[0]);
-			//this.fakeclick();
-			e.preventDefault();
-	}.bind(this));
-
-
-			Event.observe($('webtronics_part_display'),'mouseover',function(e){
-				if(window.getSelection) { // FF, Safari, Opera
-					var sel = window.getSelection();
-					var range = document.createRange();
-					range.selectNode($('webtronics_part_display'));
-					sel.removeAllRanges();
-					sel.addRange(range);
-				} else { // IE
-					document.selection.empty();
-					var range = document.body.createTextRange($('webtronics_part_display'));
-					range.moveToElementText($('webtronics_part_display'));
-					range.select();
-		       };
-			});
-         
-			Event.observe($('webtronics_part_display'),'dragstart',function(e){
-				//console.log('dragstart');
-				e.dataTransfer.setData("text/plain", Name);
-				e.dataTransfer.setDragImage(svg, $('webtronics_part_display').offsetWidth/2, $('webtronics_part_display').offsetHeight/2);
-			});
-
-			Event.observe($('webtronics_part_display'),'dragend',function(e){
-				webtronics.returnpart();
-				var evt = document.createEvent("MouseEvents");
-				var screenx=$('webtronics_part_display').offsetLeft;
-				var screeny=$('webtronics_part_display').offsetTop;
-				evt.initMouseEvent("dragend", true, true, window,
-				1, screenx, screeny, 0, 0, false, false, false, false, 0, null);
-				if(!$('webtronics_diagram_area').dispatchEvent(evt))alert('not working');
-			});
-*/
 		},
 
 		disablepage:function(){
@@ -166,7 +113,17 @@ var webtronics={
 
 		},
 
-
+		sanitize:function(doc){
+				var elems=doc.getElementsByTagName("*");
+				for(var i=0;i<elems.length;i++){
+					if(!webtronics.Elist.any(function(el){return elems[i].tagName.toLowerCase()==el}))return elems[i].tagName;
+					var attr=elems[i].attributes;
+					for(var j=0;j<attr.length;j++){
+						if(!webtronics.Alist.any(function(a){return attr[j].name.toLowerCase()==a;}))return attr[j].name;
+						if(!webtronics.Vlist.all(function(v){return attr[j].value.toLowerCase().match(v)==null;}))return attr[j].value;
+					} ;
+				};
+		}
 }
 
 
@@ -191,6 +148,8 @@ var webtronics={
 						var xmlDoc=Utils.docfromtext(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
+							var result=webtronics.sanitize(xmlDoc)
+							if(result){console.log(result+ ' found');alert('unclean file');return;}
 							var node=xmlDoc.getElementsByTagName('svg')[0];
 							if(!node){alert("svg node not found")}
 							else webtronics.circuit.getfile(node);
@@ -207,6 +166,8 @@ var webtronics={
 		
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
 					var xmlDoc=Utils.docfromtext(txt);
+					var result=webtronics.sanitize(xmlDoc)
+					if(result){console.log(result+ ' found');alert('unclean file');return;}
 					var node=xmlDoc.getElementsByTagName('svg')[0];
 					if(!node){alert("svg node not found");}
 					else webtronics.circuit.getfile(node);
@@ -221,6 +182,8 @@ var webtronics={
 				$('webtronics_open_file').hide();
 				$('webtronics_open_text_ok').onclick=function(){
 					var xmlDoc=Utils.docfromtext($('webtronics_svg_code').value);
+					var result=webtronics.sanitize(xmlDoc)
+					if(result){console.log(result+ ' found');alert('unclean file');return;}
 					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
 					$('webtronics_open_text').hide();
 				 	webtronics.setMode('webtronics_select','select', 'Selection');    

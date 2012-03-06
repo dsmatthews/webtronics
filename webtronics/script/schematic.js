@@ -57,15 +57,14 @@ function Schematic(elem) {
 	this.zoomRatio=1;
 	this.mode = '';
 /*array of nodes*/
-	this.selected = Array();
+	this.selected = new Array();
 	this.copybuffer=null;
-	this.wirenodes=Array();
+	this.wirenodes=new Array();
 /*selecting rectangle*/
 	this.history=new Array(10);
 	this.undolevel=0;	
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
-	this.wlist=['path','circle','rect','line','text','g','tspan'];
 	this.mouseDown={x:0,y:0};
 	this.viewoffset={x:0,y:0};
 	
@@ -88,16 +87,16 @@ function Schematic(elem) {
 
 Schematic.prototype.undo=function(){
 	if(this.undolevel>0){
-		this.removeTracker()
+		this.removeTracker();
 		this.addhistory();
 		this.undolevel-=2;
 		console.log("undo "+ this.undolevel);
-		this.unselect()
+		this.unselect();
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
 		this.drawing=$("webtronics_drawing");
-		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
-		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
+		if(this.background.getAttribute('class')==='inv')this.drawing.setAttribute('class','inv');
+		else if(this.drawing.getAttribute('class')==='inv')this.drawing.removeAttribute('class');
 		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 	}
 }
@@ -578,7 +577,7 @@ Schematic.prototype.getMarkup = function() {
 	this.drawing.removeAttribute('transform');
 	var svgsize=this.tracker(this.drawing);
 	this.drawing.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-	svg.style.backgroundColor="#ffffff";
+	//svg.style.backgroundColor="#ffffff";
 	svg.setAttributeNS(null,'width',svgsize.width+10);
 	svg.setAttributeNS(null,'height',svgsize.height+10);
 	return (new XMLSerializer()).serializeToString(svg);
@@ -1045,29 +1044,10 @@ Schematic.prototype.getgroup =function(elem){
 		this.drag=1;
 }
 
-Schematic.prototype.sanitize=function(elem){
-	var script=(new XMLSerializer()).serializeToString(elem).extractScripts(); 
-	if(script!='')return script;
-	var elems=elem.getElementsByTagName('*');
-	for(var i=0;i<elems.length;i++){
-		var count=0;
-		for(;count<this.wlist.length;count++){
-			if(elems[i].tagName==this.wlist[count])break;
-		}
-		if(count==this.wlist.length)return elems[i].tagName;	
-	}
-	 
-	return '';
-}
 
 Schematic.prototype.getfile =function(elem){
 	webtronics.circuit.addhistory();
 	this.unselect();
-	var result=this.sanitize(elem)
-	if(result!=''){
-		alert ('this file contains \n'+result+ '\n unacceptable elements\n');
-		return;
-	}
 	ch=elem.childNodes;
 	for(var i= ch.length;i>0;i--){
 /*only open these nodes*/

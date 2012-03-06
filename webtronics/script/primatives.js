@@ -27,8 +27,7 @@ Schematic.prototype.createline = function(lineColor,lineWidth,left, top,right,bo
   svg.setAttributeNS(null, 'y1', top);
 	svg.setAttributeNS(null, 'x2', right);
 	svg.setAttributeNS(null, 'y2', bottom );
-  svg.style.position = 'absolute';
-
+ 
   if (lineColor.length == 0)
     lineColor = 'none';
   svg.setAttributeNS(null, 'stroke', lineColor);
@@ -63,8 +62,6 @@ Schematic.prototype.createdot =function(lineColor,x,y){
   svg.setAttributeNS(null, 'cx', x);
   svg.setAttributeNS(null, 'cy', y);
   svg.setAttributeNS(null, 'r', 3 );
-
-  svg.style.position = 'absolute';
 
   if (lineColor.length == 0)
     lineColor = 'none';
