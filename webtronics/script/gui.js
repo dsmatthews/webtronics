@@ -62,7 +62,7 @@ var webtronics={
 		changeimage:function(Name){
 
 			var xmlDoc=Utils.openfile(Name);
-			var group=xmlDoc.getElementsByTagName('g')[0];
+			var group=xmlDoc.getElementsByTagName('g')[0].cloneNode(1);
 			var svg=$$('#webtronics_part_display > svg')[0];
 			if(svg)$('webtronics_part_display').removeChild(svg);
 			svg=document.createElement('svg');
@@ -70,7 +70,7 @@ var webtronics={
 				'translate('+($('webtronics_part_display').offsetWidth/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('width')/2))+
 				','+($('webtronics_part_display').offsetHeight/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('height')/2))+')');	
 						
-			svg.appendChild(group.cloneNode(1));
+			svg.appendChild(group);
 			$('webtronics_part_display').appendChild(svg);
 			var gotpart=false;	
 			
