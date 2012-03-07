@@ -1126,7 +1126,7 @@ var Utils = {
 			var xmlDoc;
 			if (window.DOMParser){
 				parser=new DOMParser();
-				xmlDoc=parser.parseFromString(txt,"image/svg+xml");
+				xmlDoc=parser.parseFromString(txt,"text/xml");
 			}
 			else{ // Internet Explorer
 				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
@@ -1144,8 +1144,7 @@ var Utils = {
 //			contentType:"text/xml",
 			onSuccess: function(transport){
 				/*this overrides the mimetype to xml for ie9*/
-				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-				xmldoc=Utils.docfromtext(transport.responseText);
+				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
 				},
 			onFailure: function(){ alert('Something went wrong...'); },
 			onException: function(req,exception) {

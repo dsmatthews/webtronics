@@ -65,7 +65,7 @@ var webtronics={
 			var group=xmlDoc.getElementsByTagName('g')[0];
 			var svg=$$('#webtronics_part_display > svg')[0];
 			if(svg)$('webtronics_part_display').removeChild(svg);
-			svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+			svg=document.createElement('svg');
 			/*
 			group.setAttribute('transform',
 				'translate('+($('webtronics_part_display').offsetWidth/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('width')/2))+
