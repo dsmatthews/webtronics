@@ -66,10 +66,11 @@ var webtronics={
 			var svg=$$('#webtronics_part_display > svg')[0];
 			if(svg)$('webtronics_part_display').removeChild(svg);
 			svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-			console.log();			
-			group.setAttributeNS(null,'transform',
+			/*
+			group.setAttribute('transform',
 				'translate('+($('webtronics_part_display').offsetWidth/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('width')/2))+
 				','+($('webtronics_part_display').offsetHeight/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('height')/2))+')');	
+			*/			
 			svg.appendChild(group);
 			$('webtronics_part_display').appendChild(svg);
 			var gotpart=false;	

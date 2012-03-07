@@ -1141,7 +1141,7 @@ var Utils = {
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
-			contentType:"image/svg+xml",
+			contentType:"text/xml",
 			onSuccess: function(transport){
 				/*this overrides the mimetype to xml for ie9*/
 				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
