@@ -1126,7 +1126,7 @@ var Utils = {
 			var xmlDoc;
 			if (window.DOMParser){
 				parser=new DOMParser();
-				xmlDoc=parser.parseFromString(txt,"text/xml");
+				xmlDoc=parser.parseFromString(txt,"image/svg+xml");
 			}
 			else{ // Internet Explorer
 				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
@@ -1141,10 +1141,11 @@ var Utils = {
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
-			contentType:"text/xml",
+//			contentType:"text/xml",
 			onSuccess: function(transport){
 				/*this overrides the mimetype to xml for ie9*/
-				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				xmldoc=Utils.docfromtext(transport.responsText);
 				},
 			onFailure: function(){ alert('Something went wrong...'); },
 			onException: function(req,exception) {
