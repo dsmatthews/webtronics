@@ -62,7 +62,7 @@ var webtronics={
 		changeimage:function(Name){
 
 			var xmlDoc=Utils.openfile(Name);
-			var group=xmlDoc.getElementsByTagName('g')[0].cloneNode(1);
+			var group=xmlDoc.getElementsByTagName('g')[0];
 			var svg=$$('#webtronics_part_display > svg')[0];
 			if(svg)$('webtronics_part_display').removeChild(svg);
 			svg=document.createElement('svg');
