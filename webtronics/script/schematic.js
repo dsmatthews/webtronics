@@ -1145,7 +1145,7 @@ var Utils = {
 			onSuccess: function(transport){
 				/*this overrides the mimetype to xml for ie9*/
 				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-				xmldoc=Utils.docfromtext(transport.responsText);
+				xmldoc=Utils.docfromtext(transport.responseText);
 				},
 			onFailure: function(){ alert('Something went wrong...'); },
 			onException: function(req,exception) {
