@@ -4,7 +4,7 @@ var webtronics={
 		rightclickmenu:null,
 		Vlist:[/expression/,/^\s*url/,/javascript/],
 		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','flippable','font-size','font-weight','font-style','font-family'],
-		Elist:['path','circle','rect','line','text','g','tspan','svg'],
+		Elist:['path','circle','rect','line','text','g','tspan','svg','model'],
 
 		
 
@@ -59,9 +59,9 @@ var webtronics={
 
 		},
 
-		changeimage:function(Name){
+		changeimage:function(category,Name){
 
-			var xmlDoc=Utils.openfile(Name);
+			var xmlDoc=(new DOMParser()).parseFromString(Utils.openfile('./symbols/'+category+'/'+Name+'.svg'),"text/xml");
 			var group=xmlDoc.getElementsByTagName('g')[0].cloneNode(1);
 			var svg=$$('#webtronics_part_display > svg')[0];
 			if(svg)$('webtronics_part_display').removeChild(svg);
@@ -83,6 +83,30 @@ var webtronics={
 				if(gotpart)webtronics.circuit.deleteSelection();
 				else console.log('broke');
 			});			
+
+		},
+		getmodels:function(category,Name){
+			var text=Utils.openfile('./symbols/'+category+'/'+Name+'.cir');
+			if(!text)return;
+			var nodes=$("webtronics_part_model").childNodes;
+			for(var i=nodes.length;i>0;i--){
+				nodes[i-1].parentNode.removeChild(nodes[i-1]);
+
+			}
+			var option=document.createElement("option");
+			option.setAttribute("value","none");
+			option.innerHTML="none";
+			$("webtronics_part_model").appendChild(option);
+			var rx= /\.model\s*(\w*)([^\)]|\s|\w)*/gi;
+			var model;
+			while((model=rx.exec(text))!=null){
+	//			console.log(model[0]);
+	//			console.log(model[1]);
+				var option=document.createElement("option");
+				option.setAttribute("value",model[0]+")");
+				option.innerHTML=model[1];
+				$("webtronics_part_model").appendChild(option);
+			}
 
 		},
 
@@ -109,6 +133,7 @@ var webtronics={
 		},
 	
 		openProperties:function(){
+			webtronics.disablepage();
 			$('webtronics_properties_form').style.display = "block";
 
 		},
@@ -232,7 +257,7 @@ var webtronics={
 				}
 		}
 		else if(file){
-				var xmlDoc=Utils.openfile(file);
+				var xmlDoc=xmldoc=(new DOMParser()).parseFromString(Utils.openfile(file),"text/xml");
 				if(!xmlDoc){alert("file opening error");}
 				else{
 					var node=xmlDoc.getElementsByTagName('svg')[0]
@@ -278,7 +303,8 @@ var webtronics={
 		Event.observe(part[i],'click',function(e){
 			var pname=Event.element(e).firstChild.nodeValue;
 			var category=Event.element(e).parentNode.parentNode.firstChild.innerHTML.match(/.*/);
-			webtronics.changeimage('./symbols/'+category+'/'+pname+'.svg');
+			webtronics.changeimage(category,pname);
+			webtronics.getmodels(category,pname);
 		});
 	}
 
@@ -394,12 +420,36 @@ var webtronics={
 /*properties events*/		
 		Event.observe($('webtronics_properties_ok'), 'click', function() {
 			$('webtronics_properties_form').hide();
-		});
-		Event.observe($('webtronics_partvalue'),'keyup',function(){
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_partvalue').value);
-			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
 			$("webtronics_main_window").removeChild($("webtronics_disable"));
-			
+			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+		});
+		
+		if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
+			if($('webtronics_part_model').value!="none"){
+				$('webtronics_model_text').value=$('webtronics_part_model').value;
+				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
+				var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
+				if(!model){
+					model=document.createElement('model');
+					webtronics.circuit.selected[0].appendChild(model);
+					model.innerHTML=$("webtronics_model_text").value;
+				}
+				else {model.innerHTML=$("webtronics_model_text").value;}
+				
+			}
+			else {
+				$('webtronics_model_text').value="";
+				$('webtronics_part_value').value="";
+
+			}
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		});
+		
+		if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		});
+		if($('webtronics_part_id'))Event.observe($('webtronics_part_id'),'keyup',function(){
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
 		});
 
 

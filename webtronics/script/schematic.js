@@ -52,8 +52,8 @@ function Schematic(elem) {
 	this.zoomtools=null;
 /*group to display information*/
 	this.info=null;
-	this.connections=false;
 	this.graph=false;
+	this.connections=false;
 	this.zoomRatio=1;
 	this.mode = '';
 /*array of nodes*/
@@ -61,8 +61,8 @@ function Schematic(elem) {
 	this.copybuffer=null;
 	this.wirenodes=new Array();
 /*selecting rectangle*/
-	this.history=new Array(10);
-	this.undolevel=0;	
+	this.history=new Array();
+	this.undolevel=-1;	
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
 	this.mouseDown={x:0,y:0};
@@ -72,47 +72,51 @@ function Schematic(elem) {
 
 	this.onMouseDownListener = this.onMouseDown.bindAsEventListener(this);
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
-//	this.onDragStartListener=this.onDragStart.bindAsEventListener(this);	
 	this.onMouseMove = this.onMouseMove.bindAsEventListener(this);	
 	this.onWheelListener = this.onWheel.bindAsEventListener(this);	
+	this.onChangeListener=this.refresh.bindAsEventListener(this);
+
 	Event.observe(this.container, "mousewheel",this.onWheelListener);
 	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
 	Event.observe(this.container, "dragover", this.onMouseMove);
-//	Event.observe(this.container, "drop", this.onDragStart);
 	Event.observe(this.container, "mousemove", this.onMouseMove); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
+	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 
 }
 
 Schematic.prototype.undo=function(){
-	if(this.undolevel>0){
-		this.removeTracker();
-		this.addhistory();
-		this.undolevel-=2;
-		console.log("undo "+ this.undolevel);
+/*current image is 0*/
+	if(this.undolevel<this.history.length-1){
+		this.clearinfo();
+		this.undolevel++;
+//		console.log("undo "+ this.undolevel);
 		this.unselect();
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
 		this.drawing=$("webtronics_drawing");
-		if(this.background.getAttribute('class')==='inv')this.drawing.setAttribute('class','inv');
-		else if(this.drawing.getAttribute('class')==='inv')this.drawing.removeAttribute('class');
+		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
+		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
+		this.showallconnects();
+		Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 	}
 }
 
 Schematic.prototype.addhistory=function(){
-	console.log("saving "+ this.undolevel);
-	this.history[this.undolevel]=$('webtronics_drawing').cloneNode(true);
-	if(this.undolevel>=10)this.history.shift();
-	else this.undolevel++;
+	if(this.history.length>=20){this.history.pop();}
+	this.history.unshift($('webtronics_drawing').cloneNode(true));
+	this.undolevel=0;
 }
 
+
+
 Schematic.prototype.redo=function(){
-	if(this.history[this.undolevel+1]){
-		this.removeTracker()
-		if(this.undolevel<10)this.undolevel++;
-		console.log("redo "+ this.undolevel+ ' history '+this.history.length);
+	if(this.undolevel>0){
+		this.clearinfo()
+		this.undolevel--;
+//		console.log("redo "+ this.undolevel+ ' history '+this.history.length);
 		this.unselect()
 		this.remove($("webtronics_drawing"));
 		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
@@ -120,7 +124,15 @@ Schematic.prototype.redo=function(){
 		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
 		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
+		this.showallconnects();
+		Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 	}
+}
+Schematic.prototype.refresh=function(){
+//	console.log("image changed\n");
+	this.hideconnects();
+	this.addhistory();
+	this.showallconnects();
 }
 
 
@@ -389,16 +401,18 @@ otherwise the box width and height are zero if it only contains lines*/
 /*show a box around an element*/
 Schematic.prototype.rotate=function(elem){
 	var matrix=this.parseMatrix(elem);
-/*center the  object?*/
-	var box1=this.tracker(elem);	
-	matrix=matrix.rotate(90);
+/*center the  object*/
+	var box=elem.getBBox();	
+	var rotmatrix=this.svgRoot.createSVGTransform();
+	var x=(box.width/2);
+	var y=(box.height/2);
+//	console.log(x+" "+y+"\n");
+	rotmatrix.setRotate(90,x,y);
+	matrix=matrix.multiply(rotmatrix.matrix);
+/*align with grid*/
+	matrix.e=Math.round(matrix.e/this.grid)*this.grid;
+	matrix.f=Math.round(matrix.f/this.grid)*this.grid;
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-	var box2=this.tracker(elem);	
-	var x=matrix.e+((box1.x+(box1.width/2))-(box2.x+(box2.width/2)));
-	var y=matrix.f+((box1.y+(box1.height/2))-(box2.y+(box2.height/2))); 
-	x=Math.round(x/this.grid)*this.grid;
-	y=Math.round(y/this.grid)*this.grid;
-	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+x+','+y+')');
 
 //	var trans=this.svgRoot.createSVGTransform();
 //	trans.setRotate(90,0,0);
@@ -470,10 +484,20 @@ Schematic.prototype.showTracker = function(elem) {
 	
 	}
 	this.info.appendChild(tracked);
+
 	if(this.selected.length==1&&this.selected[0].tagName=='g'){
-		$('webtronics_partvalue').clear();
+		$('webtronics_part_value').clear();
+		$('webtronics_part_id').clear();
+		$('webtronics_model_text').clear();
 		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','enabled');
-		$('webtronics_partvalue').value=this.selected[0].getAttribute('partvalue');
+		var value=this.selected[0].getAttribute('partvalue').split(" ");
+		if(value[0]!=undefined)$('webtronics_part_id').value=value[0];
+		if(value[1]!=undefined)$('webtronics_part_value').value=value[1];
+/*css selectors don't work here,maybe doing it wrong*/
+		var model=this.selected[0].getElementsByTagName("model")[0];
+		if(model){
+			$("webtronics_model_text").value=model.innerHTML;
+		}		
 	}
 	else{
 		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
@@ -485,6 +509,7 @@ Schematic.prototype.showTracker = function(elem) {
 
 
 Schematic.prototype.clearinfo=function(){
+	this.hideconnects();
 	this.remove(this.info);
 	this.info=document.createElementNS(this.svgNs,'g');
 	this.info.id="information";
@@ -493,7 +518,6 @@ Schematic.prototype.clearinfo=function(){
 	var matrix=this.parseMatrix(this.drawing);
 	this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.info
-	this.showallconnects();
 	if($('invertfilter'))this.info.setAttribute('filter','url(#invertfilter)');
 
 }
@@ -501,7 +525,6 @@ Schematic.prototype.clearinfo=function(){
 
 /*find all tracking boxes and delete them*/
 Schematic.prototype.removeTracker=function(){
-	/*id's are supposed to be unique*/
 	var tracker=$$('.schematic_tracker');
 	for(var i=0;i<tracker.length;i++){
 		if(tracker[i].parentNode!=null)tracker[i].parentNode.removeChild(tracker[i]);
@@ -512,10 +535,8 @@ Schematic.prototype.removeTracker=function(){
 
 Schematic.prototype.remove = function(shape) {
 	if(shape){  
-	this.hideconnects();
 	if(shape.parentNode!=null)shape.parentNode.removeChild(shape);
 	shape=null;
-	this.showallconnects()
 	}
 }
 
@@ -525,32 +546,6 @@ Schematic.prototype.newdoc = function(){
 }
 
 
-Schematic.prototype.invertcolors =function(check){
-/* I can't get this to work in all browsers but it looks real good in firefox*/
-	if(check){
-		if(!$('invertfilter')){
-			var defs=$$('defs')[0];
-			if(!defs)defs=document.createElementNS(this.svgNs ,'defs');
-			filter=document.createElementNS(this.svgNs ,'filter');
-			filter.setAttributeNS(null,'id','invertfilter');
-			var fecm=document.createElementNS(this.svgNs ,'feColorMatrix');
-			fecm.setAttributeNS(null,'values',"-1  0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0");
-			filter.appendChild(fecm);
-			defs.appendChild(filter);
-			this.svgRoot.appendChild(defs);
-			this.drawing.setAttribute('filter','url(#invertfilter)');
-			this.background.setAttribute('filter','url(#invertfilter)');
-			this.info.setAttribute('filter','url(#invertfilter)');
-		}
-
-	}
-	else {
-		this.remove($('invertfilter'));
-		this.drawing.removeAttribute('filter');
-		this.background.removeAttribute('filter');
-		this.info.removeAttribute('filter');
-	}
-}
 
 
 Schematic.prototype.showconnections=function(check){
@@ -709,94 +704,96 @@ if(!this.drag){
 	var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
 	this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
 	this.mouseDown.y =Math.round(real.y/this.grid) * this.grid;
-	if (!Event.isLeftClick(event)){
-		if (this.mode == 'line') {
+	if (this.mode == 'line') {
+		if (!Event.isLeftClick(event)){
 			this.remove($("templine1"));	
 			this.remove($("templine2"));	
+			return;
 		}
-		return;
-	}
 	  
-		if (this.mode == 'line') {
-			if($('templine1')){
-				/*create line*/
-				var x1=$('templine1').getAttributeNS(null,'x1');
-				var y1=$('templine1').getAttributeNS(null,'y1');
-				var x2=$('templine1').getAttributeNS(null,'x2');
-				var y2=$('templine1').getAttributeNS(null,'y2');
-				if(!(x1==x2&&y1==y2)){
-					var svg=this.createline('black',2, x1, y1,x2, y2);
-					/*since the id is never used don't create one
-					svg.id='line:'+createUUID();
-					*/
-					this.drawing.appendChild(svg);
-					this.remove($('templine1'));
-					this.connect(x1, y1);
-					if($('templine2'))$('templine2').id='templine1';					
-					else{
-						svg = this.createline('blue',2, x2, y2,x2,y2);
-						svg.id = 'templine1';
-						svg.setAttributeNS(null,'stroke-dasharray','3,2');
-						this.info.appendChild(svg);
-					}					
-					this.connect(x2, y2);
-					
-				}
+		if($('templine1')){
+			/*create line*/
+			var x1=$('templine1').getAttributeNS(null,'x1');
+			var y1=$('templine1').getAttributeNS(null,'y1');
+			var x2=$('templine1').getAttributeNS(null,'x2');
+			var y2=$('templine1').getAttributeNS(null,'y2');
+			if(!(x1==x2&&y1==y2)){
+				var svg=this.createline('black',2, x1, y1,x2, y2);
+				/*since the id is never used don't create one
+				svg.id='line:'+createUUID();
+				*/
+				this.drawing.appendChild(svg);
+				this.remove($('templine1'));
+				this.connect(x1, y1);
+				if($('templine2'))$('templine2').id='templine1';					
+				else{
+					svg = this.createline('blue',2, x2, y2,x2,y2);
+					svg.id = 'templine1';
+					svg.setAttributeNS(null,'stroke-dasharray','3,2');
+					this.info.appendChild(svg);
+				}					
+				this.connect(x2, y2);
 				
 			}
-	/*create temperary line*/
-			else{
-				var svg = this.createline('blue',2, this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
-				svg.id = 'templine1';
-				svg.setAttributeNS(null,'stroke-dasharray','3,2');
-				this.info.appendChild(svg);
-
-			}
+			
 		}
+/*create temperary line*/
+		else{
+			var svg = this.createline('blue',2, this.mouseDown.x, this.mouseDown.y,	this.mouseDown.x, this.mouseDown.y);
+			svg.id = 'templine1';
+			svg.setAttributeNS(null,'stroke-dasharray','3,2');
+			this.info.appendChild(svg);
+		}
+	}	
 /*clicked on background  in select mode ,remove selection*/
 		else if(this.mode=='select'||this.mode=='zoom'){
-			this.selectionRect.x=real.x;
-			this.selectionRect.y=real.y;
-			this.selectionRect.width=0;
-			this.selectionRect.height=0;
-		/* if there is already a selection rectangle delete it*/
-			var selection=$('schematic_selection');
-			do{
-				if(selection)this.remove(selection);
-				selection=$('schematic_selection');	
-			}while(selection);
-			selection = this.createrect('blue',0.35,real.x,real.y,0,0);
-			selection.id='schematic_selection';
-			this.info.appendChild(selection);
-			if(this.mode=='select'){
-				for(var i=0;i<this.selected.length;i++){
-					if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
-				}
-				if(!this.drag)this.unselect();
+		if(Event.isLeftClick(event)){
+				this.selectionRect.x=real.x;
+				this.selectionRect.y=real.y;
+				this.selectionRect.width=0;
+				this.selectionRect.height=0;
+			/* if there is already a selection rectangle delete it*/
+				var selection=$('schematic_selection');
+				do{
+					if(selection)this.remove(selection);
+					selection=$('schematic_selection');	
+				}while(selection);
+				selection = this.createrect('blue',0.35,real.x,real.y,0,0);
+				selection.id='schematic_selection';
+				this.info.appendChild(selection);
+				if(this.mode=='select'){
+					for(var i=0;i<this.selected.length;i++){
+						if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+					}
+					if(!this.drag)this.unselect();
 
+				}
 			}
 		}
 		else if(this.mode=='text'){
-			if($('webtronics_add_text').style.display == 'none'||$('webtronics_add_text').style.display==""){
-				$('webtronics_add_text').style.display = "block";
-				$('webtronics_add_text').style.left = Event.pointerX(event)+'px';
-				$('webtronics_add_text').style.top = Event.pointerY(event)+'px';
-				$('webtronics_comment').value='';
-			}
-			else{
-				if($('webtronics_comment').value){
-					var textpos =this.realPosition($('webtronics_add_text').offsetLeft,$('webtronics_add_text').offsetTop);
-					this.addtext($('webtronics_comment').value,textpos.x,textpos.y);
-					$('webtronics_add_text').hide();
+		if(Event.isLeftClick(event)){
+				if($('webtronics_add_text').style.display == 'none'||$('webtronics_add_text').style.display==""){
+					$('webtronics_add_text').style.display = "block";
+					$('webtronics_add_text').style.left = Event.pointerX(event)+'px';
+					$('webtronics_add_text').style.top = Event.pointerY(event)+'px';
+					$('webtronics_comment').value='';
 				}
 				else{
-					$('webtronics_add_text').hide();
-				}	
-				webtronics.setMode('webtronics_select','select','Selection');
+					if($('webtronics_comment').value){
+						var textpos =this.realPosition($('webtronics_add_text').offsetLeft,$('webtronics_add_text').offsetTop);
+						this.addtext($('webtronics_comment').value,textpos.x,textpos.y);
+						$('webtronics_add_text').hide();
+					}
+					else{
+						$('webtronics_add_text').hide();
+					}	
+					webtronics.setMode('webtronics_select','select','Selection');
+				}
 			}
-		}
 
+		}
 	}
+	
 	return false;
 
 }
@@ -884,7 +881,6 @@ Schematic.prototype.dropSelection=function(){
 		}
 	}
 	this.remove(floating);	
-	this.addhistory();
 }
 
 
@@ -1001,6 +997,7 @@ Schematic.prototype.onWheel=function(event){
 		if(wheel>0&&matrix.a<2){
 			scale=1.2;
 		}
+
 		else if(wheel<0&&matrix.a>0.3){
 			scale=0.8;
 		}
@@ -1046,7 +1043,6 @@ Schematic.prototype.getgroup =function(elem){
 
 
 Schematic.prototype.getfile =function(elem){
-	webtronics.circuit.addhistory();
 	this.unselect();
 	ch=elem.childNodes;
 	for(var i= ch.length;i>0;i--){
@@ -1137,22 +1133,23 @@ var Utils = {
 		},
 
 		openfile:function(Name){
-			var xmldoc;
+			var text;
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
 			contentType:"text/xml",
 			onSuccess: function(transport){
 				/*this overrides the mimetype to xml for ie9*/
-				xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				text=transport.responseText;
 				},
 			onFailure: function(){ alert('Something went wrong...'); },
 			onException: function(req,exception) {
-				alert(exception);
+				//alert(exception);
 				return true;
 				}, 
 			});
-			return xmldoc;
+			return text;
 		},
 
 

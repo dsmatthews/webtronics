@@ -140,8 +140,9 @@ Schematic.prototype.createnetlist=function(){
 	parts=this.sortnetlist($$('#webtronics_drawing > g'));
 	wires=new Array();
 	nodecount=1;
+	rx=/\.model\s*(\w*)/gi;
 	this.connectwires();
-	var models=new Array();
+	var spice=new String();
 	for(var i=0;i<parts.length; i++){
 		var pins=this.getconnects(parts[i]);
 		var nodes =new Array();
@@ -181,13 +182,21 @@ Schematic.prototype.createnetlist=function(){
 		}
 		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
 			this.getparttype(parts[i]).toLowerCase()!='wire'){
-			models[i]=new String(parts[i].getAttribute('partvalue').split(' ')[0]+' ');
-			for(var j=0;j<nodes.length;j++)models[i]+=nodes[j]+' ';
-			models[i]+=parts[i].getAttribute('partvalue').split(' ')[1];
+			var model=parts[i].getElementsByTagName("model")[0];
+			if(model){
+	/*check for duplicate models*/
+				if(!spice.match(parts[i].getAttribute('partvalue').split(" ")[1]))spice=model.innerHTML+"\n"+spice;
+				spice=spice.concat(parts[i].getAttribute('partvalue')," ");
+
+			}
+			spice=spice.concat(parts[i].getAttribute('partvalue'),);
+			for(var j=0;j<nodes.length;j++)spice=spice.concat(nodes[j],' ');
+			spice=spice.concat("\n");
 		}
 	}
+	spice=spice.concat(".end");	
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
-	else alert(models.compact().join('\n').toUpperCase());
+	else alert(spice.toUpperCase());
 
 	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);

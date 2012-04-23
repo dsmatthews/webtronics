@@ -1,0 +1,7 @@
+.MODEL  1N4007  D(IS=3.872n RS=1.66E-02 N=1.776 XTI=3.0 EG=1.110 
++               CJO=1.519E-11 M=0.3554 VJ=0.5928 FC=0.5 ISR=1.356E-09
++               NR=2.152 BV=1000.0 IBV=1.0E-03 Tt=4u)
+
+.model 1N4148   D(Is=5.84n N=1.94 Rs=.7017 Ikf=44.17m Xti=3 Eg=1.11 Cjo=.95p
++               M=.55 Vj=.75 Fc=.5 Isr=11.07n Nr=2.088 Bv=100 Ibv=100u Tt=11.07n)
+

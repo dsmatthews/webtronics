@@ -64,6 +64,12 @@ toolbar
 	<div id="webtronics_side_bar" >
 		<div id="webtronics_part_display" title="drag this part" >    </div>
 		<div id="webtronics_parts_list" >
+			<div><p>test</p>
+				<div>
+					<p>scope</p>
+				</div>
+			</div>
+			
 			<div><p>amplifier</p>
 				<div>
 					<p>op-amp</p>
@@ -317,7 +323,12 @@ properties form
 -->
 <div id="webtronics_properties_form">
 <form>
-<input id="webtronics_partvalue">value<br>
+<input id="webtronics_part_id">part id<br>
+<input id="webtronics_part_value">part value<br>
+<select id="webtronics_part_model">
+		<option value="none">none</option>	
+</select>Model<br>
+<textarea cols="50" rows=4 id="webtronics_model_text"></textarea>
 <!--input id="webtronics_partmodel" />model#-->
 <img id="webtronics_properties_ok" src="./buttons/ok.png"> 
 </form>
