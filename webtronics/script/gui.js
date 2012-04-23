@@ -141,6 +141,9 @@ var webtronics={
 	
 		openProperties:function(){
 			webtronics.getmodels(webtronics.circuit.selected[0]);
+			if(!webtronics.circuit.selected[0].getAttribute("partvalue")){
+				$('webtronics_part_id').value=webtronics.circuit.getnextid(webtronics.circuit.selected[0]);
+			}
 			webtronics.disablepage();
 			$('webtronics_properties_form').style.display = "block";
 
@@ -429,6 +432,7 @@ var webtronics={
 		Event.observe($('webtronics_properties_ok'), 'click', function() {
 			$('webtronics_properties_form').hide();
 			$("webtronics_main_window").removeChild($("webtronics_disable"));
+			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
 			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
 		});
 		

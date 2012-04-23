@@ -85,7 +85,25 @@ function Schematic(elem) {
 	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 
 }
+Schematic.prototype.getnextid=function(elem){
 
+	var type=this.getparttype(elem);
+	var ids=new Array();
+	var parts=$$("#webtronics_drawing > g");
+	for(var i=0;i<parts.length;i++){
+		var t=parts[i].getAttribute("partvalue").split(" ")[0];
+		if(t.match(type)){
+			ids.push(t);
+		}
+
+	}
+	ids.sort();
+
+	if(ids.length)return type+(ids[ids.length-1].slice(1)-0+1);
+	else return type+1;
+
+
+}
 Schematic.prototype.undo=function(){
 /*current image is 0*/
 	if(this.undolevel<this.history.length-1){
@@ -192,6 +210,7 @@ Schematic.prototype.addtools=function(){
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(normal);
 	var grow=document.createElementNS(this.svgNs,'image');
+
 	grow.setAttribute('x',(this.container.offsetWidth<this.svgRoot.getAttribute('width')?this.container.offsetWidth:this.svgRoot.getAttribute('width'))-32);
 	grow.setAttribute('y',(this.container.offsetHeight<this.svgRoot.getAttribute('height')?this.container.offsetHeight:this.svgRoot.getAttribute('height'))-32);
 	grow.setAttribute('width',32);
