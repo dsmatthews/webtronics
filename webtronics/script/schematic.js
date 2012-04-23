@@ -494,10 +494,14 @@ Schematic.prototype.showTracker = function(elem) {
 		if(value[0]!=undefined)$('webtronics_part_id').value=value[0];
 		if(value[1]!=undefined)$('webtronics_part_value').value=value[1];
 /*css selectors don't work here,maybe doing it wrong*/
-		var model=this.selected[0].getAttribute("model");
+		var model=this.selected[0].getElementsByTagName("model")[0];
 		if(model){
 			$("webtronics_model_text").value=model.innerHTML;
 		}		
+		else{
+			model=document.createElement("model");
+			this.selected[0].appendChild(model);
+		}
 	}
 	else{
 		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
@@ -1144,7 +1148,7 @@ var Utils = {
 				text=transport.responseText;
 				},
 			onFailure: function(){ 
-//				console.log('Something went wrong...'); 
+				console.log('Could not load file...'); 
 			},
 			onException: function(req,exception) {
 				//alert(exception);

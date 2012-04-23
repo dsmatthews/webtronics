@@ -71,9 +71,15 @@ var webtronics={
 				','+($('webtronics_part_display').offsetHeight/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('height')/2))+')');	
 						
 			svg.appendChild(group);
+/*add path info here*/
+			var model=document.createElement("model");
+			model.setAttribute("path",category+"/"+Name);
+			group.appendChild(model);
+			
+
 			$('webtronics_part_display').appendChild(svg);
 			var gotpart=false;	
-			
+						
 			Event.observe($('webtronics_part_display'),'mousedown',function(e){
 				webtronics.returnpart();
 				gotpart=true
@@ -85,9 +91,9 @@ var webtronics={
 			});			
 
 		},
-		getmodels:function(category,Name){
-			var text=Utils.openfile('./symbols/'+category+'/'+Name+'.cir');
-			if(!text)return;
+		getmodels:function(elem){
+			var path=elem.getElementsByTagName("model")[0].getAttribute("path");
+			var text=Utils.openfile('./symbols/'+path+'.cir');
 			var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
 				nodes[i-1].parentNode.removeChild(nodes[i-1]);
@@ -97,6 +103,7 @@ var webtronics={
 			option.setAttribute("value","none");
 			option.innerHTML="none";
 			$("webtronics_part_model").appendChild(option);
+			if(!text)return;
 			var rx= /\.model\s*(\w*)([^\)]|\s|\w)*/gi;
 			var model;
 			while((model=rx.exec(text))!=null){
@@ -133,6 +140,7 @@ var webtronics={
 		},
 	
 		openProperties:function(){
+			webtronics.getmodels(webtronics.circuit.selected[0]);
 			webtronics.disablepage();
 			$('webtronics_properties_form').style.display = "block";
 
@@ -304,7 +312,7 @@ var webtronics={
 			var pname=Event.element(e).firstChild.nodeValue;
 			var category=Event.element(e).parentNode.parentNode.firstChild.innerHTML.match(/.*/);
 			webtronics.changeimage(category,pname);
-			webtronics.getmodels(category,pname);
+							
 		});
 	}
 
@@ -428,7 +436,13 @@ var webtronics={
 			if($('webtronics_part_model').value!="none"){
 				$('webtronics_model_text').value=$('webtronics_part_model').value;
 				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
-				webtronics.circuit.selected[0].setAttribute("model",$("webtronics_model_text").value);
+				var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
+				if(!model){
+					model=document.createElement('model');
+					webtronics.circuit.selected[0].appendChild(model);
+					model.innerHTML=$("webtronics_model_text").value;
+				}
+				else {model.innerHTML=$("webtronics_model_text").value;}
 				
 			}
 			else {
