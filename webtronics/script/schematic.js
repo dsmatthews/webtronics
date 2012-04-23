@@ -1144,7 +1144,7 @@ var Utils = {
 				text=transport.responseText;
 				},
 			onFailure: function(){ 
-				alert('Something went wrong...'); 
+//				alert('Something went wrong...'); 
 			},
 			onException: function(req,exception) {
 				//alert(exception);
