@@ -3,7 +3,7 @@ var webtronics={
 		circuit:null,
 		rightclickmenu:null,
 		Vlist:[/expression/,/^\s*url/,/javascript/],
-		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','flippable','font-size','font-weight','font-style','font-family'],
+		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','path','flippable','font-size','font-weight','font-style','font-family'],
 		Elist:['path','circle','rect','line','text','g','tspan','svg','model'],
 
 		
