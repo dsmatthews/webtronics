@@ -304,7 +304,7 @@ var webtronics={
 			var pname=Event.element(e).firstChild.nodeValue;
 			var category=Event.element(e).parentNode.parentNode.firstChild.innerHTML.match(/.*/);
 			webtronics.changeimage(category,pname);
-			//webtronics.getmodels(category,pname);
+			webtronics.getmodels(category,pname);
 		});
 	}
 
