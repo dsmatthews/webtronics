@@ -182,10 +182,10 @@ Schematic.prototype.createnetlist=function(){
 		}
 		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
 			this.getparttype(parts[i]).toLowerCase()!='wire'){
-			var model=parts[i].getElementsByTagName("model")[0];
+			var model=parts[i].getAttribute("model");
 			if(model){
 	/*check for duplicate models*/
-				if(!spice.match(parts[i].getAttribute('partvalue').split(" ")[1]))spice=model.innerHTML+"\n"+spice;
+				if(!spice.match(parts[i].getAttribute('partvalue').split(" ")[1]))spice=model+"\n"+spice;
 				spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}

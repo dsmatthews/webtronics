@@ -494,7 +494,7 @@ Schematic.prototype.showTracker = function(elem) {
 		if(value[0]!=undefined)$('webtronics_part_id').value=value[0];
 		if(value[1]!=undefined)$('webtronics_part_value').value=value[1];
 /*css selectors don't work here,maybe doing it wrong*/
-		var model=this.selected[0].getElementsByTagName("model")[0];
+		var model=this.selected[0].getAttribute("model");
 		if(model){
 			$("webtronics_model_text").value=model.innerHTML;
 		}		

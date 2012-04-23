@@ -428,13 +428,7 @@ var webtronics={
 			if($('webtronics_part_model').value!="none"){
 				$('webtronics_model_text').value=$('webtronics_part_model').value;
 				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
-				var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
-				if(!model){
-					model=document.createElement('model');
-					webtronics.circuit.selected[0].appendChild(model);
-					model.innerHTML=$("webtronics_model_text").value;
-				}
-				else {model.innerHTML=$("webtronics_model_text").value;}
+				webtronics.circuit.selected[0].setAttribute("model",$("webtronics_model_text").value);
 				
 			}
 			else {
