@@ -1143,7 +1143,9 @@ var Utils = {
 				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
 				text=transport.responseText;
 				},
-			onFailure: function(){ alert('Something went wrong...'); },
+			onFailure: function(){ 
+				alert('Something went wrong...'); 
+			},
 			onException: function(req,exception) {
 				//alert(exception);
 				return true;

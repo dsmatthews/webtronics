@@ -189,7 +189,7 @@ Schematic.prototype.createnetlist=function(){
 				spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}
-			spice=spice.concat(parts[i].getAttribute('partvalue'),);
+			spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 			for(var j=0;j<nodes.length;j++)spice=spice.concat(nodes[j],' ');
 			spice=spice.concat("\n");
 		}
