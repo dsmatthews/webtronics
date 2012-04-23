@@ -186,7 +186,7 @@ Schematic.prototype.createnetlist=function(){
 			if(model){
 	/*check for duplicate models*/
 				if(!spice.match(parts[i].getAttribute('partvalue').split(" ")[1]))spice=model.innerHTML+"\n"+spice;
-				spice=spice.concat(parts[i].getAttribute('partvalue')," ");
+				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}
 			spice=spice.concat(parts[i].getAttribute('partvalue')," ");
