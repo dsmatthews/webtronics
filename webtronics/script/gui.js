@@ -4,7 +4,7 @@ var webtronics={
 		rightclickmenu:null,
 		Vlist:[/expression/,/^\s*url/,/javascript/],
 		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','path','flippable','font-size','font-weight','font-style','font-family'],
-		Elist:['path','circle','rect','line','text','g','tspan','svg','model'],
+		Elist:['path','circle','rect','line','text','g','tspan','svg','spicemodel'],
 
 		
 
@@ -72,8 +72,9 @@ var webtronics={
 						
 			svg.appendChild(group);
 /*add path info here*/
-			var model=document.createElement("model");
-			model.setAttribute("path",category+"/"+Name);
+			group.setAttribute("path",category+"/"+Name);
+
+			var model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
 			group.appendChild(model);
 			
 
@@ -92,7 +93,7 @@ var webtronics={
 
 		},
 		getmodels:function(elem){
-			var path=elem.getElementsByTagName("model")[0].getAttribute("path");
+			var path=elem.getAttribute("path");
 			var text=Utils.openfile('./symbols/'+path+'.cir');
 			var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
@@ -107,11 +108,33 @@ var webtronics={
 			var rx= /\.model\s*(\w*)([^\)]|\s|\w)*/gi;
 			var model;
 			while((model=rx.exec(text))!=null){
-	//			console.log(model[0]);
-	//			console.log(model[1]);
 				var option=document.createElement("option");
 				option.setAttribute("value",model[0]+")");
 				option.innerHTML=model[1];
+				$("webtronics_part_model").appendChild(option);
+			}
+
+		},
+		getvalues:function(elem){
+			var path=elem.getAttribute("path");
+			var text=Utils.openfile('./symbols/'+path+'.cir');
+			var nodes=$("webtronics_part_model").childNodes;
+			for(var i=nodes.length;i>0;i--){
+				nodes[i-1].parentNode.removeChild(nodes[i-1]);
+
+			}
+			var option=document.createElement("option");
+			option.setAttribute("value","none");
+			option.innerHTML="none";
+			$("webtronics_part_model").appendChild(option);
+			if(!text)return;
+			var rx= /.*\n/gi;
+			var model;
+			while((model=rx.exec(text))!=null){
+				var option=document.createElement("option");
+				//console.log(model[0]);
+				option.setAttribute("value",model[0]);
+				option.innerHTML=model[0];
 				$("webtronics_part_model").appendChild(option);
 			}
 
@@ -140,10 +163,35 @@ var webtronics={
 		},
 	
 		openProperties:function(){
-			webtronics.getmodels(webtronics.circuit.selected[0]);
+			$('webtronics_part_value').clear();
+			$('webtronics_part_id').clear();
+			$('webtronics_model_text').clear();
+			if(!webtronics.circuit.selected[0].getAttribute("path")){
+				webtronics.circuit.selected[0].setAttribute("path","ic/ic");
+			}
+			if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="ac"){
+				webtronics.getvalues(webtronics.circuit.selected[0]);
+			}
+			else if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="scope"){
+				webtronics.getvalues(webtronics.circuit.selected[0]);
+
+			}
+			else {
+				webtronics.getmodels(webtronics.circuit.selected[0]);
+				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				if(model){
+					$("webtronics_model_text").value=model.textContent;
+				}
+			}
+			var rx=/(\w*)\s*(.*)/mi;
+			var value=rx.exec(webtronics.circuit.selected[0].getAttribute('partvalue'));
+			if(value[1]!=""){$('webtronics_part_id').value=value[1];}
+			if(value[2]!=""){$('webtronics_part_value').value=value[2];}
+
 			if(!webtronics.circuit.selected[0].getAttribute("partvalue")){
 				$('webtronics_part_id').value=webtronics.circuit.getnextid(webtronics.circuit.selected[0]);
 			}
+
 			webtronics.disablepage();
 			$('webtronics_properties_form').style.display = "block";
 
@@ -429,24 +477,28 @@ var webtronics={
 						
 				});
 /*properties events*/		
-		Event.observe($('webtronics_properties_ok'), 'click', function() {
+		if($('webtronics_properties_ok'))Event.observe($('webtronics_properties_ok'), 'click', function() {
 			$('webtronics_properties_form').hide();
 			$("webtronics_main_window").removeChild($("webtronics_disable"));
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
 			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			if($("webtronics_model_text").value!=""){
+				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				if(!model){
+					model=document.createElement('spicemodel');
+					webtronics.circuit.selected[0].appendChild(model);
+					model.textContent=$("webtronics_model_text").value;
+				}
+				else {model.textContent=$("webtronics_model_text").value;}
+			}
 		});
 		
 		if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
 			if($('webtronics_part_model').value!="none"){
-				$('webtronics_model_text').value=$('webtronics_part_model').value;
-				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
-				var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
-				if(!model){
-					model=document.createElement('model');
-					webtronics.circuit.selected[0].appendChild(model);
-					model.innerHTML=$("webtronics_model_text").value;
+				if($('webtronics_part_model').value.match(/\.model/i)!=null){
+					$('webtronics_model_text').value=$('webtronics_part_model').value;
 				}
-				else {model.innerHTML=$("webtronics_model_text").value;}
+				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
 				
 			}
 			else {
@@ -455,6 +507,7 @@ var webtronics={
 
 			}
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+			console.log("2 "+webtronics.circuit.selected[0].getAttribute("partvalue"));
 		});
 		
 		if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
@@ -462,6 +515,16 @@ var webtronics={
 		});
 		if($('webtronics_part_id'))Event.observe($('webtronics_part_id'),'keyup',function(){
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		});
+		if($('webtronics_model_text'))Event.observe($('webtronics_model_text'),"change",function(){		
+			/*css selectors don't work here,maybe doing it wrong*/
+			var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
+			if(!model){
+				model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
+				webtronics.circuit.selected[0].appendChild(model);
+			}
+			model.textContent=$('webtronics_model_text').value;
+			console.log("3 "+webtronics.circuit.selected[0].getAttribute("partvalue"));
 		});
 
 

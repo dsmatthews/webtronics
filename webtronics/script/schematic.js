@@ -35,6 +35,7 @@
  
 function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
+	this.wtxNs = 'webtronics schematic editor';
 	this.container = elem;
 	this.grid = 10;
 	this.width=640;
@@ -86,7 +87,6 @@ function Schematic(elem) {
 
 }
 Schematic.prototype.getnextid=function(elem){
-
 	var type=this.getparttype(elem);
 	var ids=new Array();
 	var parts=$$("#webtronics_drawing > g");
@@ -162,6 +162,8 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
+	this.svgRoot.setAttribute('xmlns:wtx',this.wtxNs);
+
 	this.svgRoot.setAttribute('width',2000);
 	this.svgRoot.setAttribute('height',2000);
 
@@ -505,22 +507,7 @@ Schematic.prototype.showTracker = function(elem) {
 	this.info.appendChild(tracked);
 
 	if(this.selected.length==1&&this.selected[0].tagName=='g'){
-		$('webtronics_part_value').clear();
-		$('webtronics_part_id').clear();
-		$('webtronics_model_text').clear();
 		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','enabled');
-		var value=this.selected[0].getAttribute('partvalue').split(" ");
-		if(value[0]!=undefined)$('webtronics_part_id').value=value[0];
-		if(value[1]!=undefined)$('webtronics_part_value').value=value[1];
-/*css selectors don't work here,maybe doing it wrong*/
-		var model=this.selected[0].getElementsByTagName("model")[0];
-		if(model){
-			$("webtronics_model_text").value=model.innerHTML;
-		}		
-		else{
-			model=document.createElement("model");
-			this.selected[0].appendChild(model);
-		}
 	}
 	else{
 		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
@@ -736,6 +723,7 @@ if(!this.drag){
 	  
 		if($('templine1')){
 			/*create line*/
+
 			var x1=$('templine1').getAttributeNS(null,'x1');
 			var y1=$('templine1').getAttributeNS(null,'y1');
 			var x2=$('templine1').getAttributeNS(null,'x2');

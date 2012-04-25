@@ -34,6 +34,7 @@ Schematic.prototype.sortnetlist=function(list){
 	var K=new Array();
 	var L=new Array();
 	var M=new Array();
+	var P=new Array();
 	var Q=new Array();
 	var R=new Array();
 	var U=new Array();
@@ -72,6 +73,9 @@ Schematic.prototype.sortnetlist=function(list){
 		else if(type=='m'){
 			M.push(list[i]);
 		}
+		else if(type=='plot'){
+			M.push(list[i]);
+		}
 		else if(type=='q'){
 			Q.push(list[i]);
 		}
@@ -99,6 +103,7 @@ Schematic.prototype.sortnetlist=function(list){
 	K.sort(sortfunction);
 	L.sort(sortfunction);
 	M.sort(sortfunction);
+	P.sort(sortfunction);
 	Q.sort(sortfunction);
 	R.sort(sortfunction);
 	U.sort(sortfunction);
@@ -113,6 +118,7 @@ Schematic.prototype.sortnetlist=function(list){
 	K.each(function(item){newlist.push(item)});		
 	L.each(function(item){newlist.push(item)});		
 	M.each(function(item){newlist.push(item)});		
+	P.each(function(item){newlist.push(item)});		
 	Q.each(function(item){newlist.push(item)});		
 	R.each(function(item){newlist.push(item)});		
 	U.each(function(item){newlist.push(item)});		
@@ -137,16 +143,17 @@ Schematic.prototype.connectwires=function(){
 }
 
 Schematic.prototype.createnetlist=function(){
-	parts=this.sortnetlist($$('#webtronics_drawing > g'));
-	wires=new Array();
-	nodecount=1;
-	rx=/\.model\s*(\w*)/gi;
+	var parts=this.sortnetlist($$('#webtronics_drawing > g'));
+	var wires=new Array();
+	var command=""; 
+	var plot=new Array();
+	var nodecount=1;
 	this.connectwires();
 	var spice=new String();
 	for(var i=0;i<parts.length; i++){
 		var pins=this.getconnects(parts[i]);
 		var nodes =new Array();
-//		console.log(this.getparttype(parts[i]));
+		var type=this.getparttype(parts[i]).toLowerCase();
 		for(var j=0 ;j<pins.length;j++){
 			var wire=this.followwires(null,pins[j]);
 			var found=-1;
@@ -162,12 +169,12 @@ Schematic.prototype.createnetlist=function(){
 				}
 				if(found>-1)break;
 			}			
-			if(this.getparttype(parts[i]).toLowerCase()=='gnd'){
+			if(type=='gnd'){
 				if(!wires[0])wires[0]=new Array();
 				for(var k=0;k<wire.length;k++)wires[0].push(wire[k]);
 			}
 
-			else if(this.getparttype(parts[i]).toLowerCase()=='wire'){
+			else if(type=='wire'){
 	
 			}
 		
@@ -180,23 +187,42 @@ Schematic.prototype.createnetlist=function(){
 				nodes[j]=found;
 			}
 		}
-		if(this.getparttype(parts[i]).toLowerCase()!='gnd'&&
-			this.getparttype(parts[i]).toLowerCase()!='wire'){
-			var model=parts[i].getElementsByTagName("model")[0];
+		if(type!='gnd'&&type!='wire'&&type!="plot"){
+			var rx=/(\w*)\s*(.*)/mi;
+			var value=rx.exec(parts[i].getAttribute('partvalue'));
+			var model=parts[i].getElementsByTagName("spicemodel")[0];
 			if(model){
-	/*check for duplicate models*/
-				if(!spice.match(parts[i].getAttribute('partvalue').split(" ")[1]))spice=model.innerHTML+"\n"+spice;
+				console.log("model "+value[2]);
+				if(spice.match(value[2])==null)spice=model.textContent+"\n"+spice;
 				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}
-			spice=spice.concat(parts[i].getAttribute('partvalue')," ");
+			spice=spice.concat(value[1]," ");
 			for(var j=0;j<nodes.length;j++)spice=spice.concat(nodes[j]," ");
+			spice=spice.concat(value[2]," ");
 			spice=spice.concat("\n");
 		}
+		if(type=="plot"){
+			var rx=/(\w*)\s*(.*)/mi;
+			var value=rx.exec(parts[i].getAttribute('partvalue'));
+			command+=value[2]+"\n";
+			plot.push(nodes[0]);
+		}
+
 	}
-	spice=spice.concat(".end");	
+	console.log(plot.length);
+	if(plot.length){
+		command+=".plot tran"
+		for(var i=0;i<plot.length;i++){
+			command+=" v("+plot[i]+")";
+		}
+		console.log(command);
+		spice+=command+"\n";
+		
+	}
+	spice=spice.concat(".end \r\n");	
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
-	else alert(spice.toUpperCase());
+	else alert(spice.toLowerCase());
 
 	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
