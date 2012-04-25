@@ -197,8 +197,8 @@ var webtronics={
 
 		},
 
-		sanitize:function(doc){
-				var elems=doc.getElementsByTagName("*");
+		sanitize:function(xmldoc){
+				var elems=xmldoc.getElementsByTagName("*");
 				for(var i=0;i<elems.length;i++){
 					if(!webtronics.Elist.any(function(el){return elems[i].tagName.toLowerCase()==el}))return elems[i].tagName;
 					var attr=elems[i].attributes;
@@ -230,9 +230,9 @@ var webtronics={
 					var textReader = new FileReader();
 					textReader.onloadend=function(){
 						var xmlDoc=Utils.docfromtext(textReader.result);
-						console.log(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
+							console.log((new XMLSerializer()).serializeToString(xmlDoc));
 							var result=webtronics.sanitize(xmlDoc)
 							if(result){console.log(result+ ' found');alert('unclean file');return;}
 							var node=xmlDoc.getElementsByTagName('svg')[0];
