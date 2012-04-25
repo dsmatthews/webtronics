@@ -35,7 +35,7 @@
  
 function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
-	this.wtxNs = 'webtronics schematic editor';
+	this.wtxNs = 'http://127.0.0.1/webtronics';
 	this.container = elem;
 	this.grid = 10;
 	this.width=640;
