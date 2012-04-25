@@ -230,6 +230,7 @@ var webtronics={
 					var textReader = new FileReader();
 					textReader.onloadend=function(){
 						var xmlDoc=Utils.docfromtext(textReader.result);
+						console.log(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
 							var result=webtronics.sanitize(xmlDoc)
@@ -249,6 +250,7 @@ var webtronics={
 				$('webtronics_open_file_selector').onchange=function(){
 		
 					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
+										
 					var xmlDoc=Utils.docfromtext(txt);
 					var result=webtronics.sanitize(xmlDoc)
 					if(result){console.log(result+ ' found');alert('unclean file');return;}
