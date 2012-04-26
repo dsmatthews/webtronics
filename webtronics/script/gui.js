@@ -85,11 +85,12 @@ var webtronics={
 				webtronics.returnpart();
 				gotpart=true
 			});			
-
 			Event.observe($('webtronics_part_display'),'mouseup',function(e){
 				if(gotpart)webtronics.circuit.deleteSelection();
 				else console.log('broke');
 			});			
+/*this might get the ipad working*/			
+			Event.observe($('webtronics_part_display'), "onclick", void(0));
 
 		},
 		getmodels:function(elem){

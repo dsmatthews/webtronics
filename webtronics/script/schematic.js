@@ -83,6 +83,9 @@ function Schematic(elem) {
 	Event.observe(this.container, "mousemove", this.onMouseMove); 
 	Event.observe(this.container, "mousedown", this.onMouseDownListener);
 	Event.observe(this.container, "mouseup", this.onMouseUpListener);
+/*this might get the ipad working*/
+	Event.observe(this.container, "onclick", void(0));
+
 	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 
 }
@@ -1078,16 +1081,17 @@ Schematic.prototype.getfile =function(elem){
 			var oldid=ch[i-1].id
 /*change ids first because they might conflict with existing ids*/
 			this.changeid(ch[i-1]);		
-			var newelem	= document.importNode(ch[i-1],true);
+			var newelem= document.importNode(ch[i-1],true);
 			this.drawing.appendChild(newelem);
 /*if there is a partvalue attribute find the value, set the id to the new id */								
 			if(ch[i-1].getAttribute('partvalue')){
+				
 				var oldvalue = ch[i-1].ownerDocument.getElementById('value:'+oldid);
 				if(oldvalue!=null){
-					oldvalue.id='value:'+ch[i-1].id;		
+//					oldvalue.id='value:'+ch[i-1].id;		
 					var newvalue= document.importNode(oldvalue,true);
+					newvalue.id='value:'+ch[i-1].id;		
 					this.drawing.appendChild(newvalue);
-					this.select(newvalue);
 				}
 			}
 			this.select(newelem);
@@ -1100,9 +1104,12 @@ Schematic.prototype.getfile =function(elem){
 Schematic.prototype.copy=function(){
 	this.copybuffer=document.createElementNS(this.svgNs, 'g');
 	for(var i=0;i<this.selected.length;i++){
-		var svgnode=this.selected[i].cloneNode(true);
-		var newnode=this.copybuffer.appendChild(svgnode);
+		if(this.getparttype(this.selected[i])!="value"){
+			var svgnode=this.selected[i].cloneNode(true);
+			this.copybuffer.appendChild(svgnode);
+		}
 	}
+	
 }
 
 Schematic.prototype.paste=function(){
