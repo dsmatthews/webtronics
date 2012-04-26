@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.1"
-   width="60"
-   height="40"
-   id="svg2">
-  <defs
-     id="defs4" />
-  <g	connects='0,20;60,20'
-     id="v"
-	stroke='black'
-	stroke-width='2px'>
-    <path
-       d="m 50.381357,19.923218 a 20.203051,19.697975 0 1 1 -40.406101,0 20.203051,19.697975 0 1 1 40.406101,0 z"
-       id="path2816"
-       fill="none" />
-    <path
-       d="M 9.9752564,20.049487 0,20.175756"
-       id="path2818" />
-    <path
-       d="m 50.255089,20.302025 9.722718,0"
-       id="path2820" />
-    <path
-       d="m 10.508475,20.847458 c 2.703969,-4.928413 7.883098,-12.4613142 10.677966,-14.067797 10.056238,-2.0803112 11.460468,32.57079 16.77966,25.762712 -0.03259,2.082998 7.514125,-7.118644 10.508475,-11.694915 l 0.169492,-0.677966"
-       id="path2819"
-       fill="none" />
-  </g>
+<svg id="svg2"  xmlns="http://www.w3.org/2000/svg" width="50" height="40">
+  <g id="v" stroke="#000" stroke-width="2px" connects="0,20;60,20">
+  <path id="path2816" fill="none" d="m50.381,19.923a20.203,19.698,0,1,1,-40.406,0,20.203,19.698,0,1,1,40.406,0z"/>
+  <path id="path2818" d="M10,20,0,20"/>
+  <path id="path2820" d="m50,20,10,0"/>
+  <path id="path2819" d="M15.763,19.492c10.699,23.004,16.424-16.073,27.966,0.169" stroke-width="1px" fill="none"/>
+      <text
+         x="0"
+         y="20"
+         id="text5025"
+         font-size='12px'
+	stroke-width='0px'>+</text>
+      <text
+         x="53"
+         y="15"
+         id="text5029"
+         font-size='12px'
+	stroke-width='0px'>_</text>
+ </g>
 </svg>
