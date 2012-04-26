@@ -118,10 +118,10 @@ Schematic.prototype.sortnetlist=function(list){
 	K.each(function(item){newlist.push(item)});		
 	L.each(function(item){newlist.push(item)});		
 	M.each(function(item){newlist.push(item)});		
-	P.each(function(item){newlist.push(item)});		
 	Q.each(function(item){newlist.push(item)});		
 	R.each(function(item){newlist.push(item)});		
 	U.each(function(item){newlist.push(item)});		
+	P.each(function(item){newlist.push(item)});		
 	return newlist;
 }
 
@@ -147,6 +147,9 @@ Schematic.prototype.createnetlist=function(){
 	var wires=new Array();
 	var command=""; 
 	var plot=new Array();
+	var models=new Array();
+	var subckt=new Array();
+
 	var nodecount=1;
 	this.connectwires();
 	var spice=new String();
@@ -193,7 +196,13 @@ Schematic.prototype.createnetlist=function(){
 			var model=parts[i].getElementsByTagName("spicemodel")[0];
 			if(model){
 				console.log("model "+value[2]);
-				if(spice.match(value[2])==null)spice=model.textContent+"\n"+spice;
+				if(model.textContent.match(/\.subckt/i)!=null){
+					value[1]="x"+value[1];
+					subckt.push(model.textContent);
+				}
+				else {
+					models.push(model.textContent);
+				}				
 				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}
@@ -210,17 +219,32 @@ Schematic.prototype.createnetlist=function(){
 		}
 
 	}
-	console.log(plot.length);
+	if(models.length){
+		models=models.uniq();
+		for(var i=0;i<models.length;i++){
+			spice+=models[i]+"\n";
+		}
+
+
+	}
 	if(plot.length){
 		command+=".plot tran"
 		for(var i=0;i<plot.length;i++){
 			command+=" v("+plot[i]+")";
 		}
-		console.log(command);
 		spice+=command+"\n";
 		
 	}
 	spice=spice.concat(".end \r\n");	
+	if(subckt.length){
+		subckt=subckt.uniq();
+		for(var i=0;i<subckt.length;i++){
+			spice+=subckt[i]+"\n";
+		}		
+	}
+
+
+
 	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
 	else alert(spice.toLowerCase());
 

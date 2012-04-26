@@ -1,42 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="50.34"
-   height="40.356956"
-   id="svg2">
-  <defs
-     id="defs4" />
-  <g
- 	stroke='black'
-	stroke-width='2px' 
-     	id="opamp"
-	connects= "0,10;0,30;50,20"
-	flippable="true" >
-     <path
-       d="M 40,20 10,40 10,0 40,20 z"
-       id="path1887"
-       fill="none" />
-    <path
-       d="M 10,10 0,10"
-       id="path1889" />
-    <path
-       d="M 10,30 0,30"
-       id="path1893" />
-    <text
-       x="12.219952"
-       y="16.536049"
-       id="text1895"
-       font-size="10px">+</text>
-    <path
-       d="m 40,20 10,0"
-       id="path2167" />
-    <text
-       x="13.692554"
-       y="27.003143"
-       id="text1915"
-       font-size="10px">_</text>
-  </g>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" height="60" width="60" version="1.0">
+<!--
+* CONNECTIONS:   NON-INVERTING INPUT
+*                | INVERTING INPUT
+*                | | POSITIVE POWER SUPPLY
+*                | | | NEGATIVE POWER SUPPLY
+*                | | | | OUTPUT
+*                | | | | |
+.SUBCKT UA741    1 2 3 4 5
+-->
+ <g id="u" flippable="true" connects="0,10;0,50;30,0;30,60;60,30"  stroke="#000" stroke-width="2px" >
+  <path id="path1887" fill="none" d="M50,30,10,60,10,0,50,30z"/>
+  <path id="path1889" d="M0,10,10,10"/>
+  <path id="path1893" d="M0,50,10,50"/>
+  <text id="text1895" y="20" x="15" font-size="12px" stroke-width="0px">+</text>
+  <path id="path2167" d="M50,30,60,30"/>
+  <text id="text1915" y="45" x="15" font-size="12px" stroke-width="0px">_</text>
+  <path id="path2" d="M30,0,30,15"/>
+  <path id="path2" d="M30,45,30,60"/>
+ </g>
 </svg>

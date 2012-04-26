@@ -97,9 +97,12 @@ Schematic.prototype.getnextid=function(elem){
 		}
 
 	}
-	ids.sort();
 
-	if(ids.length)return type+(ids[ids.length-1].slice(1)-0+1);
+	if(ids.length){
+		var newid=ids.length+1;
+		return type+newid;
+
+	}
 	else return type+1;
 
 

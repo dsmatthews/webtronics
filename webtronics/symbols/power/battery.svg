@@ -43,17 +43,12 @@
          y="8.5261526"
          id="text5025"
          font-size='12px'
-		><tspan
-           x="8.2167969"
-           y="8.5261526"
-           id="tspan5027">+</tspan></text>
+	stroke-width='0px'>+</text>
       <text
          x="34.111794"
-         y="7.5234375"
+         y="0.5234375"
          id="text5029"
-         font-size='12px'><tspan
-           x="34.111794"
-           y="7.5234375"
-           id="tspan5031">-</tspan></text>
+         font-size='12px'
+	stroke-width='0px'>_</text>
   </g>
 </svg>

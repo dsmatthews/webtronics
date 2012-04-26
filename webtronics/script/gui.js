@@ -105,15 +105,26 @@ var webtronics={
 			option.innerHTML="none";
 			$("webtronics_part_model").appendChild(option);
 			if(!text)return;
-			var rx= /\.model\s*(\w*)([^\)]|\s|\w)*/gi;
+			var rx2=/\.SUBCKT\s*(\w*)((?!.ENDS)[\s\S])*\.ENDS/gi	
+			var rx1= /\.MODEL\s*(\w*)([^)]*\))/gi;
 			var model;
-			while((model=rx.exec(text))!=null){
+			while((model=rx2.exec(text))!=null){
+//				console.log(model[0]);
 				var option=document.createElement("option");
-				option.setAttribute("value",model[0]+")");
+				option.setAttribute("value",model[0]);
 				option.innerHTML=model[1];
 				$("webtronics_part_model").appendChild(option);
 			}
-
+/*remove all subcircuits so the don't interfere with the next search*/
+	
+			text=text.replace(rx2,"");
+			while((model=rx1.exec(text))!=null){
+//				console.log(model[0]);
+				var option=document.createElement("option");
+				option.setAttribute("value",model[0]);
+				option.innerHTML=model[1];
+				$("webtronics_part_model").appendChild(option);
+			}
 		},
 		getvalues:function(elem){
 			var path=elem.getAttribute("path");
@@ -169,7 +180,8 @@ var webtronics={
 			if(!webtronics.circuit.selected[0].getAttribute("path")){
 				webtronics.circuit.selected[0].setAttribute("path","ic/ic");
 			}
-			if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="ac"){
+			if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="ac"||
+			webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="battery"	){
 				webtronics.getvalues(webtronics.circuit.selected[0]);
 			}
 			else if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="scope"){
@@ -232,7 +244,7 @@ var webtronics={
 						var xmlDoc=Utils.docfromtext(textReader.result);
 						if(!xmlDoc){alert("error parsing svg");}
 						else{
-							console.log((new XMLSerializer()).serializeToString(xmlDoc));
+							//console.log((new XMLSerializer()).serializeToString(xmlDoc));
 							var result=webtronics.sanitize(xmlDoc)
 							if(result){console.log(result+ ' found');alert('unclean file');return;}
 							var node=xmlDoc.getElementsByTagName('svg')[0];
@@ -504,12 +516,12 @@ var webtronics={
 				
 			}
 			else {
-				$('webtronics_model_text').value="";
-				$('webtronics_part_value').value="";
-
+				$('webtronics_model_text').clear();
+				$('webtronics_part_value').clear();
+				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				model.textContent="";
 			}
 			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-			console.log("2 "+webtronics.circuit.selected[0].getAttribute("partvalue"));
 		});
 		
 		if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
@@ -526,7 +538,6 @@ var webtronics={
 				webtronics.circuit.selected[0].appendChild(model);
 			}
 			model.textContent=$('webtronics_model_text').value;
-			console.log("3 "+webtronics.circuit.selected[0].getAttribute("partvalue"));
 		});
 
 

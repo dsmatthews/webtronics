@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
    width="20.171276"
@@ -14,7 +13,7 @@
 	stroke-width='2px' 
      id="Gnd">
     <path
-       d="M 10.648082,0.5 L 10.648082,11.468059"
+       d="M 10,0 L 10,11"
        id="path3694"
 />
     <path
