@@ -3,7 +3,8 @@
 <svg
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
-   width="39.561817"
+   width="40"
+height="20"	
 >
  <defs>
 </defs>
@@ -16,7 +17,7 @@
        id="path2210"
        fill='none' />
     <path
-       d="M 0.5,10.160362 L 38.561819,10.160362"
+       d="M 0,10 L 40,10"
        id="path3202"
 	 />
     <path

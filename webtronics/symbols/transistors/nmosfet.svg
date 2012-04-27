@@ -15,62 +15,19 @@
      id="Q"
 	flippable="true"
 	>
-	<rect id="rect2162" height="40" width="40" y="0" x="0" visibility="hidden" />
-    <path
-       d="m 15.271146,31.633176 0,-24.254396"
-       id="path2178"
-/>
-    <path
-       d="m 30.587966,8.0714286 0,-7.5714286"
-       id="path2186"
- />
-    <path
-       d="m 30.581079,31.195586 0,8.285715"
-       id="path2188"
- />
-    <path
-       d="m 19.804376,25.074652 10.624205,0.08568 0.119536,6.033534"
-       id="path3564"
-	fill='none'
- />
-    <path
-       d="m 20.008478,14.375915 10.642461,-0.08568 0,-6.6377981"
-       id="path3566"
-	fill='none'
- />
-    <path
-       d="m 14.685397,19.910211 -15.0520787,0"
-       id="path3568"
-/>
-    <path
-       d="m 19.877067,12.080459 c 0,0 0,0 0,0 z"
-       id="path2398"
- />
-    <path
-       d="m 19.962744,21.847638 0,-4.712236"
-       id="path2402"
- />
-    <path
-       d="m 19.79139,15.850247 0,-4.969266"
-       id="path2404"
- />
-    <path
-       d="m 19.962744,23.132793 0.08568,5.226298"
-       id="path2406"
- />
-    <path
-       d="m 23.260583,19.45086 7.069079,-0.08785 0.08568,5.826036"
-       id="path2408"
-	fill='none'
- />
-    <path
-       d="m 25.940531,17.992172 -3.684112,1.627863 3.855466,1.285156"
-       id="path2416"
-	fill='none'
-/>
- <text id="text2823" fill='black' stroke-width="0px" font-style="normal" font-size="8.19031239px" y="18.113794" x="1.0786462" font-family="Bitstream Vera Sans" >G</text>
- <text id="text2827" fill='black' stroke-width="0px" font-style="normal" font-size="8.0008316px" y="7.4208322" x="32.072721" font-family="Bitstream Vera Sans" >D</text>
- <text id="text2831" fill='black' stroke-width="0px" font-style="normal" font-size="8.04845715px" y="39.414978" x="32.333487" font-family="Bitstream Vera Sans" >S</text>
-
-  </g>
+  <rect id="rect2162" visibility="hidden" height="40" width="40" y="0" x="0" fill="none"/>
+  <path id="path2398" fill="none" d="M19.877,12.08z"/>
+  <text id="text2823" font-size="8.19031239px" font-family="Bitstream Vera Sans" y="18.113794" x="1.0786462" stroke-width="0px" font-style="normal" fill="black">G</text>
+  <text id="text2827" font-size="8.0008316px" font-family="Bitstream Vera Sans" y="7.4208322" x="32.072721" stroke-width="0px" font-style="normal" fill="black">D</text>
+  <text id="text2831" font-size="8.04845715px" font-family="Bitstream Vera Sans" y="39.414978" x="32.333487" stroke-width="0px" font-style="normal" fill="black">S</text>
+  <path id="path2891" d="m20,12.925,10,0,0-13" fill="none"/>
+  <path id="path2934" d="m20,26.925,10,0,0,13" fill="none"/>
+  <path id="path2936" d="m20,19.925,10,0,0,7" fill="none"/>
+  <path id="path2938" d="m20,16.925,0,6"  fill="none"/>
+  <path id="path2942" d="m20,23.925,0,6"  fill="none"/>
+  <path id="path2944" d="M20,15.925,20,9.9255"  fill="none"/>
+  <path id="path2946" d="M17,9.9255,17,29.925" fill="none"/>
+  <path id="path2948"  d="m17,19.925-17,0" fill="none"/>
+ <path id="path3813" d="m21,19.925,3-2,0,4-3-2z" fill="none"/>
+</g>
 </svg>

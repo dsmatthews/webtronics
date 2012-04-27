@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="31.19149"
-   height="19.2792"
->
-  <defs>
-</defs>
-  <g connects="0,10;30,10"
-	stroke='black'
-	stroke-width='2px' 
-     id="D">
-    <path
-       d="M 7.075891,18.82484 L 7.075891,0.45435962"
-       id="path2210"
-	 />
-    <path
-       d="M 0,10 L 30.806377,10"
-       id="path3202"
-	/>
-    <path
-       d="M 6.9758131,10 L 24.667172,0.94293572 L 24.667172,18.043117 L 6.9758131,10 z"
-       id="path2220"
-       fill='black' />
-
-  </g>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" width="40" hweight="20">
+ <g id="D" stroke="#000" stroke-width="2px" connects="0,10;40,10">
+  <path id="path2210" d="m11.059,19.249,0-18.37"/>
+  <path id="path3202" d="M0,10h40"/>
+  <path id="path2220" fill="#000" d="m11.298,10,17.776-8.5486,0,17.1l-17.776-8.551z"/>
+ </g>
 </svg>

@@ -431,9 +431,9 @@ Schematic.prototype.rotate=function(elem){
 /*center the  object*/
 	var box=elem.getBBox();	
 	var rotmatrix=this.svgRoot.createSVGTransform();
-	var x=(box.width/2);
-	var y=(box.height/2);
-//	console.log(x+" "+y+"\n");
+	var x=Math.round((box.width/2)/this.grid)*this.grid;
+	var y=Math.round((box.height/2)/this.grid)*this.grid;
+	console.log(x+" "+y+"\n");
 	rotmatrix.setRotate(90,x,y);
 	matrix=matrix.multiply(rotmatrix.matrix);
 /*align with grid*/

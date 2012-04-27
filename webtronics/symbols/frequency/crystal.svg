@@ -1,39 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="30.130182"
-   height="20.586164"
->
-  <defs>
-</defs>
-  <g connects="0,10;10,30"
-	stroke='black'
-	stroke-width='2px' 
-     id="X">
-    <path
-       d="M 8.7481201,0.5 L 8.6301841,19.99981"
-       id="path3412"
-        />
-    <path
-       d="M 19.996278,0.58635358 L 19.996278,20.086164"
-       id="path3414"
-       />
-    <path
-       d="M 19.630182,9.9998101 L 29.630182,9.990557"
-       id="path3420"
-        />
-    <path
-       d="M 8.2825091,9.9998101 L 0.50000006,9.9998094"
-       id="path3422"
-        />
-    <rect
-       width="7.4791164"
-       height="18.91264"
-       x="10.630184"
-       y="1.0871713"
-       id="rect3789"
-       fill='none' />
-  </g>
+<svg id="svg2"  xmlns="http://www.w3.org/2000/svg" width="40" height="20" >
+ <g id="X" stroke="#000" stroke-width="2px" connects="0,10;40,10">
+  <path id="path3412" d="M10,0,10,20"/>
+  <path id="path3420" d="M28,10,40,10"/>
+  <path id="path3414" d="m28,0,0,20"/>
+  <path id="path3422" d="m9.3789,9.9998-8.754-7E-7"/>
+  <rect id="rect3789" height="18.913" width="7.4791" y="0.91271" x="15.079" fill="none"/>
+ </g>
 </svg>

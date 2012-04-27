@@ -3,12 +3,12 @@
 <svg
    xmlns="http://www.w3.org/2000/svg"
    version="1.0"
-   width="39.561817"
+   width="40"
    height="20.660362"
 >
  <defs>
 </defs>
-  <g connects="0,10;50,10;0,20"
+  <g connects="0,10;40,10;0,20"
 	stroke='black'
 	stroke-width='2px' 
       id="D">
@@ -17,7 +17,7 @@
        id="path2210"
         />
     <path
-       d="M 0.5,10.160362 L 50,10.160362"
+       d="M 0,10 L 40,10"
        id="path3202"
 	 />
     <path

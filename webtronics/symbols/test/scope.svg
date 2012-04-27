@@ -1,32 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   width="50"
-   height="40"
->
- <g 	stroke="#000000"
-	stroke-width='2px' 
-	connects="0,20"
-   	id="Plot"	>
-    <path
-       d="M 0,20 L 10,20"
-       id="path2193"
- />
-    <rect
-       width="39.879436"
-       height="39.359486"
-       x="10.564011"
-       y="1.2049117"
-       id="rect3658"
-       fill="none"
-/>
-    <path
-       d="M 13.172065,20.624681 C 26.182892,-15.549125 37.717139,53.535814 46.622178,20.451365"
-       id="path3660"
-       fill="none"
-
-	/>
-  </g>
+<svg id="svg2" width="50"  height="40" xmlns="http://www.w3.org/2000/svg" >
+ <g id="Plot" stroke="#000" stroke-width="2px" connects="0,20">
+  <path id="path2193" d="M0,20h10"/>
+  <rect id="rect3658" height="40" width="40" y="0" x="10" fill="none"/>
+  <path id="path2820" d="M15.085,20.169c7.96-24.084,21.723,22.742,29.661-0.169" stroke-width="1px" fill="none"/>
+ </g>
 </svg>
