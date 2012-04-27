@@ -5,7 +5,7 @@
   <path id="path2840" d="M30,13,30,0"/>
   <path id="path2844" d="M30,25,30,40" />
   <path id="path3568" d="M16,20h-16"/>
-  <path id="path3572" d="M10,15l-5,5,5,5" stroke-width="0px" />
+  <path id="path3572" d="M10,15l-5,5,5,5" />
   <path id="path2178" d="M16.247,33.517v-27.223"/>
   <text id="text2823" font-size="8px" font-family="Bitstream Vera Sans" y="18.113794" x="1.0786462" stroke-width="0px" fill="#000000">G</text>
   <text id="text2827" font-size="8px" font-family="Bitstream Vera Sans" y="7.4208322" x="33" stroke-width="0px" fill="#000000">D</text>
