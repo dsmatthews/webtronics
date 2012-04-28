@@ -1,53 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="40.028328"
-   height="40.606297"
->
-  <defs>
-</defs>
-  <g connects="0,20;30,0;30,40"
-	stroke='black'
-	stroke-width='2px' 
-     id="Q"
-	flippable="true"
->
-    <path
-       d="M 0,20 L 7.5260889,20"
-       id="path4105"
- />
-    <path
-       d="M 30,6.500601 L 30,0"
-       id="path2186"
-/>
-    <path
-       d="M 30,32.247914 L 30,40"
-       id="path2188"
-/>
-    <path
-       d="M 39.528327,19.711332 C 39.528327,27.422391 32.281724,33.673439 23.342588,33.673439 C 14.403451,33.673439 7.1568491,27.422391 7.1568492,19.711332 C 7.1568491,12.000274 14.403451,5.7492257 23.342588,5.7492257 C 32.281724,5.7492257 39.528327,12.000274 39.528327,19.711332 L 39.528327,19.711332 z"
-       id="path2170"
-       fill='none'
- />
-    <path
-       d="M 15.507593,31.530581 L 15.728279,8.4635117"
-       id="path2178"
-/>
-    <path
-       d="M 6.7582072,19.62019 L 15.286906,19.730534 L 30.046507,32.277381"
-       id="path2180"
-	fill='none'
- />
-    <path
-       d="M 16.111535,19.730533 L 30.728279,6.6063688"
-       id="path2182"
- />
-    <path
-       d="M 20.517223,29.049101 L 29.699143,31.727149 L 25.677184,23.383532"
-       id="path2184"
-	fill='none'
- />
-  </g>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" height="40" width="40">
+ <g id="Q" stroke="#000" stroke-width="2px" connects="0,20;30,0;30,40" flippable="true">
+ <rect width="40" height="40" x="0" y="0" id="rect2162" visibility="hidden" />
+  <path id="path2178" d="M15.508,31.531l0-23.068"/>
+  <path id="path2829" d="M30,0,30,7.6063,16,16.606" fill="none"/>
+  <path id="path2831" d="m30,40,0-9-14-7" fill="none"/>
+  <path id="path3613" d="m25,31.606,2-4,3,4-5-0.000001z"/>
+  <path id="path3615" d="m0,20,15,0"/>
+ </g>
 </svg>

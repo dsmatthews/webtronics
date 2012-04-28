@@ -1,57 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="40.028328"
-   height="40.606297"
->
- <defs>
-</defs>
-  <g connects="30,0;30,40"
-	stroke='black'
-	stroke-width='2px' 
-     id="Q"
-	flippable="true"
-	>
-    <path
-       d="M 39.528327,19.711332 C 39.528327,27.422391 32.281724,33.673439 23.342588,33.673439 C 14.403451,33.673439 7.1568491,27.422391 7.1568492,19.711332 C 7.1568491,12.000274 14.403451,5.7492257 23.342588,5.7492257 C 32.281724,5.7492257 39.528327,12.000274 39.528327,19.711332 L 39.528327,19.711332 z"
-       id="path2170"
-       fill='none'
- />
-    <path
-       d="M 15.507593,31.530581 L 15.728279,8.4635117"
-       id="path2178"
-/>
-    <path
-       d="M 15.286906,19.730534 L 30.046507,32.277381"
-       id="path2180"
- />
-    <path
-       d="M 16.111535,19.730533 L 30.728279,6.6063688"
-       id="path2182"
- />
-    <path
-       d="M 20.916302,29.049101 L 29.699143,31.727149 L 25.677184,23.383532"
-       id="path2184"
-	fill='none'
-/>
-    <path
-       d="M 30.176563,6.500601 L 30.176563,0.49999991"
-       id="path2186"
-/>
-    <path
-       d="M 29.976563,32.247914 L 29.976563,40.106297"
-       id="path2188"
- />
-    <path
-       d="M 0.5,1.659174 L 8.5237866,9.548579"
-       id="path4105"
- />
-    <path
-       d="M 2.5986186,8.508829 L 9,9.6062965 L 7.102072,3.3069872"
-       id="path2297"
-	fill='none'
- />
-  </g>
+<svg id="svg2"  xmlns="http://www.w3.org/2000/svg"  height="40" width="40">
+ <g id="Q" stroke="#000" stroke-width="2px" flippable="true" connects="30,0;30,40">
+ <rect width="40" height="40" x="0" y="0" id="rect2162" visibility="hidden" />
+  <path id="path2178" d="M15.508,31.531l0.22-23.068"/>
+  <path id="path2829" fill="none" d="M30,0,30,8,16,17"/>
+  <path id="path2831" fill="none" d="m30,40,0-9-14-7"/>
+  <path id="path3613" d="m20,28.606,2-4-5,0,3,4z"/>
+  <path id="path3615" d="M-4.3534E-7,6,10,16"/>
+  <path id="path3780" d="m6,15.606,5,1-1-5-4,4z" fill="none"/>
+ </g>
 </svg>
