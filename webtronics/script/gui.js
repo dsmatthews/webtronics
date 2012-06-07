@@ -1,40 +1,217 @@
-
 var webtronics={
 		circuit:null,
+        copy:null,
 		rightclickmenu:null,
-		Vlist:[/expression/,/^\s*url/,/javascript/],
-		Alist:['x','y','x1','y1','x2','y2','cx','cy','r','width','height','transform','d','id','fill','stroke','visibility','stroke-width','xmlns','connects','partvalue','path','flippable','font-size','font-weight','font-style','font-family'],
-		Elist:['path','circle','rect','line','text','g','tspan','svg','spicemodel'],
+        title:null,
+        description:null,
+        file_id:null,
+        tabs:[],
+        mode:'',
 
-		
+		Vlist:/\s*expression|\s*url|.*script/,
+		Alist:/^(x|y|x1|y1|x2|y2|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|font-size|font-weight|font-style|font-family)$/,
+		Elist:/^(path|circle|rect|line|text|g|tspan|svg|spicemodel)$/,
+
 
 		setsize:function(){
-		
 			var buffer=30;
 			var realheight=window.innerHeight-$('webtronics_toolbar').offsetHeight-$('webtronics_status_bar').offsetHeight;
 			var realwidth=window.innerWidth-$('webtronics_side_bar').offsetWidth;
 			$('webtronics_center').style.width = window.offsetWidth+'px';
 			$('webtronics_center').style.height = realheight-buffer+'px';
+			$('webtronics_tab_area').style.width = realwidth-buffer+'px';
 			$('webtronics_diagram_area').style.width = realwidth-buffer+'px';
-			$('webtronics_diagram_area').style.height = realheight-buffer+'px';
-			$('webtronics_parts_list').style.height=realheight-$('webtronics_part_display').offsetHeight-buffer+'px';
+			$('webtronics_diagram_area').style.height = realheight-$('webtronics_tab_area').offsetHeight-buffer+'px';
+            frames=$$('#webtronics_diagram_area>iframe')
+            for(var i=0;i<frames.length;i++){
+            	frames[i].width = realwidth-buffer+'px';
+    			frames[i].height = realheight-$('webtronics_tab_area').offsetHeight-buffer+'px';
+            }
+			$('webtronics_parts_list').style.height=realheight-buffer+'px';
 		},
 
 		getMarkup:function() {
 			var str="<?xml version='1.0' ?>\n";
 			str+="<!--Created by webtronics 0.1-->\n";
-			str+=webtronics.circuit.getMarkup();
+			str+=this.circuit.getMarkup();
 			return str;
 		},
 		
-		showMarkup:function(){
+		download:function(){
 
-			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(webtronics.getMarkup() ));
+//			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(webtronics.getMarkup() ));
+			var text=this.getMarkup();
+			new Ajax.Request("/upload",{
+			method:'post',
+			contentType:"image/svg+xml",
+			asynchronous:false,
+			postBody:text,
+			//parameters:{Content:text,Accept:'application/force-download'},
+			onSuccess:function(transport){
+				window.open("/upload");
+			},			
+			onFailure: function(){ 
+				console.log('Could not load file...'); 
+			},
+			onException: function(req,exception) {
+				console.log(exception);
+				return true;
+				}, 
+			});
+			//return text;
+
+
+
 		},
+
+		createPicker:function() {
+			  var view = new google.picker.View(google.picker.ViewId.DOCS);
+			  view.setMimeTypes('image/svg+xml');
+              console.log(this.CLIENT_ID);
+			  picker = new google.picker.PickerBuilder().
+                            setAppId(this.CLIENT_ID).
+                            addView(view).
+                            setCallback(this.pickerCallback.bind(this)).
+                            build();
+                            picker.setVisible(true);
+
+			},
+
+		GetSuccess:function(id,data){
+			if (data.redirect) {
+				window.location.href = data.redirect;
+			}
+      
+			if(!data['content']){
+				console.log("file is empty");
+			};
+            console.log(data);
+            if(this.fileaction=='open'){
+                this.file_id=id;
+                this.title = data['title'];
+                this.description = data['description'];
+	    		var xmlDoc=Utils.docfromtext(data['content']);
+	    		if(!xmlDoc){alert("error parsing svg");}
+	    		else{
+	    			var result=webtronics.sanitize(xmlDoc)
+	    			if(result){console.log(result+ ' found');alert('unclean file');return;}
+	    			var node=xmlDoc.getElementsByTagName('svg')[0];
+
+	    			if(!node){alert("svg node not found")}
+	    			else {
+                        if(this.circuit===null||this.circuit.drawing.childNodes.length>0){
+                            var frame=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
+                            $('webtronics_diagram_area').insert(frame);
+                            Event.observe(frame,'load',function(){
+                                this.attachframe(this.title,frame);
+                                this.circuit.getfile(node);
+                            }.bind(this));
+                        }
+                        else if(this.circuit.drawing.childNodes.length===0){
+                            this.circuit.getfile(node);
+                        }
+                    }
+			    }
+            }
+            else if(this.fileaction=='import'){
+	    		var xmlDoc=Utils.docfromtext(data['content']);
+	    		if(!xmlDoc){alert("error parsing svg");}
+	    		else{
+	    			var result=webtronics.sanitize(xmlDoc)
+	    			if(result){console.log(result+ ' found');alert('unclean file');return;}
+	    			var node=xmlDoc.getElementsByTagName('svg')[0];
+        			if(!node){alert("svg node not found");}
+	    			else {
+                        this.circuit.getfile(node);
+                    }
+			    }
+            }
+		},
+
+		Get:function(id) {
+            var response;
+			new Ajax.Request('/svc?file_id=' + id,{
+                method:'get',
+                asynchronous:false,
+				onSuccess:function(transport){response=transport.responseJSON;},
+				onFailure: function(){ 
+					console.log('Could not load file '+id); 
+				},
+				onException: function(req,exception) {
+					console.log(exception);
+					return true;
+					}, 
+				});
+            this.GetSuccess(id,response);
+        },
+
+
+      // A simple callback implementation for Google Docs.
+		pickerCallback:function(data) {
+				if(data.action == "picked"){
+    				this.Get(data.docs[0].id);
+                }
+
+		},
+
+        CreateUi:function() {
+        
+            var ok=new Element('img',{'src':'buttons/ok.png'});
+            var cancel=new Element('img',{'src':'buttons/cancel.png'});
+            var gsavedialog=new Element('div',{'class':'modal'});
+            gsavedialog.insert(new Element('div')
+                .insert(new Element('form',{'name':'gsave'})
+                .insert(new Element('p').update('File Name'))
+                .insert(new Element('input',{'name':'title','value':this.title}))
+                .insert(new Element('br'))
+                .insert(new Element('p').update('File Description'))
+                .insert(new Element('textarea',{'name':'description','cols':"50",'rows':4}).update(this.description))));
+            Event.observe(ok,'click',function(){
+                if(document.forms.gsave.title.value)this.title=document.forms.gsave.title.value;
+                if(document.forms.gsave.description.value)this.description=document.forms.gsave.description.value;
+                this.Save();
+                $('webtronics_main_window').removeChild(gsavedialog);
+                this.enablepage();
+                }.bind(this));
+            Event.observe(cancel,'click',function(){
+                $('webtronics_main_window').removeChild(gsavedialog);
+                this.enablepage();
+                }.bind(this));
+                            
+            gsavedialog.insert(ok);
+            gsavedialog.insert(cancel);
+            $('webtronics_main_window').insert(gsavedialog);
+            gsavedialog.style.display='block';
+            this.center(gsavedialog);
+            this.disablepage();
+        },
+
+        Read:function() {
+          return {
+              'content': this.getMarkup(),
+              'title': this.title,
+              'description': this.description,
+              'mimeType': 'image/svg+xml',
+              'resource_id': this.file_id
+            };
+        },
+        Save:function(){
+            var request=new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if(request.readyState == 4 && request.status == 200) {
+                    console.log('save success');
+                }
+            }
+            request.open((this.file_id===null)?'POST':'PUT','/svc',false);
+            request.setRequestHeader("Content-Type", "application/json");            
+            request.send(JSON.stringify(this.Read()));
+
+
+        },
 
 		setMode:function(button,mode, status){
 
-			var imgs = $('webtronics_toolbar').getElementsByTagName('img');
+			var imgs = $$('.pressed_button');
 
 			for (var i=0; i<imgs.length; i++) {
 				imgs[i].className = 'normal_button';
@@ -44,58 +221,27 @@ var webtronics={
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
 			$('webtronics_add_text').hide();
 			if(mode=='select'){
-				webtronics.rightclickmenu.options.enabled=true;
-			}
+				if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='visible';
+    		}
 			else if(mode=='line'){
-				webtronics.rightclickmenu.options.enabled=false;
-				if(webtronics.circuit.selected){
-					webtronics.circuit.unselect();
+                if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='hidden';
+				if(this.circuit.selected){
+					this.circuit.unselect();
 				}
 			}
 			else if(mode=='text'){
-				webtronics.rightclickmenu.options.enabled=false;
+				if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='hidden';
 			}
-			webtronics.circuit.mode=mode;
+            $('webtronics_context_menu').style.display='none';
+    		this.mode=mode;
+            this.circuit.mode=this.mode;
 
 		},
 
-		changeimage:function(category,Name){
-
-			var xmlDoc=(new DOMParser()).parseFromString(Utils.openfile('./symbols/'+category+'/'+Name+'.svg'),"text/xml");
-			var group=xmlDoc.getElementsByTagName('g')[0].cloneNode(1);
-			var svg=$$('#webtronics_part_display > svg')[0];
-			if(svg)$('webtronics_part_display').removeChild(svg);
-			svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-			group.setAttribute('transform',
-				'translate('+($('webtronics_part_display').offsetWidth/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('width')/2))+
-				','+($('webtronics_part_display').offsetHeight/2-(xmlDoc.getElementsByTagName('svg')[0].getAttribute('height')/2))+')');	
-						
-			svg.appendChild(group);
-/*add path info here*/
-			group.setAttribute("path",category+"/"+Name);
-
-			var model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
-			group.appendChild(model);
-			
-
-			$('webtronics_part_display').appendChild(svg);
-			var gotpart=false;	
-						
-			Event.observe($('webtronics_part_display'),'mousedown',function(e){
-				webtronics.returnpart();
-				gotpart=true
-			});			
-			Event.observe($('webtronics_part_display'),'mouseup',function(e){
-				if(gotpart)webtronics.circuit.deleteSelection();
-				else console.log('broke');
-			});			
-/*this might get the ipad working*/			
-			Event.observe($('webtronics_part_display'), "onclick", void(0));
-
-		},
 		getmodels:function(elem){
-			var path=elem.getAttribute("path");
-			var text=Utils.openfile('./symbols/'+path+'.cir');
+			var c=elem.getAttribute("class")
+			var text=Utils.openfile('/models/'+c+'.cir');
+			console.log(text);
 			var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
 				nodes[i-1].parentNode.removeChild(nodes[i-1]);
@@ -110,13 +256,12 @@ var webtronics={
 			var rx1= /\.MODEL\s*(\w*)([^)]*\))/gi;
 			var model;
 			while((model=rx2.exec(text))!=null){
-//				console.log(model[0]);
 				var option=document.createElement("option");
 				option.setAttribute("value",model[0]);
 				option.innerHTML=model[1];
 				$("webtronics_part_model").appendChild(option);
 			}
-/*remove all subcircuits so the don't interfere with the next search*/
+/*remove all subcircuits so they don't interfere with the next search*/
 	
 			text=text.replace(rx2,"");
 			while((model=rx1.exec(text))!=null){
@@ -128,8 +273,8 @@ var webtronics={
 			}
 		},
 		getvalues:function(elem){
-			var path=elem.getAttribute("path");
-			var text=Utils.openfile('./symbols/'+path+'.cir');
+			var c=elem.getAttribute("class");
+			var text=Utils.openfile("models/"+c+'.cir');
 			var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
 				nodes[i-1].parentNode.removeChild(nodes[i-1]);
@@ -152,6 +297,11 @@ var webtronics={
 
 		},
 
+        center:function(e){
+		    e.style.left = ($('webtronics_main_window').offsetWidth/2)-(e.offsetWidth/2)+'px';
+		    e.style.top = ($('webtronics_main_window').offsetHeight/2)-(e.offsetHeight/2)+'px';
+        },
+
 		disablepage:function(){
 			var div=document.createElement('div');
 			div.id="webtronics_disable";
@@ -159,431 +309,557 @@ var webtronics={
 			$('webtronics_main_window').insertBefore(div,$("webtronics_chips_box"));
 
 		},
-
-		returnpart:function(){
-			var group=$$('#webtronics_part_display>svg>g')[0];
-			webtronics.circuit.getgroup(group);
-			webtronics.setMode('webtronics_select','select','Selection');
-		},	
-
-
+        enablepage:function(){
+            $('webtronics_main_window').removeChild($('webtronics_disable'));
+        },
 
 		returnchip:function(){
-		webtronics.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
-		$('webtronics_chips_box').hide();
-		webtronics.setMode('webtronics_select','select','Selection');
+		this.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
+			$('webtronics_chips_box').hide();
+			this.setMode('webtronics_select','select','Selection');
 		},
 	
 		openProperties:function(){
 			$('webtronics_part_value').clear();
 			$('webtronics_part_id').clear();
 			$('webtronics_model_text').clear();
-			if(!webtronics.circuit.selected[0].getAttribute("path")){
-				webtronics.circuit.selected[0].setAttribute("path","ic/ic");
+			var c=this.circuit.selected[0].getAttribute("class");
+			if(!c){
+				this.circuit.selected[0].setAttribute("c","ic");
 			}
-			if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="ac"||
-			webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="battery"	){
-				webtronics.getvalues(webtronics.circuit.selected[0]);
+			if(c=="ac"||c=="battery"	){
+				this.getvalues(this.circuit.selected[0]);
 			}
-			else if(webtronics.circuit.selected[0].getAttribute("path").split("/")[1]=="scope"){
-				webtronics.getvalues(webtronics.circuit.selected[0]);
+			else if(c=="scope"){
+				this.getvalues(this.circuit.selected[0]);
 
 			}
 			else {
-				webtronics.getmodels(webtronics.circuit.selected[0]);
-				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				this.getmodels(this.circuit.selected[0]);
+				var model=this.circuit.selected[0].getElementsByTagName("spicemodel")[0];
 				if(model){
 					$("webtronics_model_text").value=model.textContent;
 				}
 			}
 			var rx=/(\w*)\s*(.*)/mi;
-			var value=rx.exec(webtronics.circuit.selected[0].getAttribute('partvalue'));
+			var value=rx.exec(this.circuit.selected[0].getAttribute('partvalue'));
 			if(value[1]!=""){$('webtronics_part_id').value=value[1];}
 			if(value[2]!=""){$('webtronics_part_value').value=value[2];}
 
 			if(!webtronics.circuit.selected[0].getAttribute("partvalue")){
-				$('webtronics_part_id').value=webtronics.circuit.getnextid(webtronics.circuit.selected[0]);
+				$('webtronics_part_id').value=this.circuit.getnextid(this.circuit.selected[0]);
 			}
 
-			webtronics.disablepage();
+			this.disablepage();
 			$('webtronics_properties_form').style.display = "block";
 
 		},
 
 		sanitize:function(xmldoc){
-				var elems=xmldoc.getElementsByTagName("*");
-				for(var i=0;i<elems.length;i++){
-					if(!webtronics.Elist.any(function(el){return elems[i].tagName.toLowerCase()==el}))return elems[i].tagName;
-					var attr=elems[i].attributes;
-					for(var j=0;j<attr.length;j++){
-						if(!webtronics.Alist.any(function(a){return attr[j].name.toLowerCase()==a;}))return attr[j].name;
-						if(!webtronics.Vlist.all(function(v){return attr[j].value.toLowerCase().match(v)==null;}))return attr[j].value;
-					} ;
-				};
-		}
-}
-
-
-
-
-	Event.observe(window, 'load', function() {
-		if (!window.console) {
-			window.console = {};
-			window.console.log = function(){};
-		}
-
-
-		var url=window.location.search.toQueryParams();
-		var file=url['file'];
-		var code = url['code'];
-		/* test file read capability*/
-			if(window.FileReader){
-				$('webtronics_open_file_selector').form.reset();
-				$('webtronics_open_file_selector').onchange=function(){
-					var textReader = new FileReader();
-					textReader.onloadend=function(){
-						var xmlDoc=Utils.docfromtext(textReader.result);
-						if(!xmlDoc){alert("error parsing svg");}
-						else{
-							//console.log((new XMLSerializer()).serializeToString(xmlDoc));
-							var result=webtronics.sanitize(xmlDoc)
-							if(result){console.log(result+ ' found');alert('unclean file');return;}
-							var node=xmlDoc.getElementsByTagName('svg')[0];
-							if(!node){alert("svg node not found")}
-							else webtronics.circuit.getfile(node);
-						}
-					}
-					textReader.readAsText($('webtronics_open_file_selector').files[0]);
-					$('webtronics_open_file_selector').form.reset();
-				}
+			var elems=xmldoc.getElementsByTagName('*');
+			for(var i=0;i<elems.length;i++){
+				if(!elems[i].tagName.match(this.Elist))return elems[i].tagName;
+				var attr=elems[i].attributes;
+				for(var j=0;j<attr.length;j++){
+					if(!attr[j].name.match(this.Alist))return attr[j].name;
+					if(attr[j].value.match(this.Vlist))return attr[j].value;
+				} 
 			}
-			else if((navigator.userAgent.toLowerCase().indexOf('firefox')>-1)||
-				(navigator.userAgent.toLowerCase().indexOf('iceweasel')>-1)&&window.FileList){
-				$('webtronics_open_file_selector').form.reset();
-				$('webtronics_open_file_selector').onchange=function(){
-		
-					var txt =$('webtronics_open_file_selector').files[0].getAsText('');					
-										
-					var xmlDoc=Utils.docfromtext(txt);
-					var result=webtronics.sanitize(xmlDoc)
-					if(result){console.log(result+ ' found');alert('unclean file');return;}
-					var node=xmlDoc.getElementsByTagName('svg')[0];
-					if(!node){alert("svg node not found");}
-					else webtronics.circuit.getfile(node);
-					$('webtronics_open_file_selector').form.reset();
-				}
+		},
+		createfilemenu:function(x,y,id,parent,list){
+			var menu=document.createElement('div');
+			menu.id=id;
+			menu.className='webtronics_menu';
+			menu.style.left=x+'px';
+			menu.style.top=y+'px';
+            menu.observe('click',Event.stop)
+                .observe('contextmenu',Event.stop);    
+			for(var i=0;i<list.length;i++){
+				var item=new Element('a',{Title:list[i].label,id:'webtronics_context_option',class:'enabled'})
+				    .observe('click',list[i].cb.bind(this))
+				    .observe('contextmenu', Event.stop)
+                    .update(list[i].label);
+				menu.insert(item);
+                menu.insert(new Element('br'));
+  			}
+			menu.style.display='none';
+			parent.insert(menu);			
+		},
 
-			}
+		file_open:function(){
+			$('webtronics_file_menu').style.display='none';
+            var file=new Element('input',{'type':'file'});
+            var div=new Element('div',{'class':'modal'}).insert(file);
+            Event.observe(file,'change',function(){
+        		if(window.FileReader){
+				    var textReader = new FileReader();
+				    textReader.onloadend=function(){
+					    if(!textReader.result){
+						    console.log("error opening file");
+						    return;
+					    };
 
-			/*no file read capability*/
-
-			else {
-				$('webtronics_open_file').hide();
-				$('webtronics_open_text_ok').onclick=function(){
-					var xmlDoc=Utils.docfromtext($('webtronics_svg_code').value);
-					var result=webtronics.sanitize(xmlDoc)
-					if(result){console.log(result+ ' found');alert('unclean file');return;}
-					webtronics.circuit.getfile(xmlDoc.getElementsByTagName('svg')[0]);
-					$('webtronics_open_text').hide();
-				 	webtronics.setMode('webtronics_select','select', 'Selection');    
-				}
-			}
-				
-
-		webtronics.setsize();
-
-
-		webtronics.circuit = new Schematic($('webtronics_diagram_area'));
-/*replace context menu*/
-		var myLinks = [
-				{name: 'copy', callback: function(){webtronics.circuit.copy()}},
-				{name: 'paste', callback: function(){webtronics.circuit.paste()}},
-				{separator: true},
-				{name:'Properties',disabled: true,callback:function(){
-					webtronics.openProperties()
-					$('webtronics_properties_form').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_properties_form').offsetWidth/2)+'px';
-
-					$('webtronics_properties_form').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_properties_form').offsetHeight/2)+'px';
-				}},
-/*
-
-				{name: 'Disabled option', disabled: true},
-				{name: 'Toggle previous option', callback: function(){
-				        var item = myLinks.find(function(l){return l.name == 'Properties';});
-				        item.disabled = (item.disabled == false ? true : false);
-
-						}},
-*/
-		];
-		webtronics.rightclickmenu=new Proto.Menu({
-				selector: '#webtronics_diagram_area', // context menu will be shown when element with class name of "contextmenu" is clicked
-				className: 'contextmenu', // this is a class which will be attached to menu container (used for css styling)
-				menuItems: myLinks // array of menu items
-		});
-	 	webtronics.setMode('webtronics_select','select', 'Selection');    
-		if(code){
-			var xmlDoc=Utils.docfromtext(Utils.decode64(code));
-			if(!xmlDoc)alert("data opening error");
-			else{
-					var node=xmlDoc.getElementsByTagName('svg')[0]
-					if(!node){alert("code svg node not found");}
-					else	webtronics.circuit.getfile(node);
-				}
-		}
-		else if(file){
-				var xmlDoc=xmldoc=(new DOMParser()).parseFromString(Utils.openfile(file),"text/xml");
-				if(!xmlDoc){alert("file opening error");}
-				else{
-					var node=xmlDoc.getElementsByTagName('svg')[0]
-					if(!node){alert("file svg node not found");}
-					else	webtronics.circuit.getfile(node);
-				}
-
-		}
-
-
-		$('webtronics_open_file').style.left = $('webtronics_file_open').offsetLeft+'px';
-		$('webtronics_open_file').style.top = $('webtronics_file_open').offsetTop+'px';
-		$('webtronics_open_file').style.width = $('webtronics_file_open').offsetWidth+'px';
-		$('webtronics_open_file').style.height = $('webtronics_file_open').offsetHeight+'px';
-
-
-		Event.observe(window, 'resize', function() {
-			webtronics.setsize();
-			webtronics.circuit.addtools();	
-		});
-
-
-	$('webtronics_toolbar').onselectstart = function() {return false;} 
-	$('webtronics_diagram_area').onselectstart = function() {return false;} 
-	$('webtronics_side_bar').onselectstart = function() {return false;} 
-
-/*parts list*/
-	var category=$$('#webtronics_parts_list > div >p');
-	for(var i=0;i<category.length;i++){
-		Event.observe(category[i],'click',function(e){
-			var menuitems=$$('#webtronics_parts_list > div');
-			var li=Event.element(e).parentNode.getElementsByTagName('div');
-			for(var j=0;j<menuitems.length;j++){
-				var list=menuitems[j].getElementsByTagName('div');
-				if(li[0]!=list[0])list[0].style.display='none';
-			}
-			if(li[0].style.display=='block')li[0].style.display='none';
-			else li[0].style.display='block';
-		});
-	}
-	var part=$$('#webtronics_parts_list>div>div');
-	for(var i=0;i<part.length;i++){
-		Event.observe(part[i],'click',function(e){
-			var pname=Event.element(e).firstChild.nodeValue;
-			var category=Event.element(e).parentNode.parentNode.firstChild.innerHTML.match(/.*/);
-			webtronics.changeimage(category,pname);
-							
-		});
-	}
-
-
-/*menu events*/		
-		Event.observe($('webtronics_file_open'), 'click', function() {
-			$('webtronics_open_text').style.display = "block";
-			webtronics.setMode('webtronics_file_open','select','Selection');
-			});
-		Event.observe($('webtronics_new'), 'click', function() {
-			webtronics.setMode('webtronics_select','select','Selection');
+					    var xmlDoc=Utils.docfromtext(textReader.result);
+					    if(!xmlDoc){alert("error parsing svg");}
+					    else{
+						    var result=this.sanitize(xmlDoc)
+						    if(result){console.log(result+ ' found');alert('unclean file');return;}
+						    var node=xmlDoc.getElementsByTagName('svg')[0];
+						    if(!node){alert("svg node not found")}
+						    else this.circuit.getfile(node);
+					    }
+				    }.bind(this);
+                    console.log(file.files[0]);
+				    textReader.readAsText(file.files[0]);
+                    $('webtronics_main_window').removeChild(div);
+    		    }
+		    }.bind(this));
+            $('webtronics_main_window').insert(div);
+            div.style.display='block';
+            file.focus();
+            file.click();
+            div.style.display='none';
+            
+            			
+		},
+		file_save:function(){
+			$('webtronics_file_menu').style.display='none';
+			this.download();
+		},
+		file_new:function(){
+			$('webtronics_file_menu').style.display='none';
+			this.setMode('webtronics_select','select','Selection');
 			input_box=confirm("Click OK to Clear the Drawing.");
-			if (input_box==true)webtronics.circuit.newdoc();
-			});
-		Event.observe($('webtronics_chips_open'), 'click', function() {
-			webtronics.disablepage();
-//			$('webtronics_chips_box').reset();
-			webtronics.circuit.clearinfo();
-			webtronics.setMode('webtronics_chips_open','select','Selection');
-			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
-			$('webtronics_chips_box').style.display = "block";
-			$('webtronics_chips_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_chips_box').offsetWidth/2)+'px';
-			$('webtronics_chips_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_chips_box').offsetHeight/2)+'px';
-			});
-		if($('webtronics_parts_open')){
-			webtronics.disablepage();
-			Event.observe($('webtronics_parts_open'), 'click', function() {
-				webtronics.setMode('webtronics_parts_open','select','Selection');
-				$('webtronics_parts_box').style.display = "block";
-				$('webtronics_parts_box').style.left = ($('webtronics_main_window').offsetWidth/2)-($('webtronics_parts_box').offsetWidth/2)+'px';
-				$('webtronics_parts_box').style.top = ($('webtronics_main_window').offsetHeight/2)-($('webtronics_parts_box').offsetHeight/2)+'px';
+			if (input_box==true)this.circuit.newdoc();
+		},
+		gdrive_open:function(){
+			$('webtronics_file_menu').style.display='none';
+            this.fileaction='open';
+			this.createPicker();
+		},
+		gdrive_import:function(){
+			$('webtronics_file_menu').style.display='none';
+            this.fileaction='import';
+			this.createPicker();
+		},
+    	gdrive_save:function(){
+			$('webtronics_file_menu').style.display='none';
+            this.CreateUi();
+        },
+		gdrive_new:function(){
+			$('webtronics_file_menu').style.display='none';
+        },
 
-				});
-		}
-		Event.observe($('webtronics_select'), 'click', function() {
-				webtronics.circuit.clearinfo();
-				webtronics.setMode('webtronics_select','select', 'Selection');
-			});
-		Event.observe($('webtronics_wire'), 'click', function() {
-				webtronics.circuit.clearinfo();
-				webtronics.setMode('webtronics_wire','line','Wire');
-			});
-		Event.observe($('webtronics_text'), 'click', function() {
-			webtronics.circuit.clearinfo();
-			webtronics.setMode('webtronics_text','text', 'Text');
-			});
-		if($('webtronics_undo')){
-			Event.observe($('webtronics_undo'),'click',function(){
-				webtronics.circuit.undo();
+        attachframe:function(filename,frame){
+            this.circuit=frame.contentWindow.circuit;
+            this.newtab(filename,frame);
+     	 	this.setMode('webtronics_select','select', 'Selection');    
+            this.circuit.container.observe('contextmenu',function(e){
+                $('webtronics_context_menu').style.top=Event.pointerY(e)+'px';                        
+                $('webtronics_context_menu').style.left=Event.pointerX(e)+'px';                        
+                $('webtronics_context_menu').style.display='block';                        
+                if(this.circuit.selected.length===1){
+                    $$('div#webtronics_context_menu [title=Properties]')[0].className='enabled';
+                }
+                else {
+                    $$('div#webtronics_context_menu [title=Properties]')[0].className='disabled';
+                }
 
-			});
-		}
-		if($('webtronics_redo')){
-			Event.observe($('webtronics_redo'),'click',function(){
-				webtronics.circuit.redo();
-			});
-		}
+                Event.stop(e);
+            }.bind(this));
+            this.circuit.container.observe('click',function(e){
+                if(Event.isLeftClick(e)){                
+                    if($('webtronics_context_menu')){
+                        $('webtronics_context_menu').style.display='none';
+                    }
+                }
+            });
 
-		Event.observe($('webtronics_delete'), 'click', function() {
-			webtronics.circuit.clearinfo();
-			webtronics.circuit.addhistory();
-			webtronics.circuit.deleteSelection();
-			});
-		if($('webtronics_save')){
-			Event.observe($('webtronics_save'), 'click', function() {
-				webtronics.circuit.clearinfo();
-				webtronics.showMarkup();
-				});
-		}
-		if($('webtronics_netlist')){
-			Event.observe($('webtronics_netlist'), 'click', function() {
-				webtronics.circuit.createnetlist();
-				});
-		}
-	
-		if($('webtronics_invert')){
-			$('webtronics_invert').checked=false;
-			Event.observe($('webtronics_invert'),'click',function(){
-				if($('webtronics_invert').checked==true){
-					console.log('invert');
-					$("webtronics_background").setAttribute('class','inv');
-					$("webtronics_drawing").setAttribute('class','inv');
-					$("information").setAttribute('class','inv');
-				}
-				else{
-					$("webtronics_background").removeAttribute('class');
-					$('webtronics_drawing').removeAttribute('class');
-					$("information").removeAttribute('class');
-				}
-								
-			});
-		}		
-		$('webtronics_graph').checked=false;
-		Event.observe($('webtronics_graph'),'click',function(){
-		if($('webtronics_graph').checked){
-			webtronics.circuit.graph=true;
-			webtronics.circuit.showbackground();									
-		}
-		else{
-			webtronics.circuit.graph=false;
-			webtronics.circuit.remove($('graph'));
-		}
-	
-					
-						
-			});
+        },
 
-		$('webtronics_connections').checked=false;
-		Event.observe($('webtronics_connections'),'click',function(){
-				webtronics.circuit.showconnections($('webtronics_connections').checked);
-						
-				});
-/*properties events*/		
-		if($('webtronics_properties_ok'))Event.observe($('webtronics_properties_ok'), 'click', function() {
-			$('webtronics_properties_form').hide();
-			$("webtronics_main_window").removeChild($("webtronics_disable"));
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-			webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-			if($("webtronics_model_text").value!=""){
-				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
-				if(!model){
-					model=document.createElement('spicemodel');
-					webtronics.circuit.selected[0].appendChild(model);
-					model.textContent=$("webtronics_model_text").value;
-				}
-				else {model.textContent=$("webtronics_model_text").value;}
-			}
-		});
+        newtab:function(filename,frame){
+            var newt=$('webtronics_new_tab');
+            if(newt===null){
+                newt=new Element('div',{'id':'webtronics_new_tab'})
+                            .insert(new Element('a',{"style":'margin:8px;'}).update('+'));
+                Event.observe(newt,'click',function(){
+                    var f=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
+                    $('webtronics_diagram_area').insert(f);
+                    Event.observe(f,'load',function(){
+                        this.attachframe('Schematic.svg',f);
+                    }.bind(this));
+
+                }.bind(this));
+                $('webtronics_tab_area').insert(newt);
+            }
+            var tab=new Element('div',{'class':'webtronics_selected_tab'});
+            var close = new Element('div',{"class":'webtronics_close_tab'})
+                            .insert(new Element('a').update('x'));
+         
+            Event.observe(tab,'click',function(e){
+                element=Event.element(e);
+
+                while(element.className!=='webtronics_tab'&&element.className!=='webtronics_selected_tab'){
+                    element=element.parentNode;
+                }
+                var tabs=$$('div.webtronics_selected_tab');
+                for(var i=0;i<tabs.length;i++){
+                    tabs[i].className='webtronics_tab';
+                }
+                element.className='webtronics_selected_tab';
+                var frames=$$('iframe');
+                for(var i=0;i<frames.length;i++){
+                    frames[i].style.visibility='hidden';
+                }                
+                frame.style.visibility='visible';
+                this.circuit=frame.contentWindow.circuit;
+                this.circuit.mode=this.mode;
+                $('webtronics_context_menu').style.display='none';
+                $('webtronics_connections').checked=this.circuit.connections;
+                $('webtronics_graph').checked=this.circuit.graph;
+                $('webtronics_invert').checked=this.circuit.inv;
+            }.bind(this));
+            Event.observe(close,'click',function(e){
+                element=Event.element(e);
+                while(element.className!=='webtronics_tab'&&element.className!=='webtronics_selected_tab'){
+                    element=element.parentNode;
+                }
+                element.parentNode.removeChild(element);
+                $('webtronics_diagram_area').removeChild(frame);
+                $('webtronics_tab_area').firstChild.click();
+                e.stopPropagation();                
+            }.bind(this));
+
+            tab.insert(close);
+            tab.insert(new Element('div',{'style':'position:relative;float:right;overflow:hidden'}).update(filename));
+            newt.insert({'before':tab});
+            tab.click();
+        },
+        
+
+
+
+
+/*all events are loaded here*/
+    init:function(){
+        Event.observe(window, 'load', function(){
+		    if (!window.console) {
+			    window.console = {};
+			    window.console.log = function(){};
+		    }
+            webtronics.setsize();
+		    if(webtronics.CLIENT_ID){
+                webtronics.createfilemenu($('webtronics_file').offsetLeft,
+			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
+			    'webtronics_file_menu',
+                $('webtronics_main_window'),
+			    [{label:'import',cb:webtronics.file_open},
+			    {label:'save',cb:webtronics.file_save},
+			    {label:'new',cb:webtronics.file_new},
+			    {label:'G-drive open',cb:webtronics.gdrive_open},
+			    {label:'G-drive import',cb:webtronics.gdrive_import},
+			    {label:'G-drive save',cb:webtronics.gdrive_save},
+			    {label:'G-drive new',cb:webtronics.gdrive_new}]);
+            }
+            else{
+                webtronics.createfilemenu($('webtronics_file').offsetLeft,
+			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
+			    'webtronics_file_menu',
+                $('webtronics_main_window'),
+			    [{label:'import',cb:webtronics.file_open},
+			    {label:'save',cb:webtronics.file_save},
+			    {label:'new',cb:webtronics.file_new}]);
+            }
+
 		
-		if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
-			if($('webtronics_part_model').value!="none"){
-				if($('webtronics_part_model').value.match(/\.model/i)!=null){
-					$('webtronics_model_text').value=$('webtronics_part_model').value;
-				}
-				$('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
+
+    /*replace context menu*/
+		    var myLinks = [
+                    {label:'copy',cb:function(){
+                        webtronics.copy=webtronics.circuit.copy();
+                        $('webtronics_context_menu').style.display='none';
+                        }},
+                    {label:'paste',cb:function(){
+                        webtronics.circuit.paste(webtronics.copy);
+                        $('webtronics_context_menu').style.display='none';}},
+				    {label:'Properties',cb:function(){
+					    webtronics.openProperties()
+					    webtronics.center($('webtronics_properties_form'));
+                        $('webtronics_context_menu').style.display='none';
+				    }}];
+            this.createfilemenu(0,
+                0,
+                'webtronics_context_menu',
+                $('webtronics_diagram_area'),
+                myLinks);
+ 
+        /*add a new tab */
+            var frame=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
+            $('webtronics_diagram_area').insert(frame);
+            Event.observe(frame,'load',function(){
+                var filename='Schematic.svg';
+        /* if google gave us a file id load it*/
+                if(webtronics.FILE_IDS!==undefined){
+                    if(webtronics.FILE_IDS[0]!==undefined){
+                        webtronics.file_id=webtronics.FILE_IDS[0];
+                        if(webtronics.FILE_IDS[0]!=''){
+                            webtronics.fileaction='open';
+                            webtronics.Get(webtronics.file_id);
+                        }
+                        else {
+                            this.attachframe(filename,frame);
+                        }
+                    }
+                    else {
+                        this.attachframe(filename,frame);
+                    }
+                }
+                else {
+                    this.attachframe(filename,frame);
+                }
+            }.bind(this));
+
+		    Event.observe(window, 'resize', function() {
+			    webtronics.setsize();
+			    webtronics.circuit.addtools();	
+		    });
+       
+	    $('webtronics_toolbar').onselectstart = function() {return false;} 
+	    $('webtronics_diagram_area').onselectstart = function() {return false;} 
+	    $('webtronics_side_bar').onselectstart = function() {return false;} 
+
+    /*parts list*/
+	    var category=$$('#webtronics_parts_list > div >p');
+	    for(var i=0;i<category.length;i++){
+		    Event.observe(category[i],'click',function(e){
+			    var menuitems=$$('#webtronics_parts_list > div');
+			    var li=Event.element(e).parentNode.getElementsByTagName('div');
+			    for(var j=0;j<menuitems.length;j++){
+				    var list=menuitems[j].getElementsByTagName('div');
+				    if(li[0]!=list[0])list[0].style.display='none';
+			    }
+			    if(li[0].style.display=='block')li[0].style.display='none';
+			    else li[0].style.display='block';
+		    });
+	    }
+	    var part=$$('#webtronics_parts_list>div>div');
+	    for(var i=0;i<part.length;i++){
+		
+		    Event.observe(part[i],'mousedown',function(e){
+			    webtronics.circuit.unselect();
+			    var element=Event.element(e);
+			    while(element.tagName!=="svg"){
+			    element=element.parentNode;
+			    }
+			    var group=element.firstChild;
+			    while(group.nodeType!==1||group.tagName!=="g"){
+				    group=group.nextSibling;
+			    }
+			    var model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
+			    if(!model){
+				    group.appendChild(model);
+			    }
+			    webtronics.circuit.getgroup(group);
+			    webtronics.setMode('webtronics_select','select','Selection');
+			
+		    });
+		    Event.observe(part[i],'mouseup',function(e){
+			    webtronics.circuit.deleteSelection();				
+		    });
+	    /*this might get the ipad working*/
+		    Event.observe(part[i], "onclick", void(0));
+			
+	    }
+
+    /*menu events*/		
+		    Event.observe($('webtronics_file'), 'click', function() {
+			    if($('webtronics_file_menu').style.display=='block'){
+                    $('webtronics_file_menu').style.display='none';
+                }            
+                else {
+                    $('webtronics_file_menu').style.display='block';
+                }                
+		    });
+		    Event.observe($('webtronics_chips_open'), 'click', function() {
+			    webtronics.disablepage();
+    //			$('webtronics_chips_box').reset();
+			    webtronics.circuit.clearinfo();
+			    webtronics.setMode('webtronics_chips_open','select','Selection');
+			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+			    $('webtronics_chips_box').style.display = "block";
+			    webtronics.center($('webtronics_chips_box'));
+			    });
+		    if($('webtronics_parts_open')){
+			    webtronics.disablepage();
+			    Event.observe($('webtronics_parts_open'), 'click', function() {
+				    webtronics.setMode('webtronics_parts_open','select','Selection');
+				    $('webtronics_parts_box').style.display = "block";
+				    webtronics.center($('webtronics_parts_box'));
+				    });
+		    }
+		    Event.observe($('webtronics_select'), 'click', function() {
+				    webtronics.circuit.clearinfo();
+				    webtronics.setMode('webtronics_select','select', 'Selection');
+			    });
+		    Event.observe($('webtronics_wire'), 'click', function() {
+				    webtronics.circuit.clearinfo();
+				    webtronics.setMode('webtronics_wire','line','Wire');
+			    });
+		    Event.observe($('webtronics_text'), 'click', function() {
+			    webtronics.circuit.clearinfo();
+			    webtronics.setMode('webtronics_text','text', 'Text');
+
+			    });
+		    if($('webtronics_undo')){
+			    Event.observe($('webtronics_undo'),'click',function(){
+				    webtronics.circuit.undo();
+
+			    });
+		    }
+		    if($('webtronics_redo')){
+			    Event.observe($('webtronics_redo'),'click',function(){
+				    webtronics.circuit.redo();
+			    });
+		    }
+
+		    Event.observe($('webtronics_delete'), 'click', function() {
+			    webtronics.circuit.clearinfo();
+			    webtronics.circuit.addhistory();
+			    webtronics.circuit.deleteSelection();
+			    });
+		    if($('webtronics_save')){
+			    Event.observe($('webtronics_save'), 'click', function() {
+				    webtronics.circuit.clearinfo();
+				    webtronics.showMarkup();
+				    });
+		    }
+		    if($('webtronics_netlist')){
+			    Event.observe($('webtronics_netlist'), 'click', function() {
+				    webtronics.circuit.createnetlist();
+				    });
+		    }
+	
+		    if($('webtronics_invert')){
+			    Event.observe($('webtronics_invert'),'click',function(){
+        			webtronics.circuit.invert($('webtronics_invert').checked);
+						
+			    });
+		    }		
+		    if($('webtronics_graph')){
+                Event.observe($('webtronics_graph'),'click',function(){
+		            if($('webtronics_graph').checked){
+			            webtronics.circuit.graph=true;
+			            webtronics.circuit.showbackground();									
+		            }
+		            else{
+			            webtronics.circuit.graph=false;
+			            webtronics.circuit.showbackground();									
+		            }
+        		});
+            }
+		    if($('webtronics_connections')){
+            $('webtronics_connections').checked=false;
+		        Event.observe($('webtronics_connections'),'click',function(){
+				        webtronics.circuit.showconnections($('webtronics_connections').checked);
+						
+		        });
+            }
+    /*properties events*/		
+
+		    if($('webtronics_properties_ok'))Event.observe($('webtronics_properties_ok'), 'click', function() {
+			    $('webtronics_properties_form').hide();
+			    webtronics.enablepage();
+			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+			    webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			    if($("webtronics_model_text").value!=""){
+				    var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				    if(!model){
+					    model=document.createElement('spicemodel');
+					    webtronics.circuit.selected[0].appendChild(model);
+					    model.textContent=$("webtronics_model_text").value;
+				    }
+				    else {model.textContent=$("webtronics_model_text").value;}
+			    }
+		    });
+		
+		    if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
+			    if($('webtronics_part_model').value!="none"){
+				    if($('webtronics_part_model').value.match(/\.model/i)!=null){
+					    $('webtronics_model_text').value=$('webtronics_part_model').value;
+				    }
+				    $('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
 				
-			}
-			else {
-				$('webtronics_model_text').clear();
-				$('webtronics_part_value').clear();
-				var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
-				model.textContent="";
-			}
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		});
+			    }
+			    else {
+				    $('webtronics_model_text').clear();
+				    $('webtronics_part_value').clear();
+				    var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
+				    model.textContent="";
+			    }
+			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		    });
 		
-		if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		});
-		if($('webtronics_part_id'))Event.observe($('webtronics_part_id'),'keyup',function(){
-			webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		});
-		if($('webtronics_model_text'))Event.observe($('webtronics_model_text'),"change",function(){		
-			/*css selectors don't work here,maybe doing it wrong*/
-			var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
-			if(!model){
-				model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
-				webtronics.circuit.selected[0].appendChild(model);
-			}
-			model.textContent=$('webtronics_model_text').value;
-		});
+		    if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
+			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		    });
+		    if($('webtronics_part_id'))Event.observe($('webtronics_part_id'),'keyup',function(){
+			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		    });
+		    if($('webtronics_model_text'))Event.observe($('webtronics_model_text'),"change",function(){		
+			    /*css selectors don't work here,maybe doing it wrong*/
+			    var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
+			    if(!model){
+				    model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
+				    webtronics.circuit.selected[0].appendChild(model);
+			    }
+			    model.textContent=$('webtronics_model_text').value;
+		    });
 
 
 
-/*chip box events*/
-		Event.observe($('webtronics_vert_pins'), 'change', function() {
-			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
-		});
-		Event.observe($('webtronics_hor_pins'), 'change', function() {
-			chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
-		});
-		Event.observe($('webtronics_chip_ok'), 'click', function() {
-			$("webtronics_main_window").removeChild($("webtronics_disable"));
-			webtronics.returnchip();
-			//chipmaker.clear();
-		});
-		Event.observe($('webtronics_chip_cancel'), 'click', function() {
-			$("webtronics_main_window").removeChild($("webtronics_disable"));
-			$('webtronics_chips_box').hide();
-			webtronics.setMode('webtronics_select','select','Selection');
-		});
-/*text add events*/
-		if($("webtronics_text_ok")){
-			Event.observe($('webtronics_text_ok'), 'click', function() {
-				webtronics.circuit.addtext($('webtronics_comment').value);
-				$('webtronics_add_text').hide();
-				webtronics.setMode('webtronics_select','select','Selection');
-			});
-		}
-		if($("webtronics_text_cancel")){
-			Event.observe($('webtronics_text_cancel'), 'click', function() {
-				webtronics.setMode('webtronics_select','select','Selection');
-				$('webtronics_add_text').hide();
-			});
-		}
-/*text open events*/
-		Event.observe($('webtronics_open_text_ok'), 'click', function() {
-			$('webtronics_open_text').hide();
-		});
-		Event.observe($('webtronics_open_text_cancel'), 'click', function() {
-			webtronics.setMode('webtronics_select','select','Selection');
+    /*chip box events*/
+		    Event.observe($('webtronics_vert_pins'), 'change', function() {
+			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+		    });
+		    Event.observe($('webtronics_hor_pins'), 'change', function() {
+			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+		    });
+		    Event.observe($('webtronics_chip_ok'), 'click', function() {
+			    webtronics.enablepage()
+			    webtronics.returnchip();
+			    //chipmaker.clear();
+		    });
+		    Event.observe($('webtronics_chip_cancel'), 'click', function() {
+			    webtronics.enablepage();
+			    $('webtronics_chips_box').hide();
+			    webtronics.setMode('webtronics_select','select','Selection');
+		    });
+    /*text add events*/
+		    if($("webtronics_text_ok")){
+			    Event.observe($('webtronics_text_ok'), 'click', function() {
+				    webtronics.circuit.addtext($('webtronics_comment').value);
+				    $('webtronics_add_text').hide();
+				    webtronics.setMode('webtronics_select','select','Selection');
+			    });
+		    }
+		    if($("webtronics_text_cancel")){
+			    Event.observe($('webtronics_text_cancel'), 'click', function() {
+				    webtronics.setMode('webtronics_select','select','Selection');
+				    $('webtronics_add_text').hide();
+			    });
+		    }
+    /*text open events*/
+		    Event.observe($('webtronics_open_text_ok'), 'click', function() {
+			    $('webtronics_open_text').hide();
+		    });
+		    Event.observe($('webtronics_open_text_cancel'), 'click', function() {
+			    webtronics.setMode('webtronics_select','select','Selection');
 
-			$('webtronics_open_text').hide();
-		});
+			    $('webtronics_open_text').hide();
+		    });
 
 	
-});
-
+        }.bind(this));
+    }
+}
+webtronics.init();

@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html><head>
+<title>Webtronix schematic editor.</title>
+
+<link rel="stylesheet" href="style/schematic.css" type="text/css">
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="script/prototype.js"></script>
+<script type="text/javascript" src="script/schematic.js"></script>
+<script type="text/javascript" src="script/primatives.js"></script>
+<script type="text/javascript" src="script/connections.js"></script>
+<script type="text/javascript" src="script/chipmaker.js"></script>
+<script type="text/javascript" src="script/gui.js"></script>
+<!--script type="text/javascript" src="script/proto.menu.js"></script-->
+<script type="text/javascript" src="script/context.js"></script>
+<script type="text/javascript">
+//for google
+  var webtronics = webtronics || {};
+  webtronics.FILE_IDS = [];
+  webtronics.CLIENT_ID = "";
+  google.load('picker', '1');
 
 
-<link rel="stylesheet" href="schematic.css" type="text/css">
-<script type="text/javascript">var webtronicsPath = './'</script>
-<script type="text/javascript" src="./script/prototype.js"></script>
-<script type="text/javascript" src="./script/schematic.js"></script>
-<script type="text/javascript" src="./script/primatives.js"></script>
-<script type="text/javascript" src="./script/connections.js"></script>
-<script type="text/javascript" src="./script/chipmaker.js"></script>
-<script type="text/javascript" src="./script/gui.js"></script>
-<script type="text/javascript" src="./script/proto.menu.js"></script></head><body>
+</script>
+</head><body>
+
 <div id="webtronics_main_window">
 <!--
 toolbar
 -->
 	<div id="webtronics_toolbar">
-		<div id="webtronics_buttons">
-			<fieldset >
-				<legend>File</legend>
-				<img id="webtronics_file_open" class="normal_button" title="import file" src="./buttons/open.png">
-				<img id="webtronics_new" class="normal_button" title="clear the drawing area" src="./buttons/new.png">
-				<img id="webtronics_save" class="normal_button" title="Save the file" src="./buttons/save.png">
-			</fieldset>
+            <img id='webtronics_file' title="file menu" src="./buttons/openmenu.png">
 			<fieldset>	
 				<legend>Circuit</legend>
 				<img id="webtronics_netlist" class="normal_button" title="view the netlist" src="./buttons/netlist.png">
@@ -40,8 +46,6 @@ toolbar
 				<img id="webtronics_undo" class="normal_button" title="undo last action" src="./buttons/undo.png">
 				<img id="webtronics_redo" class="normal_button" title="redo last action" src="./buttons/redo.png">
 			</fieldset>
-		</div>
-		<div id="webtronics_settings"> 	
 			<fieldset>
 				<legend>Settings</legend>			
 				<form> 
@@ -56,123 +60,782 @@ toolbar
 					</table>         
 				</form>
 			</fieldset>
-		</div>
-
 	</div>
 <!--this section should be generated on the server -->
 <div id="webtronics_center" >
 	<div id="webtronics_side_bar" >
-		<div id="webtronics_part_display" title="drag this part" >    </div>
 		<div id="webtronics_parts_list" >
-			<div><p>test</p>
-				<div>
-					<p>scope</p>
-				</div>
-			</div>
+
 			
-			<div><p>amplifier</p>
+			<div id="webtronics_amplifier"><p>amplifier</p>
 				<div>
-					<p>op-amp</p>
-				</div>
-			</div>
-			<div><p>audio</p>
-				<div>
-					<p>speaker</p>
-				</div>
-			</div>
-			<div><p>capacitors</p>
-				<div>
-					<p>capacitor</p>
-					<p>polar-cap</p>
-					<p>varicap</p>
-				</div>
-			</div>
-			<div><p>diodes</p>
-				<div>
-					<p>diode</p>
-					<p>led</p>
-					<p>photodiode</p>
-					<p>scr</p>
-					<p>triac</p>
-					<p>trigger</p>
-					<p>zener</p>
-				</div>
-			</div>
-			<div><p>inductors</p>
-				<div>
-					<p>coil</p>
-					<p>tapcoil</p>
-					<p>transformer</p>
-				</div>
-			</div>
-			<div><p>frequency</p>
-				<div>
-					<p>crystal</p>
-				</div>
-			</div>
-			<div><p>gates</p>
-				<div>
-					<p>and</p>
-					<p>or</p>
-					<p>not</p>
-					<p>nor</p>
-					<p>xor</p>
-					<p>xnor</p>
-				</div>
-			</div>
-			<div><p>ic</p>
-				<div>
-					<p>3_pins</p>
-					<p>4_pins</p>
-					<p>5_pins</p>
-				</div>
-			</div>
-			<div><p>power</p>
-				<div>		
-					<p>ac</p>
-					<p>battery</p>
-					<p>ground</p>
-					<p>positive</p>
+				
+					<div title="op-amp">
+					<svg height="60" version="1.0" width="60" xmlns="http://www.w3.org/2000/svg">
+<!--
+* CONNECTIONS:   NON-INVERTING INPUT
+*                | INVERTING INPUT
+*                | | POSITIVE POWER SUPPLY
+*                | | | NEGATIVE POWER SUPPLY
+*                | | | | OUTPUT
+*                | | | | |
+.SUBCKT UA741    1 2 3 4 5
+-->
+ <g class="op-amp" connects="0,10;0,50;30,0;30,60;60,30" flippable="true" id="u-webtronics" stroke="#000" stroke-width="2px">
+  <path d="M50,30,10,60,10,0,50,30z" fill="none" id="path1887"/>
+  <path d="M0,10,10,10" id="path1889"/>
+  <path d="M0,50,10,50" id="path1893"/>
+  <text font-size="12px" id="text1895" stroke-width="0px" x="15" y="20">+</text>
+  <path d="M50,30,60,30" id="path2167"/>
+  <text font-size="12px" id="text1915" stroke-width="0px" x="15" y="45">_</text>
+  <path d="M30,0,30,15" id="path2"/>
+  <path d="M30,45,30,60" id="path2"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
 				</div>
 			</div>	
-			<div><p>resistors</p>
+			
+			<div id="webtronics_audio"><p>audio</p>
 				<div>
-					<p>photo-resistor</p>
-					<p>testresistor</p>
-					<p>resistor</p>
-					<p>potentiometer</p>
-					<p>vari-resistor</p>
-				</div>
-			</div>
-			<div><p>switches</p>
-				<div>
-					<p>ncpb</p>
-					<p>nopb</p>
-					<p>spst-relay</p>
-					<p>spst-switch</p>
+				
+					<div title="speaker">
+					<svg height="30.091328" version="1.0" width="50.81818" xmlns="http://www.w3.org/2000/svg">
+  <g class="speaker" connects="10,30;40,30" id="s-webtronics" stroke="black" stroke-width="2px">
+    <rect fill="none" height="9.0629358" id="rect4127" width="30" x="10.5" y="10.782949"/>
+    <path d="M 10.954546,10.608661 C 9.409091,10.085799 0.5,0.6742871 0.5,0.6742871 L 50.318182,0.5 L 40.136364,10.957236" fill="none" id="path4129"/>
+    <path d="M 10,20 L 10,30" id="path4133"/>
+    <path d="M 40,20 L 40,30" id="path4135"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
 				</div>
 			</div>	
-			<div><p>transistors</p>
+			
+			<div id="webtronics_capacitors"><p>capacitors</p>
 				<div>
-					<p>njfet</p>
-					<p>nmosfet</p>
-					<p>npn</p>
-					<p>phototrans</p>
-					<p>pjfet</p>
-					<p>pmosfet</p>
-					<p>pnp</p>
+				
+					<div title="polar-cap">
+					<svg height="20.649992" version="1.0" width="27.000002" xmlns="http://www.w3.org/2000/svg">
+  <g class="polar-cap" connects="0,10;30,10" id="C-webtronics" stroke="black" stroke-width="2px">
+    <path d="M 10,0 10,20" id="path3412"/>
+    <path d="m 20,0 0,20" id="path3414"/>
+    <path d="m 20,10 10,0" id="path3420"/>
+    <path d="M 10,10 0,10" id="path3422"/>
+     <text font-size="12px" id="text5025" stroke-width="0px" x="0" y="8.5261526">+</text>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="varicap">
+					<svg height="20.649992" version="1.0" width="30" xmlns="http://www.w3.org/2000/svg">
+  <g class="varicap" connects="0,10;30,10" id="C-webtronics" stroke="black" stroke-width="2px">
+    <path d="M 10,0 10,20" id="path3412"/>
+    <path d="m 20,0 0,20" id="path3414"/>
+    <path d="m 20,10 10,0" id="path3420"/>
+    <path d="M 10,10 0,10" id="path3422"/>
+    <path d="M 5.1751823,7.559825 C 5.1751823,6.9509801 2.7398024,2.3846428 2.7398024,2.3846428 L 8.16867,4.1604406" fill="none" id="path2163"/>
+    <path d="M 3.6530698,3.2471732 L 22.07063,18.924931" id="path2165"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="capacitor">
+					<svg height="20.524286" version="1.1" width="30.237501" xmlns="http://www.w3.org/2000/svg">
+  <g class="capacitor" connects="0,10;30,10" id="C-webtronics" stroke="black" stroke-width="2px">
+    <path d="M 10,0 10,20" id="path3412"/>
+    <path d="m 20,0 0,20" id="path3414"/>
+    <path d="m 20,10 10,0" id="path3420"/>
+    <path d="M 10,10 0,10" id="path3422"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
 				</div>
-			</div>
+			</div>	
+			
+			<div id="webtronics_diodes"><p>diodes</p>
+				<div>
+				
+					<div title="led">
+					<svg height="29.840296" version="1.0" width="39.061817" xmlns="http://www.w3.org/2000/svg">
+  <g class="led" connects="0,20;40,20" id="D-webtronics" stroke="black" stroke-width="2px">
+    <path d="M 10,30 L 10,10" id="path2210"/>
+    <path d="M 0,20 L 40,20" id="path3202"/>
+    <path d="M 12.406482,9.3402953 L 10.602339,0.5 L 17.818907,4.8299403" id="path2163"/>
+    <path d="M 18.745196,12.340295 L 11.13586,1.3624071" id="path3210"/>
+    <path d="M 10.556699,19.022098 L 29.530771,10.294655 L 29.530771,29.385935 L 10.556699,19.022098 z" fill="black" id="path2220"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="diode">
+					<svg height="20" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="diode" connects="0,10;40,10" id="D-webtronics" stroke="#000" stroke-width="2px">
+  <path d="m11.059,19.249,0-18.37" id="path2210"/>
+  <path d="M0,10h40" id="path3202"/>
+  <path d="m11.298,10,17.776-8.5486,0,17.1l-17.776-8.551z" fill="#000" id="path2220"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="scr">
+					<svg height="20.660362" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+  <g class="scr" connects="0,10;40,10;0,20" id="D" stroke="black" stroke-width="2px">
+    <path d="M 10.056699,19.706003 L 10.056699,0.45435962" id="path2210"/>
+    <path d="M 0,10 L 40,10" id="path3202"/>
+    <path d="M 10.048965,11.52119 L 0.5,20.160362" id="path2226"/>
+    <path d="M 11.056699,9.3421656 L 30.030771,0.61472262 L 30.030771,19.706003 L 11.056699,9.3421656 z" fill="black" id="path2220"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="photodiode">
+					<svg height="29.840296" version="1.0" width="39.061817" xmlns="http://www.w3.org/2000/svg">
+  <g class="photodiode" connects="0,20;40,20" id="D-webtronics" stroke="black" stroke-width="2px">
+    <path d="M 9.556699,29.385935 L 9.556699,10.134292" id="path2210"/>
+    <path d="M 0,20 L 40,20" id="path3202"/>
+    <path d="M 12,9.8402958 L 19,12.840296 L 18,5.8402958" fill="none" id="path2195"/>
+    <path d="M 18.745196,12.340295 L 11.13586,1.3624071" id="path3210"/>
+    <path d="M 10.556699,19.022098 L 29.530771,10.294655 L 29.530771,29.385935 L 10.556699,19.022098 z" fill="black" id="path2220"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="triac">
+					<svg height="30" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+  <g class="triac" connects="0,10;40,10;40,20" id="D" stroke="black" stroke-width="2px">
+    <path d="M 10.964206,16.763259 L 10.964206,1.6734577" id="path2210"/>
+    <path d="M 0,10 L 40,10" id="path3202"/>
+    <path d="M 29.266715,19.945637 L 10.964378,12.907382 L 10.96116,27.39276 L 29.266715,19.945637 z" fill="black" id="path4957"/>
+    <path d="M 29.722973,15.239242 L 29.722973,27.325552" id="path4959"/>
+    <rect height="30" id="rect2175" visibility="hidden" width="40" x="0.17812824" y="0"/>
+    <path d="M 30,20 L 40,20" id="path3163"/>
+    <path d="M 11.284014,10.29367 L 29.859252,2.102964 L 29.789401,16.847834 L 11.284014,10.29367 z" fill="black" id="path2220"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="zener">
+					<svg height="20" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+  <g class="zener" connects="0,10;40,10" id="D" stroke="black" stroke-width="2px">
+    <path d="M 14.639172,0.38974096 L 10.056699,0.45435962 L 10.056699,19.706003 L 5,19.660362" fill="none" id="path2210"/>
+    <path d="M 0,10 L 40,10" id="path3202"/>
+    <path d="M 11.056699,9.3421656 L 30.030771,0.61472262 L 30.030771,19.706003 L 11.056699,9.3421656 z" fill="black" id="path2220"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="trigger">
+					<svg height="30" version="1.0" width="40.585579" xmlns="http://www.w3.org/2000/svg">
+ <g class="trigger" connects="0,10;40,10" id="D" stroke="black" stroke-width="2px">
+    <path d="M 10.964206,16.763259 L 10.964206,1.6734577" id="path2210"/>
+    <path d="M 0,10 L 40,10" id="path3202"/>
+    <path d="M 29.266715,20 L 10,13 L 11.022585,30 L 29.266715,19.945637 z" fill="black" id="path4957"/>
+    <path d="M 29.722973,15.239242 L 29.722973,24.499999" id="path4959"/>
+    <path d="M 11.284014,10.29367 L 29.859252,2.102964 L 29.789401,16.847834 L 11.284014,10.29367 z" fill="black" id="path2220"/>
+    <rect height="25" id="rect2175" visibility="hidden" width="40" x="0.17812824" y="0"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_frequency"><p>frequency</p>
+				<div>
+				
+					<div title="crystal">
+					<svg height="20" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="crystal" connects="0,10;40,10" id="X" stroke="#000" stroke-width="2px">
+  <path d="M10,0,10,20" id="path3412"/>
+  <path d="M28,10,40,10" id="path3420"/>
+  <path d="m28,0,0,20" id="path3414"/>
+  <path d="m9.3789,9.9998-8.754-7E-7" id="path3422"/>
+  <rect fill="none" height="18.913" id="rect3789" width="7.4791" x="15.079" y="0.91271"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_gates"><p>gates</p>
+				<div>
+				
+					<div title="and">
+					<svg height="40.902729" version="1.0" width="60.318184" xmlns="http://www.w3.org/2000/svg">
+  <g class="and" connects="0,10;60,20;0,30" id="G" stroke="black" stroke-width="2px">
+    <path d="M 10.863637,0.66290618 L 20.136364,0.57199708 C 20.136364,0.57199708 33.500001,-0.35982112 41.045455,4.4810879 C 48.59091,9.3219965 49.272727,14.70836 49.409091,19.935633 C 49.545455,25.162906 48.590909,31.003815 41.045455,35.935633 C 33.500001,40.867451 20.136364,40.390178 20.136364,40.390178 L 10.863637,40.117451 L 10.863637,0.66290618 z" fill="none" id="path2189"/>
+    <path d="M 49.818182,19.935633 L 59.818182,19.935633" id="path2191"/>
+    <path d="M 10.5,10.435633 L 0.5,10.435633" id="path2193"/>
+    <path d="M 10.818182,30.299269 L 0.818182,30.299269" id="path2195"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="xor">
+					<svg height="40.902729" version="1.0" width="60.318184" xmlns="http://www.w3.org/2000/svg">
+  <g class="xor" connects="0,10;0,30;60,20" id="G" stroke="black" stroke-width="2px">
+  <path d="M10.864,0.66291l9.272-0.09091c1.055,0.0492,13.888,1.5474,20.909,8.4635,5.022,4.9455,7.841,9.5075,8.374,11.096,0.911,2.712-0.233-1.391-0.01,0.027,0.27,1.715-2.936,8.017-9.474,14.222-7.265,6.895-19.797,6.02-19.799,6.01l-9.272-0.273c4.003-12.651,5.429-25.624,0-39.454z" fill="none" id="path2189"/>
+  <path d="m50,20l10,0" fill="none" id="path2191"/>
+  <path d="M0,10l13,0" id="path2193"/>
+  <path d="M0,30h13" id="path2195"/>
+  <path d="M7.3402,0.59291c4.2808,15.544,3.1698,27.526-0.2222,39.234" fill="none" id="path3223"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="xnor">
+					<svg height="40" version="1.0" width="60" xmlns="http://www.w3.org/2000/svg">
+  <g class="xnor" connects="0,10;0,30;60,20" id="G" stroke="black" stroke-width="2px">
+  <path d="M10.864,0.66291l9.272-0.09091c1.055,0.0492,13.888,1.5474,20.909,8.4635,5.022,4.9455,7.841,9.5075,8.374,11.096,0.911,2.712-0.233-1.391-0.01,0.027,0.27,1.715-2.936,8.017-9.474,14.222-7.265,6.895-19.797,6.02-19.799,6.01l-9.272-0.273c4.003-12.651,5.429-25.624,0-39.454z" fill="none" id="path2189"/>
+  <path d="m55,20l5,0" fill="none" id="path2191"/>
+  <path d="M0,10l13,0" id="path2193"/>
+  <path d="M0,30h13" id="path2195"/>
+  <path d="m54.915,20.415a2.8882,3.1103,0,1,1,-5.7763,0,2.8882,3.1103,0,1,1,5.7763,0z" fill="none" id="path2431"/>
+  <path d="M7.3402,0.59291c4.2808,15.544,3.1698,27.526-0.2222,39.234" fill="none" id="path3223"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="or">
+					<svg height="40.902729" version="1.0" width="60.318184" xmlns="http://www.w3.org/2000/svg">
+  <g class="or" connects="0,10;0,30;60,20" id="G" stroke="black" stroke-width="2px">
+    <path d="M 10.863637,0.66290618 L 20.136364,0.57199708 C 21.190899,0.62120167 34.023953,2.1193852 41.045455,9.0354996 C 46.066503,13.981185 48.886195,18.543 49.419293,20.131273 C 50.329505,22.843088 49.474964,18.724522 49.409091,20.1578 C 49.345559,21.54015 46.472981,28.175101 39.934623,34.380468 C 32.669624,41.27547 20.137737,40.399786 20.136364,40.390178 L 10.863637,40.117451 C 14.86684,27.466336 16.293486,14.493152 10.863637,0.66290618 z" fill="none" id="path2189"/>
+    <path d="M 49.818182,19.935633 C 57.213714,20.174586 56.904566,19.960322 59.818182,19.935633" id="path2191"/>
+    <path d="M 13.388164,10.102383 L 0.5,10.435633" id="path2193"/>
+    <path d="M 12.928763,30.299269 L 0.818182,30.299269" id="path2195"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="nand">
+					<svg height="40.902729" version="1.0" width="60.318184" xmlns="http://www.w3.org/2000/svg">
+  <g class="nand" connects="60,20;0,10;0,30" id="G" stroke="black" stroke-width="2px">
+    <path d="M 10.863637,0.66290618 L 20.136364,0.57199708 C 20.136364,0.57199708 33.500001,-0.35982112 41.045455,4.4810879 C 48.59091,9.3219965 49.272727,14.70836 49.409091,19.935633 C 49.545455,25.162906 48.590909,31.003815 41.045455,35.935633 C 33.500001,40.867451 20.136364,40.390178 20.136364,40.390178 L 10.863637,40.117451 L 10.863637,0.66290618 z" fill="none" id="path2189"/>
+    <path d="M 49.818182,19.935633 L 59.818182,19.935633" id="path2191"/>
+    <path d="M 10.5,10.435633 L 0.5,10.435633" id="path2193"/>
+    <path d="M 10.818182,30.299269 L 0.818182,30.299269" id="path2195"/>
+    <path d="M 53.464991,19.999123 C 53.464991,21.220202 52.520106,22.210081 51.35453,22.210081 C 50.188955,22.210081 49.24407,21.220202 49.24407,19.999123 C 49.24407,18.778044 50.188955,17.788165 51.35453,17.788165 C 52.520106,17.788165 53.464991,18.778044 53.464991,19.999123 z" id="path2162"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="not">
+					<svg height="40.857143" version="1.0" width="40.500751" xmlns="http://www.w3.org/2000/svg">
+  <g class="not" connects="0,20;40,20" id="G" stroke="black" stroke-width="2px">
+    <path d="M 31.864774,20.071429 L 8.753888,40.357143 L 8.753888,0.5 L 31.982663,20.418568 L 39.882814,20.418568" fill="none" id="path1887"/>
+    <path d="M 8.753888,20.357143 L 0.5,20.357143" id="path1970"/>
+    <path d="M 34.155292,19.998991 C 34.155596,21.853484 33.337242,23.357143 32.327646,23.357143 C 31.31805,23.357143 30.499696,21.853484 30.5,19.998991 C 30.499696,18.144498 31.31805,16.640839 32.327646,16.640839 C 33.337242,16.640839 34.155596,18.144498 34.155292,19.998991 z" fill="none" id="path1972"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="nor">
+					<svg height="40.902729" version="1.0" width="60.318184" xmlns="http://www.w3.org/2000/svg">
+  <g class="nor" connects="0,10;0,30;60,20" id="G" stroke="black" stroke-width="2px">
+    <path d="M 10.863637,0.66290618 L 20.136364,0.57199708 C 21.190899,0.62120167 34.023953,2.1193852 41.045455,9.0354996 C 46.066503,13.981185 48.886195,18.543 49.419293,20.131273 C 50.329505,22.843088 49.186258,18.740418 49.409091,20.1578 C 49.678809,21.8734 46.472981,28.175101 39.934623,34.380468 C 32.669624,41.27547 20.137737,40.399786 20.136364,40.390178 L 10.863637,40.117451 C 14.86684,27.466336 16.293486,14.493152 10.863637,0.66290618 z" fill="none" id="path2189"/>
+    <path d="M 13.388164,10.102383 L 0.5,10.435633" id="path2193"/>
+    <path d="M 12.928763,30.299269 L 0.818182,30.299269" id="path2195"/>
+    <path d="M 51.764777,20.241251 A 2.8881636,3.1103299 0 1 1 45.98845,20.241251 A 2.8881636,3.1103299 0 1 1 51.764777,20.241251 z" fill="none" id="path2431" transform="translate(2.110581,0)"/>
+   <path d="M 49.818182,19.935633 C 57.213714,20.174586 56.904566,19.960322 59.818182,19.935633" fill="none" id="path2191"/>
+ 
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_ic"><p>ic</p>
+				<div>
+				
+					<div title="5_pins">
+					<svg height="40" version="1.0" width="43" xmlns="http://www.w3.org/2000/svg">
+  <g class="5_pins" connects="0,10;0,20;0,30;40,10;40,30" id="IC" stroke="black" stroke-width="2px">
+    <rect fill="none" height="39" id="rect2024" width="30.000002" x="6.5" y="0.49999997"/>
+    <path d="M 0.49999991,10 L 6.5450003,9.5000001" id="path2028"/>
+    <path d="M 0.49999988,20 L 6.502095,19.5" id="path2034"/>
+    <path d="M 0.49999991,30 L 6.5450003,29.5" id="path2036"/>
+    <path d="M 36.847055,9.5000001 L 43.425676,9.5000001" id="path2038"/>
+    <path d="M 37.089681,29.627764 L 43.089681,29.627764" id="path2040"/>
+    <rect height="1.4742014" id="rect2713" width="1.4004914" x="11.087742" y="8.6130219"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="4_pins">
+					<svg height="40" version="1.0" width="43" xmlns="http://www.w3.org/2000/svg">
+ <g class="4_pins" connects="0,10;0,30;40,10;40,30" id="IC" stroke="black" stroke-width="2px">
+    <path d="m 6.4152544,10 -6.50847468,0" id="path1974"/>
+    <path d="M 6.3880715,30 0.19304194,30" id="path1976"/>
+    <path d="m 37.014827,9.4999989 6.311443,0" id="path1978"/>
+    <path d="m 36.837651,30.5 6.451817,0" id="path1980"/>
+    <rect fill="none" height="39" id="rect1972" width="30.171429" x="5.5" y="0.50000006"/>
+    <rect height="3.6560197" id="rect2715" width="3.3022113" x="10.78059" y="6.9250603"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="3_pins">
+					<svg height="37.5" version="1.0" width="40.5" xmlns="http://www.w3.org/2000/svg">
+  <g class="3_pins" connects="10,40;20,40;30,40" id="IC" stroke="black" stroke-width="2px">
+    <path d="M 20.5,31.025973 L 20.5,40" id="path1918"/>
+    <path d="M 10.5,31.025971 L 10.5,40" id="path1916"/>
+    <path d="M 30.5,31.108947 L 30.5,40" id="path1920"/>
+    <rect fill="none" height="30" id="rect1914" width="39.5" x="0.5" y="0.5"/>
+    <rect height="2.8304667" id="rect2162" width="2.3587224" x="6" y="22.169533"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_inductors"><p>inductors</p>
+				<div>
+				
+					<div title="coil">
+					<svg height="20" version="1.0" width="60" xmlns="http://www.w3.org/2000/svg">
+  <g class="coil" connects="0,10;60,10" id="L" stroke="black" stroke-width="2px">
+  <path d="m0,10,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10" fill="none" id="path2905"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="transformer">
+					<svg height="50" version="1.0" width="60" xmlns="http://www.w3.org/2000/svg">
+
+  <g class="transformer" connects="0,10;60,10;0,40;60,40;30,50" id="T" stroke="black" stroke-width="2px">
+
+
+  <path d="m0,10,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10" fill="none" id="path2905"/>
+  <path d="m0,40,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10" fill="none" id="path2905"/>
+
+   <path d="M30,40,30,50" id="path3492"/>
+
+
+
+
+    <path d="M 10,15 L 50,15" id="path3496"/>
+    <path d="M 10,20 L 50,20" id="path3498"/>
+    <path d="M 10,25 L 50,25" id="path3500"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="tapcoil">
+					<svg height="30" version="1.0" width="60" xmlns="http://www.w3.org/2000/svg">
+  <g class="tapcoil" connects="0,10;30,20;60,10" id="L" stroke="black" stroke-width="2px">
+  <path d="m0,10,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10" fill="none" id="path2905"/>
+    <path d="M30,10 , 30,20" id="path3492"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_power"><p>power</p>
+				<div>
+				
+					<div title="battery">
+					<svg height="19.81868" version="1.0" width="49" xmlns="http://www.w3.org/2000/svg"> 
+
+  <g class="battery" connects="0,10;50,10" id="v" stroke="black" stroke-width="2px">
+      <path d="M 0,10 L 17,10" id="path5009"/>
+      <path d="M 32,10 L 50,10" id="path5019"/>
+      <path d="M 17.836609,0.68314333 L 17.718673,19.199113" id="path5011"/>
+      <path d="M 22.436119,3.7494823 L 22.436119,15.071349" id="path5013"/>
+      <path d="M 27.507371,0.68314333 L 27.507371,19.552922" id="path5015"/>
+      <path d="M 31.753072,3.8674183 L 31.635136,15.425157" id="path5017"/>
+      <text font-size="12px" id="text5025" stroke-width="0px" x="8.2167969" y="8.5261526">+</text>
+      <text font-size="12px" id="text5029" stroke-width="0px" x="34.111794" y="0.5234375">_</text>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="positive">
+					<svg height="20.112738" version="1.0" width="20" xmlns="http://www.w3.org/2000/svg">
+  <g class="positive" connects="10,20" id="wire" stroke="black" stroke-width="2px">
+    <rect height="20" id="rect2162" visibility="hidden" width="20" x="0" y="0"/>
+    <path d="M 9.8453557,0.75155132 L 9.7889861,20.02609" id="path3694"/>
+    <path d="M 6.8984095,6.0400567 L 9.776679,0.65836743 L 13.116155,5.9214675" id="path5089"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="ground">
+					<svg height="18" version="1.0" width="20.171276" xmlns="http://www.w3.org/2000/svg">
+  <g class="ground" connects="10,0" id="Gnd" stroke="black" stroke-width="2px">
+    <path d="M 10,0 L 10,11" id="path3694"/>
+    <path d="M 0.50000006,11.834153 L 19.671275,11.834153" id="path3696"/>
+    <path d="M 2.6480823,14.5 L 17.732881,14.5" id="path3698"/>
+    <path d="M 5.802873,17.5 L 14.648082,17.5" id="path3700"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="ac">
+					<svg height="40" width="50" xmlns="http://www.w3.org/2000/svg">
+  <g class="ac" connects="0,20;60,20" id="v" stroke="#000" stroke-width="2px">
+  <path d="m50.381,19.923a20.203,19.698,0,1,1,-40.406,0,20.203,19.698,0,1,1,40.406,0z" fill="none" id="path2816"/>
+  <path d="M10,20,0,20" id="path2818"/>
+  <path d="m50,20,10,0" id="path2820"/>
+  <path d="M15.763,19.492c10.699,23.004,16.424-16.073,27.966,0.169" fill="none" id="path2819" stroke-width="1px"/>
+      <text font-size="12px" id="text5025" stroke-width="0px" x="0" y="20">+</text>
+      <text font-size="12px" id="text5029" stroke-width="0px" x="53" y="15">_</text>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_resistors"><p>resistors</p>
+				<div>
+				
+					<div title="testresistor">
+					<svg height="19.999998" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+
+  <g class="testresistor" connects="0,10;40,10" id="R" stroke="black" stroke-width="2px">
+	<path d="M 5.1400289,10.973441 7.5009997,5.0436578 10.530362,14.908323 14.248435,4.3282724 18.324457,14.77488 21.761826,4.4617163 25.849828,14.589134 29.504786,4.5222528 33.128938,14.818135 35.33864,10.115602" fill="none" id="path3444"/>
+	<path d="m -0.0278984,10.588417 5.424147,0" id="path2159"/>
+	<path d="m 40.555206,9.9057016 -5.459106,0" id="path2161"/>
+	<rect height="19.999998" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+</g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="vari-resistor">
+					<svg height="20.444269" version="1.0" width="40.454754" xmlns="http://www.w3.org/2000/svg">
+  <g class="vari-resistor" connects="0,10;40,10" id="R" stroke="black" stroke-width="2px">
+    <path d="M 5.3415991,11.079275 8.0153231,0.54357924 10.475149,19.330121 14.539209,0.67051526 17.854627,19.457059 21.490891,0.54357924 25.287064,19.596525 28.977318,0.67051526 32.559593,19.500914 34.539695,10.209518" fill="none" id="path3444"/>
+    <path d="m 0,10 5.05722044,0" id="path2159"/>
+    <path d="m 40,10 -5.459106,0" id="path2161"/>
+    <path d="M 34.013535,19.885585 2.0746539,1.2571588" id="path2242"/>
+    <path d="M 5,5.6401043 1,0.64010429 7,1.6401043" id="path2244"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="resistor">
+					<svg height="19.999998" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+  <g class="resistor" connects="0,10;40,10" id="R" stroke="black" stroke-width="2px">
+    <path d="M 5.1400289,10.973441 7.5009997,5.0436578 10.530362,14.908323 14.248435,4.3282724 18.324457,14.77488 21.761826,4.4617163 25.849828,14.589134 29.504786,4.5222528 33.128938,14.818135 35.33864,10.115602" fill="none" id="path3444"/>
+    <path d="m 0,10 5.424147,0" id="path2159"/>
+    <path d="m 40,10 -5.459106,0" id="path2161"/>
+    <rect height="20" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="photo-resistor">
+					<svg height="40.104813" version="1.0" width="61.022789" xmlns="http://www.w3.org/2000/svg">
+  <g class="photo-resistor" connects="0,20;60,20" id="R" stroke="black" stroke-width="2px">
+    <path d="m 11.406524,18.410498 3.819574,-4.560383 4.471942,10.682183 3.810665,-10.363194 5.070138,10.173312 3.287417,-10.409232 4.682872,10.649472 3.059394,-10.243794 5.060847,10.535864 3.916121,-5.971522" fill="none" id="path3444"/>
+    <path d="M 0,20 10.687274,20" id="path2159"/>
+    <path d="m 61.369505,20 -12.171381,0" id="path2161"/>
+    <path d="M 42.795793,26.964401 19.751828,10" id="path2242"/>
+    <path d="m 20.011796,13.98641 -0.740497,-3.944704 4.099181,0.369668" id="path2244"/>
+    <path d="m 48.724184,19.920574 c 0,10.686868 -8.342101,19.350285 -18.632607,19.350285 -10.290506,0 -18.632608,-8.663417 -18.632608,-19.350285 0,-10.6868674 8.342102,-19.35028542 18.632608,-19.35028542 10.290506,0 18.632607,8.66341802 18.632607,19.35028542 l 0,0 z" fill="none" id="path2289"/>
+    <path d="m 11.700184,7.2138539 3,0 -1,-3" id="path3261"/>
+    <path d="m 7.9880993,2.8058763 5.9999997,3.884912" id="path3265"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="potentiometer">
+					<svg height="30.573784" version="1.0" width="40.801449" xmlns="http://www.w3.org/2000/svg">
+  <g class="potentiometer" connects="0,10;40,10;20,30" id="R" stroke="black" stroke-width="2px">
+    <path d="M 5.7390669,11.013002 L 8.4081832,0.47680307 L 10.86377,19.264244 L 14.920825,0.60374518 L 18.230531,19.391186 L 21.860529,0.47680307 L 25.650159,19.530659 L 29.334053,0.60374518 L 32.910155,19.435044 L 34.886846,10.143204" fill="none" id="path3444"/>
+    <path d="M 0,10 L 5.4688036,10" id="path2159"/>
+    <path d="M 40,10 L 34.930759,10" id="path2161"/>
+    <path d="M 16.851271,25.03152 L 19.316029,19.808502 L 21.851271,25.120727" fill="none" id="path2199"/>
+    <path d="M 19.183387,21.007463 L 19.183387,30.007463" id="path2201"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_switches"><p>switches</p>
+				<div>
+				
+					<div title="ncpb">
+					<svg height="30" version="1.0" width="40" xmlns="http://www.w3.org/2000/svg">
+  <g class="ncpb" connects="0,20;40,20" id="S" stroke="black" stroke-width="2px">
+    <circle cx="13" cy="20" id="path3734" r="2"/>
+    <circle cx="28" cy="20" id="path3736" r="2"/>
+    <path d="M 10,21 L 8.4802776,20 L 0,20" id="path3740"/>
+    <path d="M 29.006642,21 L 30,20 L 40,20" id="path3742"/>
+    <path d="M 10,24 L 30,24" id="path3744"/>
+    <path d="M 20,24 L 20,0" id="path3749"/>
+   <rect height="30" id="rect2162" visibility="hidden" width="40" x="-0.86240554" y="-0.021562828"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="spst-switch">
+					<svg height="20" version="1.0" width="49.242374" xmlns="http://www.w3.org/2000/svg">
+  <g class="spst-switch" connects="0,20;50,20" id="g2173" stroke="black" stroke-width="2px">
+    <path d="M 17.954546,17.082309 C 17.954546,18.417563 16.924911,19.5 15.654792,19.5 C 14.384672,19.5 13.355037,18.417563 13.355037,17.082309 C 13.355037,15.747055 14.384672,14.664618 15.654792,14.664618 C 16.924911,14.664618 17.954546,15.747055 17.954546,17.082309 L 17.954546,17.082309 z" fill="none" id="path3791"/>
+    <path d="M 35.055281,16.787467 C 35.055281,18.220422 33.972844,19.382061 32.63759,19.382061 C 31.302337,19.382061 30.2199,18.220422 30.2199,16.787467 C 30.2199,15.354512 31.302337,14.192872 32.63759,14.192872 C 33.972844,14.192872 35.055281,15.354512 35.055281,16.787467 L 35.055281,16.787467 z" fill="none" id="path3793"/>
+    <path d="M 14.331806,19.282664 L 0.60195291,19.282664" id="path3795"/>
+    <path d="M 33.482259,19.243766 L 48.742374,19.243766" id="path3797"/>
+    <path d="M 17.318766,15.374036 L 27.987971,5.781071" id="path3815"/>
+    <path d="M 23.437018,6.559941 L 28.351436,5.545442 L 26.605237,10.248072" fill="none" id="path3817"/>
+    <rect height="20" id="rect2164" visibility="hidden" width="49" x="0" y="0"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="spst-relay">
+					<svg height="60" width="60" xmlns="http://www.w3.org/2000/svg">
+ <g class="spst-relay" connects="0,0;0,40;60,40;60,50;60,60" fill="none" id="Relay" stroke="black" stroke-width="2px">
+  <path d="m25,0,0,37" id="path2830"/>
+  <path d="m30,0,0,37" id="path2832"/>
+  <path d="m35,0,0,37" id="path2834"/>
+  <path d="m60,40-40,0,1,1,1-1" id="path2857"/>
+  <path d="m60,60-40,0,1-1,1,1" id="path2859"/>
+  <path d="M18.983,57,60,50" id="path2863"/>
+  <path d="m 0,0 10,0 c 0,0 10,0 10,5 0,5 -10,5 -10,5 0,0 10,0 10,5 0,5 -10,5 -10,5 0,0 10,0 10,5 0,5 -10,5 -10,5 0,0 10,0 10,5 0,5 -10,5 -10,5 l -10,0 0,0" fill="none" id="path2886"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="nopb">
+					<svg height="20" version="1.0" width="40.776154" xmlns="http://www.w3.org/2000/svg">
+  <g class="nopb" connects="0,20;40,20" id="S" stroke="black" stroke-width="2px">
+    <path d="M 14.823,17.426654 C 14.823,18.563832 14.108298,19.485697 13.226668,19.485697 C 12.345039,19.485697 11.630336,18.563832 11.630336,17.426654 C 11.630336,16.289476 12.345039,15.367611 13.226668,15.367611 C 14.108298,15.367611 14.823,16.289476 14.823,17.426654 L 14.823,17.426654 z" id="path3734"/>
+    <path d="M 28.726067,17.323298 C 28.726067,18.525458 27.989707,19.5 27.081361,19.5 C 26.173016,19.5 25.436656,18.525458 25.436656,17.323298 C 25.436656,16.121138 26.173016,15.146596 27.081361,15.146596 C 27.989707,15.146596 28.726067,16.121138 28.726067,17.323298 z" id="path3736"/>
+    <path d="M 12.138988,20 L 0,20" id="path3740"/>
+    <path d="M 27.816258,20 L 40,20" id="path3742"/>
+    <path d="M 12.302377,10.596425 L 27.896333,10.596425" id="path3744"/>
+    <path d="M 19.822814,10.357704 L 19.726067,0.5" id="path3749"/>
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_test"><p>test</p>
+				<div>
+				
+					<div title="scope">
+					<svg height="40" width="50" xmlns="http://www.w3.org/2000/svg">
+ <g class="scope" connects="0,20" id="Plot" stroke="#000" stroke-width="2px">
+  <path d="M0,20h10" id="path2193"/>
+  <rect fill="none" height="40" id="rect3658" width="40" x="10" y="0"/>
+  <path d="M15.085,20.169c7.96-24.084,21.723,22.742,29.661-0.169" fill="none" id="path2820" stroke-width="1px"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			<div id="webtronics_transistors"><p>transistors</p>
+				<div>
+				
+					<div title="njfet">
+					<svg height="40" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="njfet" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="#000" stroke-width="2px">
+  <rect fill="none" height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M30,13,30,0" id="path2840"/>
+  <path d="M30,25,30,40" id="path2844"/>
+  <path d="M16,20h-16" id="path3568"/>
+  <path d="M10,16l5.794,3.87-5.676,3.862" id="path3572"/>
+  <path d="M16.247,33.517v-27.223" id="path2178"/>
+  <path d="M16.247,33.517v-27.223" id="path2178"/>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2823" stroke-width="0px" x="1.0786462" y="18.113794">G</text>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2827" stroke-width="0px" x="33" y="7.4208322">D</text>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2831" stroke-width="0px" x="33" y="39.414978">S</text>
+  <path d="M16,13,31,13" id="path2838"/>
+  <path d="M16,25,31,25" id="path2842"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="pnp">
+					<svg height="40" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="pnp" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="#000" stroke-width="2px">
+ <rect height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M15,31l0-23" id="path2178"/>
+  <path d="M30,0,30,7,16,17" fill="none" id="path2829"/>
+  <path d="m30,40,0-9-14-7" fill="none" id="path2831"/>
+  <path d="m20,28,2-4-5,0,3,4z" id="path3613"/>
+  <path d="m0,20,15,0" id="path3615"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="phototrans">
+					<svg height="40" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="phototrans" connects="30,0;30,40" flippable="true" id="Q" stroke="#000" stroke-width="2px">
+ <rect height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M15.508,31.531l0.22-23.068" id="path2178"/>
+  <path d="M30,0,30,8,16,17" fill="none" id="path2829"/>
+  <path d="m30,40,0-9-14-7" fill="none" id="path2831"/>
+  <path d="m20,28.606,2-4-5,0,3,4z" id="path3613"/>
+  <path d="M-4.3534E-7,6,10,16" id="path3615"/>
+  <path d="m6,15.606,5,1-1-5-4,4z" fill="none" id="path3780"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="pjfet">
+					<svg height="40" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="pjfet" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="#000" stroke-width="2px">
+  <rect fill="none" height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M30,13,30,0" id="path2840"/>
+  <path d="M30,25,30,40" id="path2844"/>
+  <path d="M16,20h-16" id="path3568"/>
+  <path d="M10,15l-5,5,5,5" id="path3572"/>
+  <path d="M16.247,33.517v-27.223" id="path2178"/>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2823" stroke-width="0px" x="1.0786462" y="18.113794">G</text>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2827" stroke-width="0px" x="33" y="7.4208322">D</text>
+  <text fill="#000000" font-family="Bitstream Vera Sans" font-size="8px" id="text2831" stroke-width="0px" x="33" y="39.414978">S</text>
+  <path d="M16,13,31,13" id="path2838"/>
+  <path d="M16,25,31,25" id="path2842"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="nmosfet">
+					<svg height="39.925488" version="1.0" width="40.235352" xmlns="http://www.w3.org/2000/svg">
+  <g class="nmosfet" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="black" stroke-width="2px">
+  <rect fill="none" height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M19.877,12.08z" fill="none" id="path2398"/>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.19031239px" font-style="normal" id="text2823" stroke-width="0px" x="1.0786462" y="18.113794">G</text>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.0008316px" font-style="normal" id="text2827" stroke-width="0px" x="32.072721" y="7.4208322">D</text>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.04845715px" font-style="normal" id="text2831" stroke-width="0px" x="32.333487" y="39.414978">S</text>
+  <path d="m20,12.925,10,0,0-13" fill="none" id="path2891"/>
+  <path d="m20,26.925,10,0,0,13" fill="none" id="path2934"/>
+  <path d="m20,19.925,10,0,0,7" fill="none" id="path2936"/>
+  <path d="m20,16.925,0,6" fill="none" id="path2938"/>
+  <path d="m20,23.925,0,6" fill="none" id="path2942"/>
+  <path d="M20,15.925,20,9.9255" fill="none" id="path2944"/>
+  <path d="M17,9.9255,17,29.925" fill="none" id="path2946"/>
+  <path d="m17,19.925-17,0" fill="none" id="path2948"/>
+ <path d="m21,19.925,3-2,0,4-3-2z" fill="none" id="path3813"/>
+</g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="npn">
+					<svg height="40" width="40" xmlns="http://www.w3.org/2000/svg">
+ <g class="npn" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="#000" stroke-width="2px">
+ <rect height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M15.508,31.531l0-23.068" id="path2178"/>
+  <path d="M30,0,30,7.6063,16,16.606" fill="none" id="path2829"/>
+  <path d="m30,40,0-9-14-7" fill="none" id="path2831"/>
+  <path d="m25,31.606,2-4,3,4-5-0.000001z" id="path3613"/>
+  <path d="m0,20,15,0" id="path3615"/>
+ </g>
+</svg>
+					</div>
+				</br>
+				
+					<div title="pmosfet">
+					<svg height="39.925488" version="1.0" width="40.235352" xmlns="http://www.w3.org/2000/svg">
+  <g class="pmosfet" connects="0,20;30,0;30,40" flippable="true" id="Q" stroke="black" stroke-width="2px">
+	<rect fill="none" height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <rect fill="none" height="40" id="rect2162" visibility="hidden" width="40" x="0" y="0"/>
+  <path d="M19.877,12.08z" fill="none" id="path2398"/>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.19031239px" font-style="normal" id="text2823" stroke-width="0px" x="1.0786462" y="18.113794">G</text>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.0008316px" font-style="normal" id="text2827" stroke-width="0px" x="32.072721" y="7.4208322">D</text>
+  <text fill="black" font-family="Bitstream Vera Sans" font-size="8.04845715px" font-style="normal" id="text2831" stroke-width="0px" x="32.333487" y="39.414978">S</text>
+  <path d="m20,12.925,10,0,0-13" fill="none" id="path2891"/>
+  <path d="m20,26.925,10,0,0,13" fill="none" id="path2934"/>
+  <path d="m20,19.925,10,0,0,7" fill="none" id="path2936"/>
+  <path d="m20,16.925,0,6" fill="none" id="path2938"/>
+  <path d="m20,23.925,0,6" fill="none" id="path2942"/>
+  <path d="M20,15.925,20,9.9255" fill="none" id="path2944"/>
+  <path d="M17,9.9255,17,29.925" fill="none" id="path2946"/>
+  <path d="m17,19.925-17,0" fill="none" id="path2948"/>
+
+  <path d="m26,17.925,3,2-3,2,0-4z" fill="none" id="path2952"/>
+
+  </g>
+</svg>
+					</div>
+				</br>
+				
+				</div>
+			</div>	
+			
+			</br>	
+			<a href="http://code.google.com/p/webtronics"><img src="icons/logo.png"/></a>
 		</div>
+
+
 	</div>
+<!--    
+tab area
+-->
+    <div id="webtronics_tab_area"></div>
 
 <!--
 display area
 -->
-
-	<div id="webtronics_diagram_area">	
-
-	</div>
+	<div id="webtronics_diagram_area" ></div>	
 </div>
 <!--
 status bar
@@ -181,24 +844,12 @@ status bar
  <div id="webtronics_status_bar">Mode: Draw Rectangle</div>
 
 
-<!--
-open files
--->
-<div id="webtronics_open_file" title="import file">
-
-<form>
-<input id="webtronics_open_file_selector" type="file">
-<!--img  id="webtronics_open_file_cancel" src="./buttons/cancel.png" /-->
- </form>
-
-</div>
-
 
 <!--
 make chips
 -->
 
-<div id="webtronics_chips_box" >
+<div id="webtronics_chips_box" class='modal'>
   <div id="webtronics_chip_display" >
   </div>
 	<form>
@@ -315,13 +966,13 @@ make chips
 add text
  -->
 
-<div id="webtronics_add_text">
+<div id="webtronics_add_text" class='modal'>
 <textarea cols="50" rows="4" id="webtronics_comment"></textarea>
 </div>
 <!--
 properties form
 -->
-<div id="webtronics_properties_form">
+<div id="webtronics_properties_form" class='modal'>
 <form>
 <input id="webtronics_part_id">part id<br>
 <input id="webtronics_part_value">part value<br>
@@ -338,7 +989,7 @@ properties form
 add code text
  -->
 
-<div id="webtronics_open_text">
+<div id="webtronics_open_text" class='modal'>
 <textarea cols="50" rows="4" id="webtronics_svg_code"></textarea>
 <img id="webtronics_open_text_ok" src="./buttons/ok.png"> 
 <img id="webtronics_open_text_cancel" src="./buttons/cancel.png">
@@ -347,3 +998,4 @@ add code text
 
 </div>
 </body></html>
+

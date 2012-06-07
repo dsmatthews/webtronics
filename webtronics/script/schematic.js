@@ -35,7 +35,7 @@
  
 function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
-	this.wtxNs = 'http://127.0.0.1/webtronics';
+	this.wtxNs = 'http://localhost/webtronics';
 	this.container = elem;
 	this.grid = 10;
 	this.width=640;
@@ -51,15 +51,17 @@ function Schematic(elem) {
 	this.background=null;
 /*svg layer for zoom tools*/
 	this.zoomtools=null;
+/*element for selection*/
+    this.selection=null;
 /*group to display information*/
+
 	this.info=null;
 	this.graph=false;
 	this.connections=false;
-	this.zoomRatio=1;
-	this.mode = '';
+    this.inv=false;
+	this.mode = 'select';
 /*array of nodes*/
 	this.selected = new Array();
-	this.copybuffer=null;
 	this.wirenodes=new Array();
 /*selecting rectangle*/
 	this.history=new Array();
@@ -67,7 +69,7 @@ function Schematic(elem) {
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
 	this.mouseDown={x:0,y:0};
-	this.viewoffset={x:0,y:0};
+//	this.viewoffset={x:0,y:0};
 	
 	this.init(this.container);
 
@@ -75,24 +77,23 @@ function Schematic(elem) {
 	this.onMouseUpListener = this.onMouseUp.bindAsEventListener(this);
 	this.onMouseMove = this.onMouseMove.bindAsEventListener(this);	
 	this.onWheelListener = this.onWheel.bindAsEventListener(this);	
-	this.onChangeListener=this.refresh.bindAsEventListener(this);
 
-	Event.observe(this.container, "mousewheel",this.onWheelListener);
-	Event.observe(this.container, "DOMMouseScroll",this.onWheelListener);
-	Event.observe(this.container, "dragover", this.onMouseMove);
-	Event.observe(this.container, "mousemove", this.onMouseMove); 
-	Event.observe(this.container, "mousedown", this.onMouseDownListener);
-	Event.observe(this.container, "mouseup", this.onMouseUpListener);
+	Event.observe(this.svgRoot, "mousewheel",this.onWheelListener);
+	Event.observe(this.svgRoot, "DOMMouseScroll",this.onWheelListener);
+	Event.observe(this.svgRoot, "dragover", this.onMouseMove);
+	Event.observe(this.svgRoot, "mousemove", this.onMouseMove); 
+	Event.observe(this.svgRoot, "mousedown", this.onMouseDownListener);
+	Event.observe(this.svgRoot, "mouseup", this.onMouseUpListener);
 /*this might get the ipad working*/
-	Event.observe(this.container, "onclick", void(0));
+	Event.observe(this.svgRoot, "onclick", void(0));
 
-	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
+//	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 
 }
 Schematic.prototype.getnextid=function(elem){
 	var type=this.getparttype(elem);
 	var ids=new Array();
-	var parts=$$("#webtronics_drawing > g");
+	var parts=this.drawing.getElementsByTagName("g");
 	for(var i=0;i<parts.length;i++){
 		var t=parts[i].getAttribute("partvalue").split(" ")[0];
 		if(t.match(type)){
@@ -117,20 +118,23 @@ Schematic.prototype.undo=function(){
 		this.undolevel++;
 //		console.log("undo "+ this.undolevel);
 		this.unselect();
-		this.remove($("webtronics_drawing"));
-		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
-		this.drawing=$("webtronics_drawing");
+		this.remove(this.drawing);
+        this.drawing=this.history[this.undolevel].cloneNode(true);
+		this.svgRoot.insertBefore(this.drawing,this.zoomtools);
 		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
 		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 		this.showallconnects();
-		Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 	}
 }
 
 Schematic.prototype.addhistory=function(){
 	if(this.history.length>=20){this.history.pop();}
-	this.history.unshift($('webtronics_drawing').cloneNode(true));
+	this.history.unshift(this.drawing.cloneNode(true));
+	for(var i=0;i<this.undolevel;i++){
+		this.history.shift();
+
+	}
 	this.undolevel=0;
 }
 
@@ -142,18 +146,17 @@ Schematic.prototype.redo=function(){
 		this.undolevel--;
 //		console.log("redo "+ this.undolevel+ ' history '+this.history.length);
 		this.unselect()
-		this.remove($("webtronics_drawing"));
-		this.svgRoot.insertBefore(this.history[this.undolevel].cloneNode(true),this.zoomtools);
-		this.drawing=$("webtronics_drawing");
+		this.remove(this.drawing);
+        this.drawing=this.history[this.undolevel].cloneNode(true);
+		this.svgRoot.insertBefore(this.drawing,this.zoomtools);
 		if(this.background.getAttribute('class')=='inv')this.drawing.setAttribute('class','inv');
 		else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
 		this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 		this.showallconnects();
-		Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 	}
 }
 Schematic.prototype.refresh=function(){
-//	console.log("image changed\n");
+	console.log("image changed\n");
 	this.hideconnects();
 	this.addhistory();
 	this.showallconnects();
@@ -169,8 +172,7 @@ Schematic.prototype.init = function(elem) {
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
 	this.svgRoot.setAttribute('xmlns:wtx',this.wtxNs);
-
-	this.svgRoot.setAttribute('width',2000);
+    this.svgRoot.setAttribute('width',2000);
 	this.svgRoot.setAttribute('height',2000);
 
 	this.container.appendChild(this.svgRoot);
@@ -190,13 +192,14 @@ Schematic.prototype.init = function(elem) {
 	this.showbackground();
 /*add the toolbar*/
 	this.addtools();
+	this.refresh();
 }
 
 Schematic.prototype.addtools=function(){
 	if($(this.zoomtools))this.remove(this.zoomtools);
 	this.zoomtools=document.createElementNS(this.svgNs,'svg');
 	this.zoomtools.setAttribute('xmlns:svg',this.svgNs);
-	this.zoomtools.setAttribute('xmlns:xlink',"http://www.w3.org/1999/xlink");
+	//this.zoomtools.setAttribute('xmlns:xlink',"http://www.w3.org/1999/xlink");
 	this.zoomtools.id='webtronics_zoomtools';
 	this.zoomtools.setAttribute('width',this.container.offsetWidth);
 	this.zoomtools.setAttribute('height',this.container.offsetHeight);			
@@ -207,7 +210,7 @@ Schematic.prototype.addtools=function(){
 	normal.setAttribute('y',0);
 	normal.setAttribute('width',32);
 	normal.setAttribute('height',32);
-	normal.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href',webtronicsPath+'/buttons/normal.png');
+	normal.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','./buttons/normal.png');
 /* make sure the mouse events don't go through the image*/
 	Event.observe(normal,"mousedown", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(normal,"mouseup", function(e){e.stopPropagation();}.bind(this));
@@ -218,12 +221,11 @@ Schematic.prototype.addtools=function(){
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(normal);
 	var grow=document.createElementNS(this.svgNs,'image');
-
-	grow.setAttribute('x',(this.container.offsetWidth<this.svgRoot.getAttribute('width')?this.container.offsetWidth:this.svgRoot.getAttribute('width'))-32);
-	grow.setAttribute('y',(this.container.offsetHeight<this.svgRoot.getAttribute('height')?this.container.offsetHeight:this.svgRoot.getAttribute('height'))-32);
+	grow.setAttribute('x',(this.container.offsetWidth)-32);
+	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
 	grow.setAttribute('height',32);
-	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href',webtronicsPath+'/buttons/grow.png');
+	grow.setAttributeNS("http://www.w3.org/1999/xlink",'xlink:href','buttons/grow.png');
 	Event.observe(grow,"mousedown", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"mouseup", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"click", function(e){
@@ -433,7 +435,7 @@ Schematic.prototype.rotate=function(elem){
 	var rotmatrix=this.svgRoot.createSVGTransform();
 	var x=Math.round((box.width/2)/this.grid)*this.grid;
 	var y=Math.round((box.height/2)/this.grid)*this.grid;
-	console.log(x+" "+y+"\n");
+//	console.log(x+" "+y+"\n");
 	rotmatrix.setRotate(90,x,y);
 	matrix=matrix.multiply(rotmatrix.matrix);
 /*align with grid*/
@@ -455,8 +457,10 @@ Schematic.prototype.rotate=function(elem){
 
 	
 	this.removeTracker();
-	for(i=0;i<this.selected.length;i++)
+	for(i=0;i<this.selected.length;i++){
 		this.showTracker(this.selected[i]);		
+	}
+this.refresh();
 };
 
 Schematic.prototype.flip=function(elem){
@@ -470,16 +474,17 @@ Schematic.prototype.flip=function(elem){
 
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.removeTracker();
-	for(i=0;i<this.selected.length;i++)
+	for(i=0;i<this.selected.length;i++){
 		this.showTracker(this.selected[i]);		
-	
+	}
+this.refresh();
 	
 }
 
 Schematic.prototype.showTracker = function(elem) {
 	var rect=this.tracker(elem);
 
-  var tracked = document.createElementNS(this.svgNs, 'g');
+  var tracked = elem.ownerDocument.createElementNS(this.svgNs, 'g');
   tracked.setAttributeNS(null, 'class', 'schematic_tracker');
 	var svg=this.createrect('blue',0.35,rect.x,rect.y,rect.width,rect.height);
 	tracked.appendChild(svg)
@@ -511,14 +516,16 @@ Schematic.prototype.showTracker = function(elem) {
 	
 	}
 	this.info.appendChild(tracked);
+/*
+	if(this.selected.length===1&&this.selected[0].tagName==='g'){
+		parent.document.getElementById('webtronics_context_menu').select('[Title=Properties]')[0].setAttribute('class','enabled');
 
-	if(this.selected.length==1&&this.selected[0].tagName=='g'){
-		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','enabled');
 	}
 	else{
-		$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
-	}
 
+		parent.document.select('#webtronics_context_menu [Title=Properties]')[0].setAttribute('class','disabled');
+	}
+*/
 
 
 }
@@ -534,7 +541,6 @@ Schematic.prototype.clearinfo=function(){
 	var matrix=this.parseMatrix(this.drawing);
 	this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 	this.info
-	if($('invertfilter'))this.info.setAttribute('filter','url(#invertfilter)');
 
 }
 
@@ -545,8 +551,8 @@ Schematic.prototype.removeTracker=function(){
 	for(var i=0;i<tracker.length;i++){
 		if(tracker[i].parentNode!=null)tracker[i].parentNode.removeChild(tracker[i]);
 	}
-	$$('.contextmenu [Title=Properties]')[0].setAttribute('class','disabled');
-	//$('webtronics_value_box').hide();
+//	parent.document.getElementById('webtronics_context_menu').select('[Title=Properties]')[0].setAttribute('class','disabled');
+	//parent.document.getElementById('webtronics_value_box').hide();
 }
 
 Schematic.prototype.remove = function(shape) {
@@ -562,7 +568,20 @@ Schematic.prototype.newdoc = function(){
 }
 
 
-
+Schematic.prototype.invert=function(check){
+		if(check){
+            this.inv=true;
+			console.log('invert');
+			this.background.setAttribute('class','inv');
+			this.drawing.setAttribute('class','inv');
+			this.info.setAttribute('class','inv');
+		}
+		else{
+			this.background.removeAttribute('class');
+			this.drawing.removeAttribute('class');
+			this.info.removeAttribute('class');
+		}
+}
 
 Schematic.prototype.showconnections=function(check){
 	if(check){
@@ -580,6 +599,12 @@ Schematic.prototype.showconnections=function(check){
 Schematic.prototype.getMarkup = function() {
 	var svg = document.createElementNS(this.svgNs, "svg");
 	svg.setAttribute('xmlns',this.svgNs);
+	svg.setAttribute('xmlns:wtx',this.wtxNs);
+    var bg=document.createElement('rect');
+    bg.setAttribute('x',0);
+    bg.setAttribute('y',0);
+    bg.setAttribute('fill','white');
+    svg.appendChild(bg);
 	for(var ch=0;ch<this.drawing.childNodes.length;ch++){
 		svg.appendChild(this.drawing.childNodes[ch].cloneNode(true));
 	}
@@ -588,7 +613,8 @@ Schematic.prototype.getMarkup = function() {
 	this.drawing.removeAttribute('transform');
 	var svgsize=this.tracker(this.drawing);
 	this.drawing.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-	//svg.style.backgroundColor="#ffffff";
+    bg.setAttribute('width',svgsize.width+10+'px');
+    bg.setAttribute('height',svgsize.height+10+'px');
 	svg.setAttributeNS(null,'width',svgsize.width+10);
 	svg.setAttributeNS(null,'height',svgsize.height+10);
 	return (new XMLSerializer()).serializeToString(svg);
@@ -602,33 +628,34 @@ Schematic.prototype.deleteSelection = function() {
 	if(!this.selected.length)return; 
 /*delete selected nodes*/  
 	for(var i=this.selected.length;i>0;i--){
-		if(this.selected[i-1].tagName=='g'&&$('value:'+this.selected[i-1].id))
-			this.remove($('value:'+this.selected[i-1].id));
+		if(this.selected[i-1].tagName=='g'&&$('value-'+this.selected[i-1].id))
+			this.remove($('value-'+this.selected[i-1].id));
 		this.remove(this.selected[i-1]);
 	 	this.selected.pop();
 	}
 /*delete all trackers*/
 	this.removeTracker();
+	this.refresh();
 }
 
 Schematic.prototype.createvalue=function(elem){
 /*create value text if attribute exists*/
 	var value=elem.getAttribute('partvalue');
 	if(value){
-		if(!$('value:'+elem.id)){
+		if(!$('value-'+elem.id)){
 			box=this.tracker(elem);	
 			var svg=this.createtext(value,'black',box.x,box.y);
-			svg.id='value:'+elem.id;
+			svg.id='value-'+elem.id;
 			this.drawing.appendChild(svg);
 		}
 		else{
-				$('value:'+elem.id).removeChild($('value:'+elem.id).firstChild);
-				$('value:'+elem.id).appendChild(document.createTextNode(value));
+				$('value-'+elem.id).removeChild($('value-'+elem.id).firstChild);
+				$('value-'+elem.id).appendChild(document.createTextNode(value));
 			
 		}	
 	}
 /* if there is no value and a value text exists remove it*/	
-	else if($('value:'+elem.id))this.remove($('value:'+elem.id));
+	else if($('value-'+elem.id))this.remove($('value-'+elem.id));
 }
 
 
@@ -636,7 +663,7 @@ Schematic.prototype.select = function(elem) {
 
 
   	this.selected.push(elem);
-	if(elem.tagName=='g'&&!$('value:'+elem.id))this.createvalue(elem);
+	if(elem.tagName=='g'&&!$('value-'+elem.id))this.createvalue(elem);
  	this.showTracker(this.selected[this.selected.length-1]);
 	
 }
@@ -662,41 +689,33 @@ Schematic.prototype.connect =function(x1,y1){
 		this.remove($('templine1'));
 		return;
 	}
-	var lines=this.drawing.childNodes;	
+	var lines=this.drawing.getElementsByTagName("line");
         for(var i=0;i<lines.length;i++){
-                if(lines[i].tagName=='line'){
-                        var lx1=lines[i].getAttributeNS(null,"x1")-0;                       
-                        var lx2=lines[i].getAttributeNS(null,"x2")-0;                       
-                        var ly1=lines[i].getAttributeNS(null,"y1")-0;                       
-                        var ly2=lines[i].getAttributeNS(null,"y2")-0;                       
-                                if((lx1<lx2 && x1>lx1 && x1<lx2 && y1==ly1)||
-                                (ly1<ly2 && y1>ly1 && y1< ly2 &&x1==lx1)||
-				(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
-                                (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
-                                        this.remove(lines[i]);
-					this.drawing.appendChild(this.createline('black',2,lx1,ly1,x1,y1));
-					this.drawing.appendChild(this.createline('black',2,x1,y1,lx2,ly2));
-					this.drawing.appendChild(this.createdot('black',x1,y1));
-					this.remove($('templine1'));
-					return;
-                                }
-                }
+		var lx1=lines[i].getAttributeNS(null,"x1")-0;                       
+		var lx2=lines[i].getAttributeNS(null,"x2")-0;                       
+		var ly1=lines[i].getAttributeNS(null,"y1")-0;                       
+		var ly2=lines[i].getAttributeNS(null,"y2")-0;                       
+	        if((lx1<lx2 && x1>lx1 && x1<lx2 && y1==ly1)||
+	        (ly1<ly2 && y1>ly1 && y1< ly2 &&x1==lx1)||
+		(lx1>lx2 && x1<lx1 && x1>lx2 && y1==ly1)||
+	        (ly1>ly2 && y1<ly1 && y1> ly2 &&x1==lx1)){
+	                this.remove(lines[i]);
+			this.drawing.appendChild(this.createline('black',2,lx1,ly1,x1,y1));
+			this.drawing.appendChild(this.createline('black',2,x1,y1,lx2,ly2));
+			this.drawing.appendChild(this.createdot('black',x1,y1));
+			this.remove($('templine1'));
+			return;
+	        }
         }
 }
 
 /*check if selection rectangle overlaps part*/
 Schematic.prototype.getPart=function(){
-
-        for(var i=0;i<this.drawing.childNodes.length;i++){
-                var part=this.drawing.childNodes[i];
-                if(part.nodeType==1){
-                        if(part.id!='information'&&part.parentNode.id!='information'){
-
-                                var rect=this.tracker(part);
-                                if(Utils.rectsIntersect(rect,this.selectionRect)){
-									this.select(part);               
-                                }
-                        }
+        var parts=$$("#webtronics_drawing>*");
+        for(var i=0;i<parts.length;i++){
+		var rect=this.tracker(parts[i]);
+		if(Utils.rectsIntersect(rect,this.selectionRect)){
+			this.select(parts[i]);               
                 }
         }
 }
@@ -704,13 +723,9 @@ Schematic.prototype.getPart=function(){
 
 Schematic.prototype.realPosition=function(x,y){
 	var real=this.svgRoot.createSVGPoint();
-	var offset = this.container.cumulativeOffset();
-/*this section gets the pointer position relative to the window and scrollbars
- * I'm using this for now until something better comes up
- */
 	var matrix=this.parseMatrix(this.drawing);
-	real.x=(x-offset[0]-matrix.e)/matrix.a;
-	real.y=(y-offset[1]-matrix.f)/matrix.a;
+	real.x=(x-matrix.e)/matrix.a;
+	real.y=(y-matrix.f)/matrix.a;
 	return real;
 }
 
@@ -736,9 +751,6 @@ if(!this.drag){
 			var y2=$('templine1').getAttributeNS(null,'y2');
 			if(!(x1==x2&&y1==y2)){
 				var svg=this.createline('black',2, x1, y1,x2, y2);
-				/*since the id is never used don't create one
-				svg.id='line:'+createUUID();
-				*/
 				this.drawing.appendChild(svg);
 				this.remove($('templine1'));
 				this.connect(x1, y1);
@@ -750,7 +762,7 @@ if(!this.drag){
 					this.info.appendChild(svg);
 				}					
 				this.connect(x2, y2);
-				
+				this.refresh();
 			}
 			
 		}
@@ -770,14 +782,9 @@ if(!this.drag){
 				this.selectionRect.width=0;
 				this.selectionRect.height=0;
 			/* if there is already a selection rectangle delete it*/
-				var selection=$('schematic_selection');
-				do{
-					if(selection)this.remove(selection);
-					selection=$('schematic_selection');	
-				}while(selection);
-				selection = this.createrect('blue',0.35,real.x,real.y,0,0);
-				selection.id='schematic_selection';
-				this.info.appendChild(selection);
+				if(this.selection)this.remove(this.selection);
+				this.selection = this.createrect('blue',0.35,real.x,real.y,0,0);
+				this.info.appendChild(this.selection);
 				if(this.mode=='select'){
 					for(var i=0;i<this.selected.length;i++){
 						if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
@@ -789,22 +796,24 @@ if(!this.drag){
 		}
 		else if(this.mode=='text'){
 		if(Event.isLeftClick(event)){
-				if($('webtronics_add_text').style.display == 'none'||$('webtronics_add_text').style.display==""){
-					$('webtronics_add_text').style.display = "block";
-					$('webtronics_add_text').style.left = Event.pointerX(event)+'px';
-					$('webtronics_add_text').style.top = Event.pointerY(event)+'px';
-					$('webtronics_comment').value='';
+                var addtext=parent.document.getElementById('webtronics_add_text');
+				if(addtext.style.display == 'none'||addtext.style.display==""){
+					addtext.style.display = "block";
+					addtext.style.left = Event.pointerX(event)+'px';
+					addtext.style.top = Event.pointerY(event)+'px';
+					addtext.value='';
 				}
 				else{
-					if($('webtronics_comment').value){
-						var textpos =this.realPosition($('webtronics_add_text').offsetLeft,$('webtronics_add_text').offsetTop);
-						this.addtext($('webtronics_comment').value,textpos.x,textpos.y);
-						$('webtronics_add_text').hide();
+                    var comment=parent.document.getElementById('webtronics_comment');
+					if(comment.value){
+						var textpos =this.realPosition(addtext.offsetLeft,addtext.offsetTop);
+						this.addtext(comment.value,textpos.x,textpos.y);
+						addtext.hide();
 					}
 					else{
-						$('webtronics_add_text').hide();
+						addtext.hide();
 					}	
-					webtronics.setMode('webtronics_select','select','Selection');
+					parent.webtronics.setMode('webtronics_select','select','Selection');
 				}
 			}
 
@@ -815,9 +824,7 @@ if(!this.drag){
 
 }
 
-Schematic.prototype.onDragStart=function(event){
-alert('dragging');
-}
+
 
 Schematic.prototype.dragSelection=function(x ,y){
 	var floating=$('schematic_floating');
@@ -826,20 +833,20 @@ Schematic.prototype.dragSelection=function(x ,y){
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 	/*if a part is selected also get label*/
-			if(this.selected[i].tagName=='g'&&$('value:'+this.selected[i].id)){
-				floating.appendChild($('value:'+this.selected[i].id));
+			if(this.selected[i].tagName=='g'&&$('value-'+this.selected[i].id)){
+				floating.appendChild($('value-'+this.selected[i].id));
 			}
+/*
 			if(this.selected[i].tagName=='g'&&$('number:'+this.selected[i].id)){
 				floating.appendChild($('number:'+this.selected[i].id));
 			}
+*/
 		}
 
 		var tracked=$$('.schematic_tracker');
-
 		for(var i=0;i<tracked.length;i++)floating.appendChild(tracked[i]);
-
 		floating.setAttributeNS(null, 'id', 'schematic_floating');
-	  this.info.appendChild(floating);
+		this.info.appendChild(floating);
 	}
 	floating.setAttributeNS(null,'transform','matrix(1,0,0,1,'+x+','+y+')');
 	
@@ -898,70 +905,74 @@ Schematic.prototype.dropSelection=function(){
 		}
 	}
 	this.remove(floating);	
+	this.refresh();
 }
 
 
 
 Schematic.prototype.onMouseUp = function(event) {
+    if(event.isLeftClick(event)){
+        console.log('mouseup');
+        this.drag=0;
+        if(this.mode=='select'){
+	        var floating=$('schematic_floating');
+	        if(floating){
+		        this.dropSelection();
+	        }
+	        else{
+		        this.unselect();
+		        this.getPart();
+	        }
+		
+        }
 
-	this.drag=0;
-	if(this.mode=='select'){
-		var floating=$('schematic_floating');
-		if(floating){
-			this.dropSelection();
-		}
-		else{
-			this.unselect();
-			this.getPart();
-		}
-			
-	}
-	
-	else	if(this.mode=='zoom'){
-		this.unselect();
-		this.zoomtorect(this.selectionRect);
-	}
+        else	if(this.mode=='zoom'){
+	        this.unselect();
+	        this.zoomtorect(this.selectionRect);
+        }
 
-	var selection = $('schematic_selection');
-	if (selection) {
-		this.remove(selection);
-		this.selectionRect.x=0;
-		this.selectionRect.y=0;
-		this.selectionRect.width=0;
-		this.selectionRect.height=0;
-	 }
-	/*skip the mouseup after a rotate*/
-	if(this.mode=='rotate'){
-		this.mode='select';
-	}
-
+        if (this.selection) {
+	        this.remove(this.selection);
+	        this.selectionRect.x=0;
+	        this.selectionRect.y=0;
+	        this.selectionRect.width=0;
+	        this.selectionRect.height=0;
+         }
+        /*skip the mouseup after a rotate*/
+        if(this.mode=='rotate'){
+	        this.mode='select';
+        }
+    }
 }
 
 
 Schematic.prototype.onMouseMove = function(event) {
 
-	var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
-	mouseAt={x:0,y:0}
-	mouseAt.x = Math.round(real.x / this.grid) * this.grid;
-	mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 
 
 	if(this.mode=='select'){
 /*clicked inside bounds*/
 
 		if(this.drag){
+			var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
+			mouseAt={x:0,y:0};
+			mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+			mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 			this.dragSelection(mouseAt.x-this.mouseDown.x,mouseAt.y-this.mouseDown.y);
 		}
 		else{
-		var selection = $('schematic_selection');
-		if (selection) {
+		if (this.selection) {
 
+			var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
+			mouseAt={x:0,y:0};
+			mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+			mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
-			if(this.selectionRect.width<0)selection.setAttributeNS(null,'x', real.x);
-			if(this.selectionRect.height<0)selection.setAttributeNS(null,'y',real.y);		
-			selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
-			selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
+			if(this.selectionRect.width<0)this.selection.setAttributeNS(null,'x', real.x);
+			if(this.selectionRect.height<0)this.selection.setAttributeNS(null,'y',real.y);		
+			this.selection.setAttributeNS(null,'width', Math.abs(this.selectionRect.width));
+			this.selection.setAttributeNS(null,'height',Math.abs(this.selectionRect.height));
 			}
 		}
 	}
@@ -970,6 +981,10 @@ Schematic.prototype.onMouseMove = function(event) {
 		
 	else if (this.mode=='line'){
 		if ($('templine1')){
+			var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
+			mouseAt={x:0,y:0};
+			mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+			mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 			
 			var x=$('templine1').getAttribute('x1')-0;
 			var y=$('templine1').getAttribute('y1')-0;
@@ -1025,6 +1040,7 @@ Schematic.prototype.onWheel=function(event){
 			this.drawing.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 			this.background.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
 			this.info.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+
 	}	
 	Event.stop(event);
 }
@@ -1032,14 +1048,17 @@ Schematic.prototype.onWheel=function(event){
 Schematic.prototype.getparttype=function(elem){
 var type;
 if(elem.id){
-	type=elem.id.split(':',1)[0];
+	type=elem.id.split('-',1)[0];
 }
 return type;
 }
 
 Schematic.prototype.changeid=function(elem){
 	var type=this.getparttype(elem);
-	elem.setAttribute('id',type +':'+ createUUID());
+	var id=type +'-'+ createUUID();
+    if($(id))this.changeid(elem);
+	else elem.setAttribute('id',id);
+
 }
 
 
@@ -1047,14 +1066,16 @@ Schematic.prototype.getgroup =function(elem){
 		if(this.drag)return;
 		this.unselect();
 		var newelem=document.importNode(elem,true);
-		this.drawing.appendChild(newelem);
-		this.mouseDown.x=0;
-		this.mouseDown.y=0;
-		
+		elem.parentNode.appendChild(newelem);
+		//this.drawing.appendChild(newelem);
+//hide selection  box
+		this.mouseDown.x=this.svgRoot.getAttribute("width");
+		this.mouseDown.y=this.svgRoot.getAttribute("height");
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')');
 		newelem.setAttribute('partvalue',''); 
-		this.changeid(newelem);
 		this.select(newelem);
+
+		this.changeid(this.selected[0]);
 		this.drag=1;
 }
 
@@ -1069,7 +1090,7 @@ Schematic.prototype.getfile =function(elem){
 			ch[i-1].tagName=='line'||
 			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&this.getparttype(ch[i-1])!='value'))
 			{
-			this.changeid(ch[i-1]);		
+//			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
 			this.drawing.appendChild(newelem);
 			this.select(newelem);
@@ -1081,19 +1102,18 @@ Schematic.prototype.getfile =function(elem){
 			var oldid=ch[i-1].id
 /*change ids first because they might conflict with existing ids*/
 			this.changeid(ch[i-1]);		
-			var newelem= document.importNode(ch[i-1],true);
-			this.drawing.appendChild(newelem);
 /*if there is a partvalue attribute find the value, set the id to the new id */								
 			if(ch[i-1].getAttribute('partvalue')){
-				
-				var oldvalue = ch[i-1].ownerDocument.getElementById('value:'+oldid);
+				var oldvalue = ch[i-1].ownerDocument.getElementById('value-'+oldid);
 				if(oldvalue!=null){
 //					oldvalue.id='value:'+ch[i-1].id;		
 					var newvalue= document.importNode(oldvalue,true);
-					newvalue.id='value:'+ch[i-1].id;		
+					newvalue.id='value-'+ch[i-1].id;		
 					this.drawing.appendChild(newvalue);
 				}
 			}
+			var newelem= document.importNode(ch[i-1],true);
+			this.drawing.appendChild(newelem);
 			this.select(newelem);
 		}
 	}
@@ -1102,22 +1122,42 @@ Schematic.prototype.getfile =function(elem){
 }
 
 Schematic.prototype.copy=function(){
-	this.copybuffer=document.createElementNS(this.svgNs, 'g');
+	var buffer=new Array();
 	for(var i=0;i<this.selected.length;i++){
-		if(this.getparttype(this.selected[i])!="value"){
-			var svgnode=this.selected[i].cloneNode(true);
-			this.copybuffer.appendChild(svgnode);
-		}
+		var svgnode=this.selected[i].cloneNode(true);
+		buffer.push(svgnode);
 	}
-	
+	return buffer;
 }
 
-Schematic.prototype.paste=function(){
-	if(this.copybuffer){
-		//console.log('pasting');
-		this.getfile(this.copybuffer);
+Schematic.prototype.paste=function(elem){
+	if(this.drag)return;
+	if(elem){
+//change ids first
+		for(var i=0;i<elem.length;i++){
+			if(elem[i].tagName==='g'){
+				var id=elem[i].id;
+				this.changeid(elem[i]);
+				for(var j=0;j<elem.length;j++){
+					if(elem[j].id==='value-'+id){
+						elem[j].id='value-'+elem[i].id;
+					}
+				}
+			}
+		}
+		
+		this.unselect();
+//		this.mouseDown.x=this.svgRoot.getAttribute("width");
+//		this.mouseDown.y=this.svgRoot.getAttribute("height");
+		var newelems=new Array();
+		for(var i=0 ;i<elem.length;i++){
+			newelems[i]=elem[i].cloneNode(true);
+			this.drawing.appendChild(newelems[i]);
+		}
+		for(var i=0;i<newelems.length;i++){
+			this.select(newelems[i])
+		}
 		this.drag=1;
-		this.remove(this.copybuffer);
 	}
 }
 
@@ -1169,7 +1209,7 @@ var Utils = {
 				console.log('Could not load file...'); 
 			},
 			onException: function(req,exception) {
-				//alert(exception);
+				console.log(exception);
 				return true;
 				}, 
 			});
