@@ -609,7 +609,7 @@ Schematic.prototype.svgSize=function(){
 Schematic.prototype.getMarkup = function() {
 	var svg = document.createElementNS(this.svgNs, "svg");
     /*attempted ie9 fix*/
-	if(!svg.getAttribute("xmlns")){
+	if(svg.getAttribute("xmlns")!=this.svgNs){
         svg.setAttribute('xmlns',this.svgNs);
     }
     var bg=document.createElementNS(this.svgNs,'rect');
