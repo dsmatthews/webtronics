@@ -611,6 +611,7 @@ Schematic.prototype.getMarkup = function() {
     var doc=xmlDoc = document.implementation.createDocument("", "", null);
 	var svg = doc.createElementNS(this.svgNs, "svg");
 	svg.setAttribute('xmlns',this.svgNs);
+    doc.appendChild(svg);
 //	svg.setAttribute('xmlns:wtx',this.wtxNs);
     var bg=doc.createElementNS(this.svgNs,'rect');
     bg.setAttribute('x',0);
