@@ -607,11 +607,9 @@ Schematic.prototype.svgSize=function(){
 }
 
 Schematic.prototype.getMarkup = function() {
-	var svg = document.createElement("svg");
-    /*attempted ie9 fix*/
-	if(svg.getAttribute("xmlns")!=this.svgNs){
-        svg.setAttribute('xmlns',this.svgNs);
-    }
+	var svg = document.createElementNS(this.svgNs, "svg");
+	svg.setAttribute('xmlns',this.svgNs);
+//	svg.setAttribute('xmlns:wtx',this.wtxNs);
     var bg=document.createElementNS(this.svgNs,'rect');
     bg.setAttribute('x',0);
     bg.setAttribute('y',0);
