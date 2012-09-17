@@ -439,7 +439,8 @@ var webtronics={
             this.center($('webtronics_image'));
             var svg = webtronics.getMarkup();
             console.log(svg);
-//            $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
+            $("webtronics_image_save").tagName="embed";
+            $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
             $("webtronics_svg_save").src="data:image/svg+xml;base64," + encode64(svg);
             $('webtronics_file_menu').style.display='none';
 
