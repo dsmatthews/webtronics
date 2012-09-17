@@ -627,9 +627,10 @@ Schematic.prototype.getMarkup = function() {
     bg.setAttribute('height',svgsize.height+10+'px');
 	svg.setAttribute('width',svgsize.width+10);
 	svg.setAttribute('height',svgsize.height+10);
-//    console.log(svg);
-//    if(svg.innerXml)return svg.innerXml;
-	return (new XMLSerializer()).serializeToString(svg);
+    this.svgRoot.appendChild(svg)
+	var text=(new XMLSerializer()).serializeToString(svg);
+    this.svgRoot.removeChild(svg);
+    return text;    
 }
 
 //**********************************************************************
