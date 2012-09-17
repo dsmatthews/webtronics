@@ -7,7 +7,7 @@
 
 
 	 function encode64(input) {
-        if(window.btoa)return window.btoa(webtronics.getMarkup());
+        if(window.btoa)return window.btoa(input);
 		// base64 strings are 4/3 larger than the original string
         var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 		var chr1, chr2, chr3;
