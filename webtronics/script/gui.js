@@ -439,8 +439,8 @@ var webtronics={
             this.center($('webtronics_image'));
 //            $("webtronics_image_save").src="data:image/svg+xml;base64;charset=utf-8," + encode64(webtronics.getMarkup());
             var svg = webtronics.getMarkup();
-            console.log(webtronics.getMarkup());
-           $("webtronics_image_save").src="data:image/svg+xml," + svg;
+            console.log(svg);
+           $("webtronics_image_save").src="data:image/svg+xml," + encode64(svg);
             $('webtronics_file_menu').style.display='none';
         },
 
