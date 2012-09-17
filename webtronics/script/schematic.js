@@ -608,7 +608,7 @@ Schematic.prototype.svgSize=function(){
 }
 
 Schematic.prototype.getMarkup = function() {
-    var doc=document.open("image/svg+xml");
+    var doc=xmlDoc = document.implementation.createDocument("", "", null);
 	var svg = doc.createElementNS(this.svgNs, "svg");
 	svg.setAttribute('xmlns',this.svgNs);
 //	svg.setAttribute('xmlns:wtx',this.wtxNs);
