@@ -223,6 +223,7 @@ Schematic.prototype.addtools=function(){
 	var grow=document.createElementNS(this.svgNs,'image');
 
 
+
 	grow.setAttribute('x',(this.container.offsetWidth)-32);
 	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
@@ -232,8 +233,8 @@ Schematic.prototype.addtools=function(){
 	Event.observe(grow,"mouseup", function(e){e.stopPropagation();}.bind(this));
 	Event.observe(grow,"click", function(e){
 			if(this.svgRoot.getAttribute('width')<this.maxwidth&this.svgRoot.getAttribute('height')<this.maxheight){
-				this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
-				this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
+				//this.drawing.setAttribute('width',this.svgRoot.getAttribute('width')*2);
+				//this.drawing.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
 				this.svgRoot.setAttribute('width',this.svgRoot.getAttribute('width')*2);
 				this.svgRoot.setAttribute('height',this.svgRoot.getAttribute('height')*2);			
 			}
@@ -625,6 +626,7 @@ Schematic.prototype.getMarkup = function() {
 	svg.setAttribute('width',svgsize.width+10);
 	svg.setAttribute('height',svgsize.height+10);
 //    console.log(svg);
+    if(svg.innerXml)return svg.innerXml;
 	return (new XMLSerializer()).serializeToString(svg);
 }
 
