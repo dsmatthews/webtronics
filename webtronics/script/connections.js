@@ -193,16 +193,10 @@ Schematic.prototype.createnetlist=function(){
 		if(type!='gnd'&&type!='wire'&&type!="plot"){
 			var rx=/(\w*)\s*(.*)/mi;
 			var value=rx.exec(parts[i].getAttribute('partvalue'));
-			var model=parts[i].getElementsByTagName("spicemodel")[0];
+			var model=parts[i].getAttribute("spice");
 			if(model){
 				console.log("model "+value[2]);
-				if(model.textContent.match(/\.subckt/i)!=null){
-					value[1]="x"+value[1];
-					subckt.push(model.textContent);
-				}
-				else {
-					models.push(model.textContent);
-				}				
+   				subckt.push(model);
 				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}

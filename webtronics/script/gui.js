@@ -9,8 +9,46 @@ var webtronics={
         mode:'',
 
 		Vlist:/\s*expression|\s*url|.*script/,
-		Alist:/^(x|y|x1|y1|x2|y2|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|font-size|font-weight|font-style|font-family)$/,
-		Elist:/^(path|circle|rect|line|text|g|tspan|svg|spicemodel)$/,
+		Alist:/^(x|y|x1|y1|x2|y2|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|font-size|font-weight|font-style|font-family)$/,
+		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:spicemodel)$/,
+
+		docfromtext:function(txt){
+			var xmlDoc;
+			if (window.DOMParser){
+				parser=new DOMParser();
+				xmlDoc=parser.parseFromString(txt,"text/xml");
+
+			}
+			else{ // Internet Explorer
+				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+				xmlDoc.async="false";
+				xmlDoc.loadXML(txt);
+			} 
+			return xmlDoc;
+		},
+
+		openfile:function(Name){
+			var text;
+			new Ajax.Request(Name,{
+			method:'get',
+			asynchronous:false,
+			contentType:"text/xml",
+			onSuccess: function(transport){
+				/*this overrides the mimetype to xml for ie9*/
+				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+				text=transport.responseText;
+				},
+			onFailure: function(){ 
+				console.log('Could not load file...'); 
+			},
+			onException: function(req,exception) {
+				console.log(exception);
+				return true;
+				}, 
+			});
+			return text;
+		},
+
 
 
 		setsize:function(){
@@ -46,17 +84,16 @@ var webtronics={
 			contentType:"image/svg+xml",
 			asynchronous:false,
 			postBody:text,
-			//parameters:{Content:text,Accept:'application/force-download'},
 			onSuccess:function(transport){
 				window.open("/upload");
 			},			
 			onFailure: function(){ 
-				console.log('Could not load file...'); 
+				console.log('Could not retrieve file...'); 
 			},
 			onException: function(req,exception) {
 				console.log(exception);
 				return true;
-				}, 
+				} 
 			});
 			//return text;
 
@@ -90,7 +127,7 @@ var webtronics={
                 this.file_id=id;
                 this.title = data['title'];
                 this.description = data['description'];
-	    		var xmlDoc=Utils.docfromtext(data['content']);
+	    		var xmlDoc=docfromtext(data['content']);
 	    		if(!xmlDoc){alert("error parsing svg");}
 	    		else{
 	    			var result=webtronics.sanitize(xmlDoc)
@@ -114,7 +151,7 @@ var webtronics={
 			    }
             }
             else if(this.fileaction=='import'){
-	    		var xmlDoc=Utils.docfromtext(data['content']);
+	    		var xmlDoc=docfromtext(data['content']);
 	    		if(!xmlDoc){alert("error parsing svg");}
 	    		else{
 	    			var result=webtronics.sanitize(xmlDoc)
@@ -238,43 +275,10 @@ var webtronics={
 
 		},
 
-		getmodels:function(elem){
-			var c=elem.getAttribute("class")
-			var text=Utils.openfile('/models/'+c+'.cir');
-			console.log(text);
-			var nodes=$("webtronics_part_model").childNodes;
-			for(var i=nodes.length;i>0;i--){
-				nodes[i-1].parentNode.removeChild(nodes[i-1]);
 
-			}
-			var option=document.createElement("option");
-			option.setAttribute("value","none");
-			option.innerHTML="none";
-			$("webtronics_part_model").appendChild(option);
-			if(!text)return;
-			var rx2=/\.SUBCKT\s*(\w*)((?!.ENDS)[\s\S])*\.ENDS/gi	
-			var rx1= /\.MODEL\s*(\w*)([^)]*\))/gi;
-			var model;
-			while((model=rx2.exec(text))!=null){
-				var option=document.createElement("option");
-				option.setAttribute("value",model[0]);
-				option.innerHTML=model[1];
-				$("webtronics_part_model").appendChild(option);
-			}
-/*remove all subcircuits so they don't interfere with the next search*/
-	
-			text=text.replace(rx2,"");
-			while((model=rx1.exec(text))!=null){
-//				console.log(model[0]);
-				var option=document.createElement("option");
-				option.setAttribute("value",model[0]);
-				option.innerHTML=model[1];
-				$("webtronics_part_model").appendChild(option);
-			}
-		},
 		getvalues:function(elem){
 			var c=elem.getAttribute("class");
-			var text=Utils.openfile("models/"+c+'.cir');
+			var text=this.openfile("models/"+c+'.cir');
 			var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
 				nodes[i-1].parentNode.removeChild(nodes[i-1]);
@@ -298,19 +302,23 @@ var webtronics={
 		},
 
         center:function(e){
+        
 		    e.style.left = ($('webtronics_main_window').offsetWidth/2)-(e.offsetWidth/2)+'px';
 		    e.style.top = ($('webtronics_main_window').offsetHeight/2)-(e.offsetHeight/2)+'px';
         },
 
 		disablepage:function(){
-			var div=document.createElement('div');
+/*			var div=document.createElement('div');
 			div.id="webtronics_disable";
 			div.onselectstart=function(){return false;};
-			$('webtronics_main_window').insertBefore(div,$("webtronics_chips_box"));
 
+			$('webtronics_main_window').insertBefore(div,$("webtronics_chips_box"));
+*/
+            $("webtronics_disable").style.visibility="visible";
 		},
         enablepage:function(){
-            $('webtronics_main_window').removeChild($('webtronics_disable'));
+            $("webtronics_disable").style.visibility="hidden";
+//            $('webtronics_main_window').removeChild($('webtronics_disable'));
         },
 
 		returnchip:function(){
@@ -335,11 +343,8 @@ var webtronics={
 
 			}
 			else {
-				this.getmodels(this.circuit.selected[0]);
-				var model=this.circuit.selected[0].getElementsByTagName("spicemodel")[0];
-				if(model){
-					$("webtronics_model_text").value=model.textContent;
-				}
+				this.getvalues(this.circuit.selected[0]);
+				$("webtronics_model_text").value=this.circuit.selected[0].getAttribute("spice");
 			}
 			var rx=/(\w*)\s*(.*)/mi;
 			var value=rx.exec(this.circuit.selected[0].getAttribute('partvalue'));
@@ -383,7 +388,8 @@ var webtronics={
                 menu.insert(new Element('br'));
   			}
 			menu.style.display='none';
-			parent.insert(menu);			
+			return menu;			
+ 
 		},
 
 		file_open:function(){
@@ -399,7 +405,7 @@ var webtronics={
 						    return;
 					    };
 
-					    var xmlDoc=Utils.docfromtext(textReader.result);
+					    var xmlDoc=this.docfromtext(textReader.result);
 					    if(!xmlDoc){alert("error parsing svg");}
 					    else{
 						    var result=this.sanitize(xmlDoc)
@@ -426,6 +432,13 @@ var webtronics={
 			$('webtronics_file_menu').style.display='none';
 			this.download();
 		},
+        saveuri:function(){
+            this.disablepage();
+	        $('webtronics_image').style.display = "block";
+            this.center($('webtronics_image'));
+            $("webtronics_image_save").src="data:image/svg+xml;base64;charset=utf-8," + encode64(webtronics.getMarkup());
+            $('webtronics_file_menu').style.display='none';
+        },
 		file_new:function(){
 			$('webtronics_file_menu').style.display='none';
 			this.setMode('webtronics_select','select','Selection');
@@ -454,11 +467,14 @@ var webtronics={
             this.circuit=frame.contentWindow.circuit;
             this.newtab(filename,frame);
      	 	this.setMode('webtronics_select','select', 'Selection');    
-            this.circuit.container.observe('contextmenu',function(e){
+
+
+/*attach the menu*/
+            Event.observe(this.circuit.container,'contextmenu',function(e){
                 $('webtronics_context_menu').style.top=Event.pointerY(e)+'px';                        
                 $('webtronics_context_menu').style.left=Event.pointerX(e)+'px';                        
                 $('webtronics_context_menu').style.display='block';                        
-                if(this.circuit.selected.length===1){
+                if(this.circuit.selected.length===1&& this.circuit.selected[0].tagName==='g'){
                     $$('div#webtronics_context_menu [title=Properties]')[0].className='enabled';
                 }
                 else {
@@ -467,13 +483,14 @@ var webtronics={
 
                 Event.stop(e);
             }.bind(this));
-            this.circuit.container.observe('click',function(e){
+            Event.observe(this.circuit.container,'click',function(e){
                 if(Event.isLeftClick(e)){                
                     if($('webtronics_context_menu')){
                         $('webtronics_context_menu').style.display='none';
                     }
                 }
-            });
+            }.bind(this));
+
 
         },
 
@@ -536,7 +553,48 @@ var webtronics={
             tab.click();
         },
         
+        savepng:function(){
+            this.disablepage();
+/*
+I want to preserve the css color for inverted diagrams in png
+*/
+            var d=this.circuit.drawing.cloneNode(true);
+            var b=this.circuit.background.cloneNode(true);
+            d.removeAttribute('transform');
+            b.removeAttribute('transform');
+        	var svgsize=this.circuit.svgSize(this.circuit.drawing);
+                        
+            if($("webtronics_canvas")){
+                $("webtronics_canvas").parentNode.removeChild($("webtronics_canvas"));
+            }
+            var canvas=new Element('canvas',{'id':'webtronics_canvas','width':svgsize.width+10+'px','height':svgsize.height+10+'px',style:"visibility:hidden"});
+            $("webtronics_image").insert(canvas);
+            var ctx=$("webtronics_canvas").getContext("2d");
+	        $('webtronics_image').style.display = "block";
+            
+            if(this.circuit.drawing.getAttribute('class')=='inv'){
+                var c=d.childNodes;
+                for(var i=0;i<c.length;i++){
+                     if(c[i].tagName=='circle'||c[i].tagName=='text')c[i].setAttributeNS(this.circuit.svgNs,'style','fill:white;stroke:white;');
+                     else c[i].setAttributeNS(this.circuit.svgNs,'style','fill:black;stroke:white;');      
+                }
+                var c=b.childNodes;
+                for(var i=0;i<c.length;i++){
+                     c[i].setAttributeNS(this.circuit.svgNs,'style','fill:black;stroke:white;');
+                }
 
+            }
+            var drawing=(new XMLSerializer()).serializeToString(d);
+            var bg=(new XMLSerializer()).serializeToString(b);
+            //console.log(drawing);
+
+            ctx.drawSvg(bg, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
+            ctx.drawSvg(drawing, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
+       	    this.center($('webtronics_image'));
+            var url= canvas.toDataURL("image/png");
+            $("webtronics_image_save").src=url;
+            $('webtronics_file_menu').style.display='none';
+        },
 
 
 
@@ -548,13 +606,15 @@ var webtronics={
 			    window.console.log = function(){};
 		    }
             webtronics.setsize();
+            var menu;
 		    if(webtronics.CLIENT_ID){
-                webtronics.createfilemenu($('webtronics_file').offsetLeft,
+                menu=this.createfilemenu($('webtronics_file').offsetLeft,
 			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
 			    'webtronics_file_menu',
                 $('webtronics_main_window'),
 			    [{label:'import',cb:webtronics.file_open},
-			    {label:'save',cb:webtronics.file_save},
+			    {label:'save',cb:webtronics.saveuri},
+			    {label:'save-png',cb:webtronics.savepng},
 			    {label:'new',cb:webtronics.file_new},
 			    {label:'G-drive open',cb:webtronics.gdrive_open},
 			    {label:'G-drive import',cb:webtronics.gdrive_import},
@@ -562,15 +622,16 @@ var webtronics={
 			    {label:'G-drive new',cb:webtronics.gdrive_new}]);
             }
             else{
-                webtronics.createfilemenu($('webtronics_file').offsetLeft,
+                menu=this.createfilemenu($('webtronics_file').offsetLeft,
 			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
 			    'webtronics_file_menu',
                 $('webtronics_main_window'),
 			    [{label:'import',cb:webtronics.file_open},
-			    {label:'save',cb:webtronics.file_save},
+			    {label:'save',cb:webtronics.saveuri},
+			    {label:'save-png',cb:webtronics.savepng},
 			    {label:'new',cb:webtronics.file_new}]);
             }
-
+            $("webtronics_main_window").insertBefore(menu,$("webtronics_disable"));
 		
 
     /*replace context menu*/
@@ -587,12 +648,12 @@ var webtronics={
 					    webtronics.center($('webtronics_properties_form'));
                         $('webtronics_context_menu').style.display='none';
 				    }}];
-            this.createfilemenu(0,
+            var contextmenu=this.createfilemenu(0,
                 0,
                 'webtronics_context_menu',
                 $('webtronics_diagram_area'),
                 myLinks);
- 
+            $("webtronics_diagram_area").insert(contextmenu);
         /*add a new tab */
             var frame=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
             $('webtronics_diagram_area').insert(frame);
@@ -655,7 +716,7 @@ var webtronics={
 			    while(group.nodeType!==1||group.tagName!=="g"){
 				    group=group.nextSibling;
 			    }
-			    var model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
+			    var model=document.createElementNS(webtronics.circuit.wtxNs,"wtx:spicemodel");
 			    if(!model){
 				    group.appendChild(model);
 			    }
@@ -764,24 +825,23 @@ var webtronics={
 						
 		        });
             }
-    /*properties events*/		
+   /*properties events*/		
 
 		    if($('webtronics_properties_ok'))Event.observe($('webtronics_properties_ok'), 'click', function() {
 			    $('webtronics_properties_form').hide();
 			    webtronics.enablepage();
-			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-			    webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-			    if($("webtronics_model_text").value!=""){
-				    var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
-				    if(!model){
-					    model=document.createElement('spicemodel');
-					    webtronics.circuit.selected[0].appendChild(model);
-					    model.textContent=$("webtronics_model_text").value;
-				    }
-				    else {model.textContent=$("webtronics_model_text").value;}
-			    }
+                var model=webtronics.circuit.selected[0];
+		        model.setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
+		        webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
+			    model.setAttribute("spice",$("webtronics_model_text").value);
+		        
 		    });
-		
+
+		    if($('webtronics_properties_cancel'))Event.observe($('webtronics_properties_cancel'), 'click', function() {
+			    $('webtronics_properties_form').hide();
+			    webtronics.enablepage();
+            });
+
 		    if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
 			    if($('webtronics_part_model').value!="none"){
 				    if($('webtronics_part_model').value.match(/\.model/i)!=null){
@@ -793,29 +853,20 @@ var webtronics={
 			    else {
 				    $('webtronics_model_text').clear();
 				    $('webtronics_part_value').clear();
-				    var model=webtronics.circuit.selected[0].getElementsByTagName("spicemodel")[0];
-				    model.textContent="";
 			    }
-			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		    });
-		
-		    if($('webtronics_part_value'))Event.observe($('webtronics_part_value'),'keyup',function(){
-			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		    });
-		    if($('webtronics_part_id'))Event.observe($('webtronics_part_id'),'keyup',function(){
-			    webtronics.circuit.selected[0].setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		    });
-		    if($('webtronics_model_text'))Event.observe($('webtronics_model_text'),"change",function(){		
-			    /*css selectors don't work here,maybe doing it wrong*/
-			    var model=webtronics.circuit.selected[0].getElementsByTagName("model")[0];
-			    if(!model){
-				    model=document.createElementNS(webtronics.circuit.wtxNs,"spicemodel");
-				    webtronics.circuit.selected[0].appendChild(model);
-			    }
-			    model.textContent=$('webtronics_model_text').value;
-		    });
+		    }
+            );
 
+/*save as png modal*/
+            if($("webtronics_image_ok")){
+       		    Event.observe($('webtronics_image_ok'), 'click', function() {
+			        webtronics.enablepage();
+			        $('webtronics_image').hide();
+			        webtronics.setMode('webtronics_select','select','Selection');
+		        });
+        
 
+            }
 
     /*chip box events*/
 		    Event.observe($('webtronics_vert_pins'), 'change', function() {

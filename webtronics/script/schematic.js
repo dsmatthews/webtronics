@@ -156,7 +156,7 @@ Schematic.prototype.redo=function(){
 	}
 }
 Schematic.prototype.refresh=function(){
-	console.log("image changed\n");
+//	console.log("image changed\n");
 	this.hideconnects();
 	this.addhistory();
 	this.showallconnects();
@@ -171,7 +171,7 @@ Schematic.prototype.init = function(elem) {
 	this.container.style.MozUserSelect = 'none';
 	this.svgRoot = document.createElementNS(this.svgNs, "svg");
 	this.svgRoot.setAttribute('xmlns',this.svgNs);
-	this.svgRoot.setAttribute('xmlns:wtx',this.wtxNs);
+//	this.svgRoot.setAttribute('xmlns:wtx',this.wtxNs);
     this.svgRoot.setAttribute('width',2000);
 	this.svgRoot.setAttribute('height',2000);
 
@@ -221,6 +221,7 @@ Schematic.prototype.addtools=function(){
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(normal);
 	var grow=document.createElementNS(this.svgNs,'image');
+
 	grow.setAttribute('x',(this.container.offsetWidth)-32);
 	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
@@ -442,7 +443,7 @@ Schematic.prototype.rotate=function(elem){
 	matrix.e=Math.round(matrix.e/this.grid)*this.grid;
 	matrix.f=Math.round(matrix.f/this.grid)*this.grid;
 	elem.setAttributeNS(null,'transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
-
+    
 //	var trans=this.svgRoot.createSVGTransform();
 //	trans.setRotate(90,0,0);
 //	elem.transform.baseVal.appendItem(trans);
@@ -571,7 +572,7 @@ Schematic.prototype.newdoc = function(){
 Schematic.prototype.invert=function(check){
 		if(check){
             this.inv=true;
-			console.log('invert');
+//			console.log('invert');
 			this.background.setAttribute('class','inv');
 			this.drawing.setAttribute('class','inv');
 			this.info.setAttribute('class','inv');
@@ -595,12 +596,20 @@ Schematic.prototype.showconnections=function(check){
 	
 }
 
+Schematic.prototype.svgSize=function(){
+	var matrix=this.parseMatrix(this.drawing);
+	this.drawing.removeAttribute('transform');
+	var svgsize=this.tracker(this.drawing);
+	this.drawing.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+    return svgsize;
+
+}
 
 Schematic.prototype.getMarkup = function() {
 	var svg = document.createElementNS(this.svgNs, "svg");
 	svg.setAttribute('xmlns',this.svgNs);
-	svg.setAttribute('xmlns:wtx',this.wtxNs);
-    var bg=document.createElement('rect');
+//	svg.setAttribute('xmlns:wtx',this.wtxNs);
+    var bg=document.createElementNS(this.svgNs,'rect');
     bg.setAttribute('x',0);
     bg.setAttribute('y',0);
     bg.setAttribute('fill','white');
@@ -609,14 +618,12 @@ Schematic.prototype.getMarkup = function() {
 		svg.appendChild(this.drawing.childNodes[ch].cloneNode(true));
 	}
 /*need to remove the matrix to get the right size*/
-	var matrix=this.parseMatrix(this.drawing);
-	this.drawing.removeAttribute('transform');
-	var svgsize=this.tracker(this.drawing);
-	this.drawing.setAttribute('transform','matrix('+matrix.a+','+matrix.b+','+matrix.c+','+matrix.d+','+matrix.e+','+matrix.f+')');
+    var svgsize=this.svgSize();
     bg.setAttribute('width',svgsize.width+10+'px');
     bg.setAttribute('height',svgsize.height+10+'px');
-	svg.setAttributeNS(null,'width',svgsize.width+10);
-	svg.setAttributeNS(null,'height',svgsize.height+10);
+	svg.setAttribute('width',svgsize.width+10);
+	svg.setAttribute('height',svgsize.height+10);
+//    console.log(svg);
 	return (new XMLSerializer()).serializeToString(svg);
 }
 
@@ -714,7 +721,7 @@ Schematic.prototype.getPart=function(){
         var parts=$$("#webtronics_drawing>*");
         for(var i=0;i<parts.length;i++){
 		var rect=this.tracker(parts[i]);
-		if(Utils.rectsIntersect(rect,this.selectionRect)){
+		if(rectsIntersect(rect,this.selectionRect)){
 			this.select(parts[i]);               
                 }
         }
@@ -775,7 +782,7 @@ if(!this.drag){
 		}
 	}	
 /*clicked on background  in select mode ,remove selection*/
-		else if(this.mode=='select'||this.mode=='zoom'){
+		else if(this.mode=='select'){
 		if(Event.isLeftClick(event)){
 				this.selectionRect.x=real.x;
 				this.selectionRect.y=real.y;
@@ -787,7 +794,7 @@ if(!this.drag){
 				this.info.appendChild(this.selection);
 				if(this.mode=='select'){
 					for(var i=0;i<this.selected.length;i++){
-						if(Utils.rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+						if(rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
 					}
 					if(!this.drag)this.unselect();
 
@@ -912,7 +919,13 @@ Schematic.prototype.dropSelection=function(){
 
 Schematic.prototype.onMouseUp = function(event) {
     if(event.isLeftClick(event)){
-        console.log('mouseup');
+//        console.log('mouseup');
+                /*hide the menu*/
+        var menu=window.parent.document.getElementById('webtronics_context_menu');
+        if(menu){
+            menu.style.display='none';        
+//            console.log('hide menu');                    
+        }
         this.drag=0;
         if(this.mode=='select'){
 	        var floating=$('schematic_floating');
@@ -925,12 +938,12 @@ Schematic.prototype.onMouseUp = function(event) {
 	        }
 		
         }
-
+/*
         else	if(this.mode=='zoom'){
 	        this.unselect();
 	        this.zoomtorect(this.selectionRect);
         }
-
+*/
         if (this.selection) {
 	        this.remove(this.selection);
 	        this.selectionRect.x=0;
@@ -1161,76 +1174,7 @@ Schematic.prototype.paste=function(elem){
 	}
 }
 
-
-
-function createUUID()
-{
-  return [7].map(function(length) {
-    var uuidpart = "";
-    for (var i=0; i<length; i++) {
-      var uuidchar = parseInt((Math.random() * 256)).toString(16);
-      if (uuidchar.length == 1)
-        uuidchar = "0" + uuidchar;
-      uuidpart += uuidchar;
-    }
-    return uuidpart;
-  }).join('-');
-}
-
-
-var Utils = {
-		docfromtext:function(txt){
-			var xmlDoc;
-			if (window.DOMParser){
-				parser=new DOMParser();
-				xmlDoc=parser.parseFromString(txt,"text/xml");
-
-			}
-			else{ // Internet Explorer
-				xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-				xmlDoc.async="false";
-				xmlDoc.loadXML(txt);
-			} 
-			return xmlDoc;
-		},
-
-		openfile:function(Name){
-			var text;
-			new Ajax.Request(Name,{
-			method:'get',
-			asynchronous:false,
-			contentType:"text/xml",
-			onSuccess: function(transport){
-				/*this overrides the mimetype to xml for ie9*/
-				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-				text=transport.responseText;
-				},
-			onFailure: function(){ 
-				console.log('Could not load file...'); 
-			},
-			onException: function(req,exception) {
-				console.log(exception);
-				return true;
-				}, 
-			});
-			return text;
-		},
-
-
-	"encode64" : function(input) {
-//probably won't work on older browsers
-		return window.btoa(input);
-
-	},
-
-	"decode64" : function (input) {
-
-
-			return  window.atob(input);
-	 
-		},
-
-	"rectsIntersect": function(r1, r2) {
+	function rectsIntersect(r1, r2) {
 		
 		return			((r2.width>0)?(r2.x):(r2.x+r2.width)) < ((r1.width>0)?(r1.x+r1.width):(r1.x)) &&
 			((r2.width>0)?(r2.x+r2.width):(r2.x)) > ((r1.width>0)?(r1.x):(r1.x+r1.width)) &&
@@ -1238,8 +1182,8 @@ var Utils = {
 			((r2.height>0)?(r2.y+r2.height):(r2.y)) > ((r1.height>0)?(r1.y):(r1.y+r1.height));
 
 
-	}
+	};
 
-	
-}
+
+
 
