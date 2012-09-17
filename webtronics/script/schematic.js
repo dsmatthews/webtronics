@@ -631,7 +631,7 @@ Schematic.prototype.getDoc = function() {
     return doc;
 }
 
-Schematic.prototype.getMarkup(){
+Schematic.prototype.getMarkup=function(){
     var doc=this.getDoc();
 	return (new XMLSerializer()).serializeToString(doc);
 }
