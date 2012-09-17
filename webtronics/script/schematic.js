@@ -609,9 +609,7 @@ Schematic.prototype.svgSize=function(){
 
 Schematic.prototype.getMarkup = function() {
 	var svg = document.createElementNS(this.svgNs, "svg");
-    if(!svg.hasAttribute('xmlns:svg')){
-    	svg.setAttribute('xmlns:svg',this.svgNs);
-    }
+	svg.setAttribute('xmlns',this.svgNs);
 //	svg.setAttribute('xmlns:wtx',this.wtxNs);
     var bg=document.createElementNS(this.svgNs,'rect');
     bg.setAttribute('x',0);
@@ -627,10 +625,8 @@ Schematic.prototype.getMarkup = function() {
     bg.setAttribute('height',svgsize.height+10+'px');
 	svg.setAttribute('width',svgsize.width+10);
 	svg.setAttribute('height',svgsize.height+10);
-    this.svgRoot.appendChild(svg)
-	svg=(new XMLSerializer()).serializeToString(svg);
-    this.svgRoot.removeChild(svg);
-    
+//    console.log(svg);
+	return (new XMLSerializer()).serializeToString(svg);
 }
 
 //**********************************************************************
