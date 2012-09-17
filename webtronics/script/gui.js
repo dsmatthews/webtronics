@@ -440,7 +440,8 @@ var webtronics={
 //            $("webtronics_image_save").src="data:image/svg+xml;base64;charset=utf-8," + encode64(webtronics.getMarkup());
             var svg = webtronics.getMarkup();
             console.log(svg);
-           $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
+            $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
+            $("webtronics_image_save").type="image/svg+xml";
             $('webtronics_file_menu').style.display='none';
         },
 
