@@ -344,7 +344,9 @@ var webtronics={
 			}
 			else {
 				this.getvalues(this.circuit.selected[0]);
-				$("webtronics_model_text").value=this.circuit.selected[0].getAttribute("spice");
+				if(this.circuit.selected[0].getAttribute("spice")){
+                    $("webtronics_model_text").value=this.circuit.selected[0].getAttribute("spice");
+                }
 			}
 			var rx=/(\w*)\s*(.*)/mi;
 			var value=rx.exec(this.circuit.selected[0].getAttribute('partvalue'));
@@ -837,7 +839,12 @@ I want to preserve the css color for inverted diagrams in png
                 var model=webtronics.circuit.selected[0];
 		        model.setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
 		        webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-			    model.setAttribute("spice",$("webtronics_model_text").value);
+			    if($("webtronics_model_text").value!=""){
+                    model.setAttribute("spice",$("webtronics_model_text").value);
+                }
+                else if(model.getAttribute("spice")){
+                    model.removeAttribute("spice");
+                }
 		        
 		    });
 
