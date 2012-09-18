@@ -18,6 +18,12 @@ body{
 	stroke:white;
 }
 
+.inv circle,.inv text{
+	fill:white;
+	stroke:white;
+}
+
+
 #information.inv>rect,.inv .schematic_tracker *,#information.inv>line{
 	fill:yellow;
 	stroke:yellow;
@@ -27,9 +33,5 @@ body{
 	stroke:green;
 }
 
-.inv circle,.inv text{
-	fill:white;
-	stroke:white;
-}
 
 

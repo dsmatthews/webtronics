@@ -224,6 +224,7 @@ Schematic.prototype.addtools=function(){
 
 
 
+
 	grow.setAttribute('x',(this.container.offsetWidth)-32);
 	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
@@ -608,7 +609,7 @@ Schematic.prototype.svgSize=function(){
 }
 
 Schematic.prototype.getDoc = function() {
-    var doc=xmlDoc = document.implementation.createDocument("", "", null);
+    var doc= document.implementation.createDocument("", "", null);
 	var svg = doc.createElementNS(this.svgNs, "svg");
 //	svg.setAttribute('xmlns',this.svgNs);
 //	svg.setAttribute('xmlns:wtx',this.wtxNs);

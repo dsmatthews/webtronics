@@ -561,15 +561,39 @@ var webtronics={
         
         savepng:function(){
             this.disablepage();
+            var doc= document.implementation.createDocument("", "", null);
+	        var svg = doc.createElementNS(this.circuit.svgNs, "svg");
 /*
 I want to preserve the css color for inverted diagrams in png
 */
-            var d=this.circuit.drawing.cloneNode(true);
+/*add the css*/
+            if(this.circuit.drawing.getAttribute('class')==="inv"){
+                var style=doc.createElementNS(this.circuit.svgNs,"style");
+                style.setAttribute('type',"text/css");
+                style.appendChild(doc.createCDATASection("g,rect,line{fill:black;stroke:white;}"+
+                                                        "circle,text{fill:white;stroke:white;}"));
+                svg.appendChild(style);
+            }               
+     
             var b=this.circuit.background.cloneNode(true);
-            d.removeAttribute('transform');
             b.removeAttribute('transform');
-        	var svgsize=this.circuit.svgSize(this.circuit.drawing);
-                        
+            svg.appendChild(b);
+
+            for(var ch=0;ch<this.circuit.drawing.childNodes.length;ch++){
+                var element=this.circuit.drawing.childNodes[ch].cloneNode(true);
+                element.setAttribute('style',this.circuit.drawing.childNodes[ch].getAttribute('style'));
+	  	        svg.appendChild(element);
+	        }
+
+            var svgsize=this.circuit.svgSize();
+	        svg.setAttribute('width',svgsize.width+10);
+	        svg.setAttribute('height',svgsize.height+10);
+            
+            doc.appendChild(svg);
+            
+
+
+//            console.log((new XMLSerializer()).serializeToString(doc));
             if($("webtronics_canvas")){
                 $("webtronics_canvas").parentNode.removeChild($("webtronics_canvas"));
             }
@@ -578,24 +602,10 @@ I want to preserve the css color for inverted diagrams in png
             var ctx=$("webtronics_canvas").getContext("2d");
 	        $('webtronics_image').style.display = "block";
             
-            if(this.circuit.drawing.getAttribute('class')=='inv'){
-                var c=d.childNodes;
-                for(var i=0;i<c.length;i++){
-                     if(c[i].tagName=='circle'||c[i].tagName=='text')c[i].setAttributeNS(this.circuit.svgNs,'style','fill:white;stroke:white;');
-                     else c[i].setAttributeNS(this.circuit.svgNs,'style','fill:black;stroke:white;');      
-                }
-                var c=b.childNodes;
-                for(var i=0;i<c.length;i++){
-                     c[i].setAttributeNS(this.circuit.svgNs,'style','fill:black;stroke:white;');
-                }
+            var drawing=(new XMLSerializer()).serializeToString(doc);
+            console.log(drawing);
 
-            }
-            var drawing=(new XMLSerializer()).serializeToString(d);
-            var bg=(new XMLSerializer()).serializeToString(b);
-            //console.log(drawing);
-
-            ctx.drawSvg(bg, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
-            ctx.drawSvg(drawing, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
+            ctx.drawSvg(doc, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
        	    this.center($('webtronics_image'));
             var url= canvas.toDataURL("image/png");
             $("webtronics_image_save").src=url;
