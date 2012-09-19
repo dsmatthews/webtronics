@@ -604,7 +604,7 @@ I want to preserve the css color for inverted diagrams in png
             var drawing=(new XMLSerializer()).serializeToString(doc);
             console.log(drawing);
             
-            ctx.drawSvg(doc, 0, 0);    
+            ctx.drawSvg(svg, 0, 0, svgsize.width+10,svgsize.height+10);    
             this.center($('webtronics_image'));
             var url= canvas.toDataURL("image/png");
             $("webtronics_image_save").src=url;
