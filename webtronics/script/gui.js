@@ -607,7 +607,7 @@ I want to preserve the css color for inverted diagrams in png
             try{
                 ctx.drawSvg(doc, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
             }       	    
-            catch{
+            catch(e){
                 ctx.drawSvg(drawing, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
             
             }
