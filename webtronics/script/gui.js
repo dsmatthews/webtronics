@@ -581,7 +581,6 @@ I want to preserve the css color for inverted diagrams in png
 
             for(var ch=0;ch<this.circuit.drawing.childNodes.length;ch++){
                 var element=this.circuit.drawing.childNodes[ch].cloneNode(true);
-                element.setAttribute('style',this.circuit.drawing.childNodes[ch].getAttribute('style'));
 	  	        svg.appendChild(element);
 	        }
 
