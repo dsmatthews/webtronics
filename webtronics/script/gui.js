@@ -601,12 +601,17 @@ I want to preserve the css color for inverted diagrams in png
             $("webtronics_image").insert(canvas);
             var ctx=$("webtronics_canvas").getContext("2d");
 	        $('webtronics_image').style.display = "block";
-            
             var drawing=(new XMLSerializer()).serializeToString(doc);
             console.log(drawing);
-
-            ctx.drawSvg(doc, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
-       	    this.center($('webtronics_image'));
+            
+            try{
+                ctx.drawSvg(doc, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
+            }       	    
+            catch{
+                ctx.drawSvg(drawing, 0, 0, svgsize.width+10,'height',svgsize.height+10);    
+            
+            }
+            this.center($('webtronics_image'));
             var url= canvas.toDataURL("image/png");
             $("webtronics_image_save").src=url;
             $('webtronics_file_menu').style.display='none';
