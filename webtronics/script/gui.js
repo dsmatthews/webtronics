@@ -437,7 +437,7 @@ var webtronics={
 
         saveuri:function(){
             this.disablepage();
-	        $('webtronics_image_').style.display = "block";
+	        $('webtronics_image').style.display = "block";
             this.center($('webtronics_image'));
             var svg = this.getMarkup();
             console.log(svg);
