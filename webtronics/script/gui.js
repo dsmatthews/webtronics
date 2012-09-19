@@ -437,13 +437,13 @@ var webtronics={
 
         saveuri:function(){
             this.disablepage();
-	        $('webtronics_image').style.display = "block";
+	        $('webtronics_image_').style.display = "block";
             this.center($('webtronics_image'));
             var svg = this.getMarkup();
             console.log(svg);
             if(navigator.appName == 'Microsoft Internet Explorer'){
-                $('webtronics_image_save').src="";
-                $('webtronics_image_save').innerHTML=svg;
+                $('webtronics_image_div').innerHTML=svg;
+                $('webtronics_image_save').style.display='none';
             }
             else{
                 $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
@@ -568,7 +568,7 @@ var webtronics={
         savepng:function(){
             
             this.disablepage();
-            $("webtronics_image_save").innerHTML="";
+            $("webtronics_image_save").style.display="block";
             var doc= document.implementation.createDocument("", "", null);
 	        var svg = doc.createElementNS(this.circuit.svgNs, "svg");
 /*
