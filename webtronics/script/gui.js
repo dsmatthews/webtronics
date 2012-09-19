@@ -443,12 +443,11 @@ var webtronics={
             console.log(svg);
             if(navigator.appName == 'Microsoft Internet Explorer'){
                 $('webtronics_image_div').innerHTML=svg;
-                $('webtronics_image_save').style.display='none';
             }
             else{
                 $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
-                $('webtronics_file_menu').style.display='none';
             }
+            $('webtronics_file_menu').style.display='none';
         },
 
 		file_new:function(){
@@ -568,7 +567,9 @@ var webtronics={
         savepng:function(){
             
             this.disablepage();
-            $("webtronics_image_save").style.display="block";
+            if(navigator.appName == 'Microsoft Internet Explorer'){
+                $('webtronics_image_div').innerHTML="<img id='webtronics_image_save' >";
+            }
             var doc= document.implementation.createDocument("", "", null);
 	        var svg = doc.createElementNS(this.circuit.svgNs, "svg");
 /*
