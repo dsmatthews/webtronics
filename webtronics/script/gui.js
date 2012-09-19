@@ -439,10 +439,16 @@ var webtronics={
             this.disablepage();
 	        $('webtronics_image').style.display = "block";
             this.center($('webtronics_image'));
-            var svg = webtronics.getMarkup();
+            var svg = this.getMarkup();
             console.log(svg);
-            $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
-            $('webtronics_file_menu').style.display='none';
+            if(navigator.appName == 'Microsoft Internet Explorer'){
+                $('webtronics_image_save').src="";
+                $('webtronics_image_save').innerHTML=svg;
+            }
+            else{
+                $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
+                $('webtronics_file_menu').style.display='none';
+            }
         },
 
 		file_new:function(){
@@ -560,7 +566,9 @@ var webtronics={
         },
         
         savepng:function(){
+            
             this.disablepage();
+            $("webtronics_image_save").innerHTML="";
             var doc= document.implementation.createDocument("", "", null);
 	        var svg = doc.createElementNS(this.circuit.svgNs, "svg");
 /*
@@ -602,12 +610,7 @@ I want to preserve the css color for inverted diagrams in png
 	        $('webtronics_image').style.display = "block";
             var drawing=(new XMLSerializer()).serializeToString(svg);
             console.log(drawing);
-            try{
-                ctx.drawSvg(doc, 0, 0, svgsize.width+10,svgsize.height+10);    
-            }
-            catch(e){
-                ctx.drawSvg(drawing, 0, 0, svgsize.width+10,svgsize.height+10);    
-            }            
+            ctx.drawSvg(doc, 0, 0, svgsize.width+10,svgsize.height+10);    
             this.center($('webtronics_image'));
             var url= canvas.toDataURL("image/png");
             $("webtronics_image_save").src=url;
