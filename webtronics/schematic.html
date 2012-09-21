@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
 <title>Webtronix schematic editor.</title>
-
+<meta charset="UTF-8">
 <link rel="stylesheet" href="style/schematic.css" type="text/css">
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript" src="script/prototype.js"></script>
@@ -993,6 +993,19 @@ add code text
 <div id='webtronics_image_div' >
 <img id="webtronics_image_save" >
 </div>    
+</div>
+
+<div id="webtronics_netlist_text" class='modal'>
+<img id="webtronics_netlist_text_ok" src="./buttons/ok.png"> 
+<div id="webtronics_netlist_text_div"></div>
+<pre>
+       d1 0 1 1n4148
+        | | |   |
+  part id | |   model/value 
+      leg 1 leg 2          
+  
+* represents missing value
+</pre>
 </div>
 
 </div>

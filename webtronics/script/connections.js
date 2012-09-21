@@ -143,7 +143,10 @@ Schematic.prototype.connectwires=function(){
 }
 
 Schematic.prototype.createnetlist=function(){
-	var parts=this.sortnetlist($$('#webtronics_drawing > g'));
+    
+	var parts=$$('#webtronics_drawing > g');
+    if(parts.length<1)return "no parts found";
+    parts=this.sortnetlist(parts);
 	var wires=new Array();
 	var command=""; 
 	var plot=new Array();
@@ -200,9 +203,19 @@ Schematic.prototype.createnetlist=function(){
 				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
 
 			}
-			spice=spice.concat(value[1]," ");
+			if(value[1]){
+                spice=spice.concat(value[1]," ");
+            }
+            else{
+                spice=spice.concat("*"," ");
+            }
 			for(var j=0;j<nodes.length;j++)spice=spice.concat(nodes[j]," ");
-			spice=spice.concat(value[2]," ");
+			if(value[2]){
+                spice=spice.concat(value[2]," ");
+            }
+            else{
+                spice=spice.concat("*"," ");
+            }
 			spice=spice.concat("\n");
 		}
 		if(type=="plot"){
@@ -239,11 +252,12 @@ Schematic.prototype.createnetlist=function(){
 
 
 
-	if(this.getparttype(parts[0]).toLowerCase()!='gnd')alert('no ground node');
-	else alert(spice.toLowerCase());
 
 	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
+
+	if(this.getparttype(parts[0]).toLowerCase()!='gnd')return 'no ground node';
+	else return spice.toLowerCase();
 
 }
 

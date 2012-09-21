@@ -563,6 +563,18 @@ var webtronics={
             newt.insert({'before':tab});
             tab.click();
         },
+
+        formatnetlist:function(spice1,spice2){
+          var html=new Element('div');
+          if(spice2===null){
+                var lines=spice1.split('\n');
+                for(var i=0;i<lines.length;i++){
+                    var line = new Element('p').update(lines[i]);
+                    html.insert(line);
+                }
+          }
+          return html;            
+        },
         
         savepng:function(){
             
@@ -665,6 +677,11 @@ I want to preserve the css color for inverted diagrams in png
                     {label:'paste',cb:function(){
                         webtronics.circuit.paste(webtronics.copy);
                         $('webtronics_context_menu').style.display='none';}},
+
+                    {label:'delete',cb:function(){
+                        webtronics.circuit.deleteSelection();
+                        $('webtronics_context_menu').style.display='none';}},
+
 				    {label:'Properties',cb:function(){
 					    webtronics.openProperties()
 					    webtronics.center($('webtronics_properties_form'));
@@ -738,10 +755,10 @@ I want to preserve the css color for inverted diagrams in png
 			    while(group.nodeType!==1||group.tagName!=="g"){
 				    group=group.nextSibling;
 			    }
-			    var model=document.createElementNS(webtronics.circuit.wtxNs,"wtx:spicemodel");
-			    if(!model){
-				    group.appendChild(model);
-			    }
+			    //var model=document.createElementNS(webtronics.circuit.wtxNs,"wtx:spicemodel");
+			    //if(!model){
+				//    group.appendChild(model);
+			    //}
 			    webtronics.circuit.getgroup(group);
 			    webtronics.setMode('webtronics_select','select','Selection');
 			
@@ -818,7 +835,14 @@ I want to preserve the css color for inverted diagrams in png
 		    }
 		    if($('webtronics_netlist')){
 			    Event.observe($('webtronics_netlist'), 'click', function() {
-				    webtronics.circuit.createnetlist();
+                    webtronics.disablepage();                    
+                    var content=$$("#webtronics_netlist_text_div > *") 
+                    for(var i=0;i<content.length;i++){
+                        $("webtronics_netlist_text_div").removeChild(content[i]);
+                    }
+				    $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(webtronics.circuit.createnetlist(),null));
+                    $("webtronics_netlist_text").style.display='block';
+                    webtronics.center($('webtronics_netlist_text'));
 				    });
 		    }
 	
@@ -926,6 +950,16 @@ I want to preserve the css color for inverted diagrams in png
 				    $('webtronics_add_text').hide();
 			    });
 		    }
+   /*netlist text events*/
+            if("webtronics_netlist_text_ok"){
+			    Event.observe($('webtronics_netlist_text_ok'), 'click', function() {
+				    webtronics.setMode('webtronics_select','select','Selection');
+				    $('webtronics_netlist_text').hide();
+                    webtronics.enablepage();
+			    });
+            }  
+
+
     /*text open events*/
 		    Event.observe($('webtronics_open_text_ok'), 'click', function() {
 			    $('webtronics_open_text').hide();
