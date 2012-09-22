@@ -12,6 +12,35 @@ var webtronics={
 		Alist:/^(x|y|x1|y1|x2|y2|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|font-size|font-weight|font-style|font-family)$/,
 		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:spicemodel)$/,
 
+        parts:{
+               "amplifier":["op-amp"],
+
+                "gates":["and","nand","nor","not","or","xnor","xor"],
+
+                "resistors":["photo-resistor","resistor","vari-resistor","potentiometer","testresistor"],
+
+                "transistors":["njfet","npn","pjfet","pnp","nmosfet","phototrans","pmosfet"],
+
+                "audio":["speaker"],
+
+                "diodes":["diode","led","photodiode","scr","triac","trigger","zener"],
+
+                "ic":["3_pins","4_pins","5_pins"],
+
+                "switches":["ncpb","nopb","spst-relay","spst-switch"],
+                
+                "capacitors":["capacitor","polar-cap","varicap"],
+
+                "frequency":["crystal"],
+
+                "inductors":["coil","tapcoil","transformer"],
+
+                "power":["ac","battery","ground","positive"],
+
+                "test":["scope"],
+
+        },
+
 		docfromtext:function(txt){
 			var xmlDoc;
 			if (window.DOMParser){
@@ -29,6 +58,7 @@ var webtronics={
 
 		openfile:function(Name){
 			var text;
+            //console.log(Name);
 			new Ajax.Request(Name,{
 			method:'get',
 			asynchronous:false,
@@ -57,14 +87,10 @@ var webtronics={
 			var realwidth=window.innerWidth-$('webtronics_side_bar').offsetWidth;
 			$('webtronics_center').style.width = window.offsetWidth+'px';
 			$('webtronics_center').style.height = realheight-buffer+'px';
-			$('webtronics_tab_area').style.width = realwidth-buffer+'px';
 			$('webtronics_diagram_area').style.width = realwidth-buffer+'px';
-			$('webtronics_diagram_area').style.height = realheight-$('webtronics_tab_area').offsetHeight-buffer+'px';
+			$('webtronics_diagram_area').style.height = realheight-buffer+'px';
             frames=$$('#webtronics_diagram_area>iframe')
-            for(var i=0;i<frames.length;i++){
-            	frames[i].width = realwidth-buffer+'px';
-    			frames[i].height = realheight-$('webtronics_tab_area').offsetHeight-buffer+'px';
-            }
+           	if(frames[0])frames[0].width = realwidth-buffer+'px';
 			$('webtronics_parts_list').style.height=realheight-buffer+'px';
 		},
 
@@ -75,176 +101,7 @@ var webtronics={
 			return str;
 		},
 		
-		download:function(){
 
-//			var w=window.open("data:image/svg+xml;base64;charset=utf-8," + Utils.encode64(webtronics.getMarkup() ));
-			var text=this.getMarkup();
-			new Ajax.Request("/upload",{
-			method:'post',
-			contentType:"image/svg+xml",
-			asynchronous:false,
-			postBody:text,
-			onSuccess:function(transport){
-				window.open("/upload");
-			},			
-			onFailure: function(){ 
-				console.log('Could not retrieve file...'); 
-			},
-			onException: function(req,exception) {
-				console.log(exception);
-				return true;
-				} 
-			});
-			//return text;
-
-
-
-		},
-
-		createPicker:function() {
-			  var view = new google.picker.View(google.picker.ViewId.DOCS);
-			  view.setMimeTypes('image/svg+xml');
-              console.log(this.CLIENT_ID);
-			  picker = new google.picker.PickerBuilder().
-                            setAppId(this.CLIENT_ID).
-                            addView(view).
-                            setCallback(this.pickerCallback.bind(this)).
-                            build();
-                            picker.setVisible(true);
-
-			},
-
-		GetSuccess:function(id,data){
-			if (data.redirect) {
-				window.location.href = data.redirect;
-			}
-      
-			if(!data['content']){
-				console.log("file is empty");
-			};
-            console.log(data);
-            if(this.fileaction=='open'){
-                this.file_id=id;
-                this.title = data['title'];
-                this.description = data['description'];
-	    		var xmlDoc=docfromtext(data['content']);
-	    		if(!xmlDoc){alert("error parsing svg");}
-	    		else{
-	    			var result=webtronics.sanitize(xmlDoc)
-	    			if(result){console.log(result+ ' found');alert('unclean file');return;}
-	    			var node=xmlDoc.getElementsByTagName('svg')[0];
-
-	    			if(!node){alert("svg node not found")}
-	    			else {
-                        if(this.circuit===null||this.circuit.drawing.childNodes.length>0){
-                            var frame=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
-                            $('webtronics_diagram_area').insert(frame);
-                            Event.observe(frame,'load',function(){
-                                this.attachframe(this.title,frame);
-                                this.circuit.getfile(node);
-                            }.bind(this));
-                        }
-                        else if(this.circuit.drawing.childNodes.length===0){
-                            this.circuit.getfile(node);
-                        }
-                    }
-			    }
-            }
-            else if(this.fileaction=='import'){
-	    		var xmlDoc=docfromtext(data['content']);
-	    		if(!xmlDoc){alert("error parsing svg");}
-	    		else{
-	    			var result=webtronics.sanitize(xmlDoc)
-	    			if(result){console.log(result+ ' found');alert('unclean file');return;}
-	    			var node=xmlDoc.getElementsByTagName('svg')[0];
-        			if(!node){alert("svg node not found");}
-	    			else {
-                        this.circuit.getfile(node);
-                    }
-			    }
-            }
-		},
-
-		Get:function(id) {
-            var response;
-			new Ajax.Request('/svc?file_id=' + id,{
-                method:'get',
-                asynchronous:false,
-				onSuccess:function(transport){response=transport.responseJSON;},
-				onFailure: function(){ 
-					console.log('Could not load file '+id); 
-				},
-				onException: function(req,exception) {
-					console.log(exception);
-					return true;
-					}, 
-				});
-            this.GetSuccess(id,response);
-        },
-
-
-      // A simple callback implementation for Google Docs.
-		pickerCallback:function(data) {
-				if(data.action == "picked"){
-    				this.Get(data.docs[0].id);
-                }
-
-		},
-
-        CreateUi:function() {
-        
-            var ok=new Element('img',{'src':'buttons/ok.png'});
-            var cancel=new Element('img',{'src':'buttons/cancel.png'});
-            var gsavedialog=new Element('div',{'class':'modal'});
-            gsavedialog.insert(new Element('div')
-                .insert(new Element('form',{'name':'gsave'})
-                .insert(new Element('p').update('File Name'))
-                .insert(new Element('input',{'name':'title','value':this.title}))
-                .insert(new Element('br'))
-                .insert(new Element('p').update('File Description'))
-                .insert(new Element('textarea',{'name':'description','cols':"50",'rows':4}).update(this.description))));
-            Event.observe(ok,'click',function(){
-                if(document.forms.gsave.title.value)this.title=document.forms.gsave.title.value;
-                if(document.forms.gsave.description.value)this.description=document.forms.gsave.description.value;
-                this.Save();
-                $('webtronics_main_window').removeChild(gsavedialog);
-                this.enablepage();
-                }.bind(this));
-            Event.observe(cancel,'click',function(){
-                $('webtronics_main_window').removeChild(gsavedialog);
-                this.enablepage();
-                }.bind(this));
-                            
-            gsavedialog.insert(ok);
-            gsavedialog.insert(cancel);
-            $('webtronics_main_window').insert(gsavedialog);
-            gsavedialog.style.display='block';
-            this.center(gsavedialog);
-            this.disablepage();
-        },
-
-        Read:function() {
-          return {
-              'content': this.getMarkup(),
-              'title': this.title,
-              'description': this.description,
-              'mimeType': 'image/svg+xml',
-              'resource_id': this.file_id
-            };
-        },
-        Save:function(){
-            var request=new XMLHttpRequest();
-            request.onreadystatechange = function() {
-                if(request.readyState == 4 && request.status == 200) {
-                    console.log('save success');
-                }
-            }
-            request.open((this.file_id===null)?'POST':'PUT','/svc',false);
-            request.setRequestHeader("Content-Type", "application/json");            
-            request.send(JSON.stringify(this.Read()));
-
-
-        },
 
 		setMode:function(button,mode, status){
 
@@ -308,17 +165,10 @@ var webtronics={
         },
 
 		disablepage:function(){
-/*			var div=document.createElement('div');
-			div.id="webtronics_disable";
-			div.onselectstart=function(){return false;};
-
-			$('webtronics_main_window').insertBefore(div,$("webtronics_chips_box"));
-*/
             $("webtronics_disable").style.visibility="visible";
 		},
         enablepage:function(){
             $("webtronics_disable").style.visibility="hidden";
-//            $('webtronics_main_window').removeChild($('webtronics_disable'));
         },
 
 		returnchip:function(){
@@ -439,7 +289,7 @@ var webtronics={
             this.disablepage();
 	        $('webtronics_image').style.display = "block";
             this.center($('webtronics_image'));
-            var svg = this.getMarkup();
+            var svgdoc = this.getMarkup();
             console.log(svg);
             if(navigator.appName == 'Microsoft Internet Explorer'){
                 $('webtronics_image_div').innerHTML=svg;
@@ -454,32 +304,26 @@ var webtronics={
 			$('webtronics_file_menu').style.display='none';
 			this.setMode('webtronics_select','select','Selection');
 			input_box=confirm("Click OK to Clear the Drawing.");
-			if (input_box==true)this.circuit.newdoc();
+			if (input_box==true){
+                $('webtronics_diagram_area').removeChild($("webtronics_frame"));
+                var frame=new Element('iframe',{id:'webtronics_frame',src:'canvas/canvas.html'});
+                $('webtronics_diagram_area').insert(frame);
+                Event.observe(frame,'load',function(){
+                    var filename='Schematic.svg';
+                    this.attachframe(filename,frame);
+
+                }.bind(this));
+                $("webtronics_invert").checked=false;
+                $("webtronics_graph").checked=false;
+                $("webtronics_connections").checked=false;
+            }
 		},
-		gdrive_open:function(){
-			$('webtronics_file_menu').style.display='none';
-            this.fileaction='open';
-			this.createPicker();
-		},
-		gdrive_import:function(){
-			$('webtronics_file_menu').style.display='none';
-            this.fileaction='import';
-			this.createPicker();
-		},
-    	gdrive_save:function(){
-			$('webtronics_file_menu').style.display='none';
-            this.CreateUi();
-        },
-		gdrive_new:function(){
-			$('webtronics_file_menu').style.display='none';
-        },
 
         attachframe:function(filename,frame){
             this.circuit=frame.contentWindow.circuit;
-            this.newtab(filename,frame);
-     	 	this.setMode('webtronics_select','select', 'Selection');    
-
-
+            this.setMode('webtronics_select','select', 'Selection');    
+//            this.circuit.mode=this.mode;
+            
 /*attach the menu*/
             Event.observe(this.circuit.container,'contextmenu',function(e){
                 $('webtronics_context_menu').style.top=Event.pointerY(e)+'px';                        
@@ -503,65 +347,6 @@ var webtronics={
             }.bind(this));
 
 
-        },
-
-        newtab:function(filename,frame){
-            var newt=$('webtronics_new_tab');
-            if(newt===null){
-                newt=new Element('div',{'id':'webtronics_new_tab'})
-                            .insert(new Element('a',{"style":'margin:8px;'}).update('+'));
-                Event.observe(newt,'click',function(){
-                    var f=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
-                    $('webtronics_diagram_area').insert(f);
-                    Event.observe(f,'load',function(){
-                        this.attachframe('Schematic.svg',f);
-                    }.bind(this));
-
-                }.bind(this));
-                $('webtronics_tab_area').insert(newt);
-            }
-            var tab=new Element('div',{'class':'webtronics_selected_tab'});
-            var close = new Element('div',{"class":'webtronics_close_tab'})
-                            .insert(new Element('a').update('x'));
-         
-            Event.observe(tab,'click',function(e){
-                element=Event.element(e);
-
-                while(element.className!=='webtronics_tab'&&element.className!=='webtronics_selected_tab'){
-                    element=element.parentNode;
-                }
-                var tabs=$$('div.webtronics_selected_tab');
-                for(var i=0;i<tabs.length;i++){
-                    tabs[i].className='webtronics_tab';
-                }
-                element.className='webtronics_selected_tab';
-                var frames=$$('iframe');
-                for(var i=0;i<frames.length;i++){
-                    frames[i].style.visibility='hidden';
-                }                
-                frame.style.visibility='visible';
-                this.circuit=frame.contentWindow.circuit;
-                this.circuit.mode=this.mode;
-                $('webtronics_context_menu').style.display='none';
-                $('webtronics_connections').checked=this.circuit.connections;
-                $('webtronics_graph').checked=this.circuit.graph;
-                $('webtronics_invert').checked=this.circuit.inv;
-            }.bind(this));
-            Event.observe(close,'click',function(e){
-                element=Event.element(e);
-                while(element.className!=='webtronics_tab'&&element.className!=='webtronics_selected_tab'){
-                    element=element.parentNode;
-                }
-                element.parentNode.removeChild(element);
-                $('webtronics_diagram_area').removeChild(frame);
-                $('webtronics_tab_area').firstChild.click();
-                e.stopPropagation();                
-            }.bind(this));
-
-            tab.insert(close);
-            tab.insert(new Element('div',{'style':'position:relative;float:right;overflow:hidden'}).update(filename));
-            newt.insert({'before':tab});
-            tab.click();
         },
 
         formatnetlist:function(spice1,spice2){
@@ -641,30 +426,19 @@ I want to preserve the css color for inverted diagrams in png
 		    }
             webtronics.setsize();
             var menu;
-		    if(webtronics.CLIENT_ID){
-                menu=this.createfilemenu($('webtronics_file').offsetLeft,
-			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
-			    'webtronics_file_menu',
-                $('webtronics_main_window'),
-			    [{label:'import',cb:webtronics.file_open},
-			    {label:'save',cb:webtronics.saveuri},
-			    {label:'save-png',cb:webtronics.savepng},
-			    {label:'new',cb:webtronics.file_new},
-			    {label:'G-drive open',cb:webtronics.gdrive_open},
-			    {label:'G-drive import',cb:webtronics.gdrive_import},
-			    {label:'G-drive save',cb:webtronics.gdrive_save},
-			    {label:'G-drive new',cb:webtronics.gdrive_new}]);
-            }
-            else{
-                menu=this.createfilemenu($('webtronics_file').offsetLeft,
-			    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
-			    'webtronics_file_menu',
-                $('webtronics_main_window'),
-			    [{label:'import',cb:webtronics.file_open},
-			    {label:'save',cb:webtronics.saveuri},
-			    {label:'save-png',cb:webtronics.savepng},
-			    {label:'new',cb:webtronics.file_new}]);
-            }
+            $("webtronics_invert").checked=false;
+            $("webtronics_graph").checked=false;
+            $("webtronics_connections").checked=false;
+            
+            menu=this.createfilemenu($('webtronics_file').offsetLeft,
+		    $('webtronics_file').offsetTop+$('webtronics_file').offsetHeight,
+		    'webtronics_file_menu',
+            $('webtronics_main_window'),
+		    [{label:'import',cb:webtronics.file_open},
+		    {label:'save',cb:webtronics.saveuri},
+		    {label:'save-png',cb:webtronics.savepng},
+		    {label:'new',cb:webtronics.file_new}]);
+       
             $("webtronics_main_window").insertBefore(menu,$("webtronics_disable"));
 		
 
@@ -693,30 +467,13 @@ I want to preserve the css color for inverted diagrams in png
                 $('webtronics_diagram_area'),
                 myLinks);
             $("webtronics_diagram_area").insert(contextmenu);
-        /*add a new tab */
-            var frame=new Element('iframe',{name:'iframe1',src:'canvas/canvas.html'});
+/*add a new frame */
+            var frame=new Element('iframe',{id:'webtronics_frame',src:'canvas/canvas.html'});
             $('webtronics_diagram_area').insert(frame);
+            
             Event.observe(frame,'load',function(){
                 var filename='Schematic.svg';
-        /* if google gave us a file id load it*/
-                if(webtronics.FILE_IDS!==undefined){
-                    if(webtronics.FILE_IDS[0]!==undefined){
-                        webtronics.file_id=webtronics.FILE_IDS[0];
-                        if(webtronics.FILE_IDS[0]!=''){
-                            webtronics.fileaction='open';
-                            webtronics.Get(webtronics.file_id);
-                        }
-                        else {
-                            this.attachframe(filename,frame);
-                        }
-                    }
-                    else {
-                        this.attachframe(filename,frame);
-                    }
-                }
-                else {
-                    this.attachframe(filename,frame);
-                }
+                this.attachframe(filename,frame);
             }.bind(this));
 
 		    Event.observe(window, 'resize', function() {
@@ -728,48 +485,56 @@ I want to preserve the css color for inverted diagrams in png
 	    $('webtronics_diagram_area').onselectstart = function() {return false;} 
 	    $('webtronics_side_bar').onselectstart = function() {return false;} 
 
-    /*parts list*/
-	    var category=$$('#webtronics_parts_list > div >p');
-	    for(var i=0;i<category.length;i++){
-		    Event.observe(category[i],'click',function(e){
-			    var menuitems=$$('#webtronics_parts_list > div');
-			    var li=Event.element(e).parentNode.getElementsByTagName('div');
-			    for(var j=0;j<menuitems.length;j++){
-				    var list=menuitems[j].getElementsByTagName('div');
-				    if(li[0]!=list[0])list[0].style.display='none';
-			    }
-			    if(li[0].style.display=='block')li[0].style.display='none';
-			    else li[0].style.display='block';
-		    });
-	    }
-	    var part=$$('#webtronics_parts_list>div>div');
-	    for(var i=0;i<part.length;i++){
-		
-		    Event.observe(part[i],'mousedown',function(e){
-			    webtronics.circuit.unselect();
-			    var element=Event.element(e);
-			    while(element.tagName!=="svg"){
-			    element=element.parentNode;
-			    }
-			    var group=element.firstChild;
-			    while(group.nodeType!==1||group.tagName!=="g"){
-				    group=group.nextSibling;
-			    }
-			    //var model=document.createElementNS(webtronics.circuit.wtxNs,"wtx:spicemodel");
-			    //if(!model){
-				//    group.appendChild(model);
-			    //}
-			    webtronics.circuit.getgroup(group);
-			    webtronics.setMode('webtronics_select','select','Selection');
+/*parts list*/
+            for (var cat in webtronics.parts){
+                var category=new Element("div",{"id":"webtronics_"+cat})
+                                        .insert(new Element("p").update(cat)
+                                                .observe('click',function(e){
+                                                        var menuitems=$$('#webtronics_parts_list>div>div');
+                                                        for(var i=0;i<menuitems.length;i++){
+				                                            if(menuitems[i].parentNode==Event.element(e).parentNode){
+				                                                if(menuitems[i].style.display=='none'){
+                                                                    menuitems[i].style.display='block';
+                                                                }
+                                                                else{
+                                                                    menuitems[i].style.display='none';
+                                                                }
+                                                            }
+                                                            else{
+                                                                menuitems[i].style.display='none';
+                                                            }
+			                                            }
+                                                }));
+  
+                for(var i=0;i<webtronics.parts[cat].length;i++){
+                    var part=new Element("div",{"id":"webtronics_"+webtronics.parts[cat][i],'style':"display:none",'title':webtronics.parts[cat][i]})
+                                        .update(webtronics.openfile("symbols/"+cat+'/'+webtronics.parts[cat][i]+'.svg'));
+                       
+		            Event.observe(part,'mousedown',function(e){
+			            webtronics.circuit.unselect();
+			            var element=Event.element(e);
+			            while(element.tagName!=="svg"){
+			            element=element.parentNode;
+			            }
+			            var group=element.firstChild;
+			            while(group.nodeType!==1||group.tagName!=="g"){
+				            group=group.nextSibling;
+			            }
+			            webtronics.circuit.getgroup(group);
+			            webtronics.setMode('webtronics_select','select','Selection');
 			
-		    });
-		    Event.observe(part[i],'mouseup',function(e){
-			    webtronics.circuit.deleteSelection();				
-		    });
-	    /*this might get the ipad working*/
-		    Event.observe(part[i], "onclick", void(0));
-			
-	    }
+		            });
+		            Event.observe(part,'mouseup',function(e){
+			            webtronics.circuit.deleteSelection();				
+		            });
+	            /*this might get the ipad working*/
+		            Event.observe(part, "onclick", void(0));
+                    category.insert(part);
+                }                
+                $("webtronics_parts_list").insertBefore(category,$("webtronics_parts_list").firstChild);
+
+            };
+
 
     /*menu events*/		
 		    Event.observe($('webtronics_file'), 'click', function() {
@@ -847,6 +612,7 @@ I want to preserve the css color for inverted diagrams in png
 		    }
 	
 		    if($('webtronics_invert')){
+
 			    Event.observe($('webtronics_invert'),'click',function(){
         			webtronics.circuit.invert($('webtronics_invert').checked);
 						

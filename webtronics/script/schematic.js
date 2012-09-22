@@ -225,6 +225,7 @@ Schematic.prototype.addtools=function(){
 
 
 
+
 	grow.setAttribute('x',(this.container.offsetWidth)-32);
 	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
@@ -564,11 +565,6 @@ Schematic.prototype.remove = function(shape) {
 	if(shape.parentNode!=null)shape.parentNode.removeChild(shape);
 	shape=null;
 	}
-}
-
-Schematic.prototype.newdoc = function(){
-	this.remove(this.svgRoot);	
-	this.init(this.container);	
 }
 
 

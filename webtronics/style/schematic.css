@@ -169,11 +169,11 @@ div#webtronics_parts_list p{
 }
 
 
-div#webtronics_parts_list>div>div{
+
+div#webtronics_parts_list>div div{
 	display:none;
 	background-color:#ffffff;
 	cursor:pointer;
-
 }
 
 div#webtronics_parts_list>div{
@@ -247,6 +247,7 @@ div.modal{
 	background-color:#e7e7e7;
     overflow:hide;
 }
+
 /*display areas*/
 
 #webtronics_image_div{
@@ -256,7 +257,10 @@ div.modal{
 	background-color:#e7e7e7;
     overflow:auto;
 }
-
+#webtronics_image_div>img{
+	width:300px;
+	height:300px;
+}
 
 #webtronics_diagram_area {	
     position:relative;
@@ -355,14 +359,13 @@ div#webtronics_context_menu .enabled:hover{
 }
 
 
-/*old*/
+/*old
 
 
 div.contextmenu {
         position: absolute;
         top: 0;
         left: 0;
-       /* font-family: verdana;*/
 }
 div.contextmenu a {
         display: block;
@@ -417,4 +420,4 @@ div.contextmenu a {
         margin: 2px 4px;
 }
   
-
+*/
