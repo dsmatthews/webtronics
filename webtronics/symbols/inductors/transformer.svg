@@ -12,7 +12,8 @@
   <g connects="0,10;60,10;0,40;60,40;30,50"
 	stroke='black'
 	stroke-width='2px' 
-    id="T">
+    id="T"
+    class="transformer">
 
 
   <path id="path2905" fill="none" d="m0,10,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10"/>

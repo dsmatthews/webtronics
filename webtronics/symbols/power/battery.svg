@@ -13,7 +13,7 @@
   <g
 	stroke='black'
 	stroke-width='2px' 
-     id="v" connects="0,10;50,10" >
+     id="v" connects="0,10;50,10" class="battery">
       <path
          d="M 0,10 L 17,10"
          id="path5009"

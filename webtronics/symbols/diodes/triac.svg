@@ -11,7 +11,8 @@
   <g connects="0,10;40,10;40,20"
 	stroke='black'
 	stroke-width='2px' 
-     id="D">
+    id="D"
+    class ="triac">
     <path
        d="M 10.964206,16.763259 L 10.964206,1.6734577"
        id="path2210"

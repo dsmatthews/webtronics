@@ -290,7 +290,7 @@ var webtronics={
 	        $('webtronics_image').style.display = "block";
             this.center($('webtronics_image'));
             var svg = this.getMarkup();
-            console.log(svg);
+            //console.log(svg);
             if(navigator.appName == 'Microsoft Internet Explorer'){
                 $('webtronics_image_div').innerHTML=svg;
             }

@@ -11,7 +11,8 @@ height="20"
   <g connects="0,10;40,10"
 	stroke='black'
 	stroke-width='2px' 
-     id="g2232">
+     id="g2232"
+    class="zener">
     <path
        d="M 14.639172,0.38974096 L 10.056699,0.45435962 L 10.056699,19.706003 L 5,19.660362"
        id="path2210"

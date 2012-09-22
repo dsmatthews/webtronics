@@ -11,7 +11,8 @@
   <g connects="0,10;40,10;0,20"
 	stroke='black'
 	stroke-width='2px' 
-      id="D">
+    id="D"
+    classs="scr" >
     <path
        d="M 10.056699,19.706003 L 10.056699,0.45435962"
        id="path2210"

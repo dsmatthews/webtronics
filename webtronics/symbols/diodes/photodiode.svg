@@ -11,7 +11,8 @@
   <g connects="0,20;40,20"
 	stroke='black'
 	stroke-width='2px' 
-     id="D">
+    id="D"
+    class="photodiode" >
     <path
        d="M 9.556699,29.385935 L 9.556699,10.134292"
        id="path2210"

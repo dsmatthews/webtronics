@@ -11,7 +11,8 @@
   <g connects="0,20;40,20"
 	stroke='black'
 	stroke-width='2px' 
-     id="S">
+     id="S"
+    class="ncpb">
     <circle cx="13" cy="20" r="2"
        id="path3734"
         />

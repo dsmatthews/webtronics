@@ -13,7 +13,8 @@
   <g connects="10,40;20,40;30,40"
 	stroke='black'
 	stroke-width='2px' 
-    id="IC">
+    id="IC"
+    clas="3_pins" >
     <path
        d="M 20.5,31.025973 L 20.5,40"
 	

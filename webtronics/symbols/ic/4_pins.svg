@@ -14,7 +14,8 @@
  <g connects="0,10;0,30;40,10;40,30"
 	stroke='black'
 	stroke-width='2px' 
-     id="IC">
+     id="IC"
+    class="4_pins" >
     <path
        d="m 6.4152544,10 -6.50847468,0"
        id="path1974"

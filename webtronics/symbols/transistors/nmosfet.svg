@@ -13,6 +13,7 @@
 	stroke='black'
 	stroke-width='2px' 
      id="Q"
+    class="nmosfet"
 	flippable="true"
 	>
   <rect id="rect2162" visibility="hidden" height="40" width="40" y="0" x="0" fill="none"/>

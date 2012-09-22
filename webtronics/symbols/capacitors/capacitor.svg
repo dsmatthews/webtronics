@@ -10,7 +10,8 @@
   <g connects="0,10;30,10"
 	stroke='black'
 	stroke-width='2px' 
-     id="C">
+     id="C"
+    class="capacitor" >
     <path
        d="M 10,0 10,20"
        id="path3412"

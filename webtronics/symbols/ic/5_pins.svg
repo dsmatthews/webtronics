@@ -12,7 +12,9 @@
   <g connects="0,10;0,20;0,30;40,10;40,30"
 	stroke='black'
 	stroke-width='2px' 
-     id="IC">
+     id="IC"
+    class="5_pins"
+>
     <rect
        width="30.000002"
        height="39"

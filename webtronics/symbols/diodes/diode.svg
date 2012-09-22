@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg id="svg2" xmlns="http://www.w3.org/2000/svg" width="40" height="20">
- <g id="D" stroke="#000" stroke-width="2px" connects="0,10;40,10">
+ <g id="D" class="diode" stroke="#000" stroke-width="2px" connects="0,10;40,10">
   <path id="path2210" d="m11.059,19.249,0-18.37"/>
   <path id="path3202" d="M0,10h40"/>
   <path id="path2220" fill="#000" d="m11.298,10,17.776-8.5486,0,17.1l-17.776-8.551z"/>

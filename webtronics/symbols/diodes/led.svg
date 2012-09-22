@@ -11,7 +11,8 @@
   <g connects="0,20;40,20"
 	stroke='black'
 	stroke-width='2px' 
-     id="D">
+     id="D"
+     class="led" >
     <path
        d="M 10,30 L 10,10"
        id="path2210"

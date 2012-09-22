@@ -9,7 +9,7 @@
 *                | | | | |
 .SUBCKT UA741    1 2 3 4 5
 -->
- <g id="u" flippable="true" connects="0,10;0,50;30,0;30,60;60,30"  stroke="#000" stroke-width="2px" >
+ <g id="u" flippable="true" connects="0,10;0,50;30,0;30,60;60,30"  stroke="#000" stroke-width="2px" class="op-amp">
   <path id="path1887" fill="none" d="M50,30,10,60,10,0,50,30z"/>
   <path id="path1889" d="M0,10,10,10"/>
   <path id="path1893" d="M0,50,10,50"/>

@@ -3,7 +3,7 @@
  <g connects="0,0;0,40;60,40;60,50;60,60"
 	stroke='black'
 	stroke-width='2px' 
-      id="Relay" fill="none" >
+      id="Relay" fill="none" class="spst-relay">
   <path id="path2830" d="m25,0,0,37"/>
   <path id="path2832" d="m30,0,0,37"/>
   <path id="path2834" d="m35,0,0,37"/>
