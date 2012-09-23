@@ -229,8 +229,6 @@ var webtronics={
 			menu.className='webtronics_menu';
 			menu.style.left=x+'px';
 			menu.style.top=y+'px';
-            menu.observe('click',Event.stop)
-                .observe('contextmenu',Event.stop);    
 			for(var i=0;i<list.length;i++){
 				var item=new Element('a',{Title:list[i].label,id:'webtronics_context_option',class:'enabled'})
 				    .observe('click',list[i].cb.bind(this))
@@ -239,6 +237,8 @@ var webtronics={
 				menu.insert(item);
                 menu.insert(new Element('br'));
   			}
+            menu.observe('click',Event.stop)
+                .observe('contextmenu',Event.stop);
 			menu.style.display='none';
 			return menu;			
  
@@ -280,13 +280,8 @@ var webtronics={
             
             			
 		},
-		file_save:function(){
-			$('webtronics_file_menu').style.display='none';
-			this.download();
-		},
 
         saveuri:function(){
-            this.disablepage();
 	        $('webtronics_image').style.display = "block";
             this.center($('webtronics_image'));
             var svg = this.getMarkup();
@@ -298,6 +293,7 @@ var webtronics={
                 $("webtronics_image_save").src="data:image/svg+xml;base64," + encode64(svg);
             }
             $('webtronics_file_menu').style.display='none';
+            this.disablepage();
         },
 
 		file_new:function(){
@@ -365,7 +361,6 @@ var webtronics={
         
         savepng:function(){
             
-            this.disablepage();
             if(navigator.appName == 'Microsoft Internet Explorer'){
                 $('webtronics_image_div').innerHTML="<img id='webtronics_image_save' >";
             }
@@ -397,10 +392,6 @@ I want to preserve the css color for inverted diagrams in png
 	        svg.setAttribute('height',svgsize.height+10);
             
             doc.appendChild(svg);
-            
-
-
-//            console.log((new XMLSerializer()).serializeToString(doc));
             if($("webtronics_canvas")){
                 $("webtronics_canvas").parentNode.removeChild($("webtronics_canvas"));
             }
@@ -409,12 +400,13 @@ I want to preserve the css color for inverted diagrams in png
             var ctx=$("webtronics_canvas").getContext("2d");
 	        $('webtronics_image').style.display = "block";
             var drawing=(new XMLSerializer()).serializeToString(svg);
-            console.log(drawing);
+//            console.log(drawing);
             ctx.drawSvg(doc, 0, 0, svgsize.width+10,svgsize.height+10);    
             this.center($('webtronics_image'));
             var url= canvas.toDataURL("image/png");
             $("webtronics_image_save").src=url;
             $('webtronics_file_menu').style.display='none';
+            this.disablepage();
         },
 
 
@@ -440,7 +432,12 @@ I want to preserve the css color for inverted diagrams in png
 		    {label:'save',cb:webtronics.saveuri},
 		    {label:'save-png',cb:webtronics.savepng},
 		    {label:'new',cb:webtronics.file_new}]);
-       
+            menu.observe('mouseout',function(e){
+                if(!((e.relatedTarget == menu) || e.relatedTarget.descendantOf(menu))){
+                    menu.style.display='none';
+                }
+            });    
+
             $("webtronics_main_window").insertBefore(menu,$("webtronics_disable"));
 		
 
@@ -548,22 +545,13 @@ I want to preserve the css color for inverted diagrams in png
                 }                
 		    });
 		    Event.observe($('webtronics_chips_open'), 'click', function() {
-			    webtronics.disablepage();
-    //			$('webtronics_chips_box').reset();
 			    webtronics.circuit.clearinfo();
-			    webtronics.setMode('webtronics_chips_open','select','Selection');
-			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
-			    $('webtronics_chips_box').style.display = "block";
-			    webtronics.center($('webtronics_chips_box'));
-			    });
-		    if($('webtronics_parts_open')){
+    		    webtronics.setMode('webtronics_chips_open','select','Selection');
+    		    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+    		    $('webtronics_chips_box').style.display = "block";
+    		    webtronics.center($('webtronics_chips_box'));
 			    webtronics.disablepage();
-			    Event.observe($('webtronics_parts_open'), 'click', function() {
-				    webtronics.setMode('webtronics_parts_open','select','Selection');
-				    $('webtronics_parts_box').style.display = "block";
-				    webtronics.center($('webtronics_parts_box'));
-				    });
-		    }
+        	});
 		    Event.observe($('webtronics_select'), 'click', function() {
 				    webtronics.circuit.clearinfo();
 				    webtronics.setMode('webtronics_select','select', 'Selection');
@@ -602,15 +590,15 @@ I want to preserve the css color for inverted diagrams in png
 		    }
 		    if($('webtronics_netlist')){
 			    Event.observe($('webtronics_netlist'), 'click', function() {
-                    webtronics.disablepage();                    
                     var content=$$("#webtronics_netlist_text_div > *") 
                     for(var i=0;i<content.length;i++){
                         $("webtronics_netlist_text_div").removeChild(content[i]);
                     }
-				    $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(webtronics.circuit.createnetlist(),null));
+			        $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(webtronics.circuit.createnetlist(),null));
                     $("webtronics_netlist_text").style.display='block';
                     webtronics.center($('webtronics_netlist_text'));
-				    });
+                    webtronics.disablepage();
+                });
 		    }
 	
 		    if($('webtronics_invert')){
