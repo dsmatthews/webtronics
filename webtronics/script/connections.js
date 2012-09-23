@@ -246,7 +246,7 @@ Schematic.prototype.createnetlist=function(){
 	if(subckt.length){
 		subckt=subckt.uniq();
 		for(var i=0;i<subckt.length;i++){
-			spice+=subckt[i]+"\n";
+			spice=subckt[i]+"\n"+spice;
 		}		
 	}
 

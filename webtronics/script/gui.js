@@ -353,9 +353,11 @@ var webtronics={
           var html=new Element('div');
           if(spice2===null){
                 var lines=spice1.split('\n');
+                                
+                
                 for(var i=0;i<lines.length;i++){
-                    var line = new Element('p').update(lines[i]);
-                    html.insert(line);
+                    html.insert(lines[i]);
+                    html.insert(new Element('br'));
                 }
           }
           return html;            
