@@ -226,6 +226,7 @@ Schematic.prototype.addtools=function(){
 
 
 
+
 	grow.setAttribute('x',(this.container.offsetWidth)-32);
 	grow.setAttribute('y',(this.container.offsetHeight)-32);
 	grow.setAttribute('width',32);
@@ -763,7 +764,29 @@ if(!this.drag){
 			var x2=$('templine1').getAttributeNS(null,'x2');
 			var y2=$('templine1').getAttributeNS(null,'y2');
 			if(!(x1==x2&&y1==y2)){
-				var svg=this.createline('black',2, x1, y1,x2, y2);
+/*make line ends join
+                if(x1==x2){
+                    if(y1<y2){
+                        y1--;
+                        y2++;
+                    }
+                    else{
+                        y1++
+                        y2--;
+                    }    
+                }
+                else if(y1==y2){
+                    if(x1<x2){
+                        x1--;
+                        x2++;
+                    }
+                    else{
+                        x1++;
+                        x2--
+                    }
+                }
+*/                                
+    			var svg=this.createline('black',2, x1, y1,x2, y2);
 				this.drawing.appendChild(svg);
 				this.remove($('templine1'));
 				this.connect(x1, y1);

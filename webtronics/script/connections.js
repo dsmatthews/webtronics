@@ -127,10 +127,16 @@ Schematic.prototype.sortnetlist=function(list){
 
 Schematic.prototype.connectwires=function(){
 	var namewires=new Array();
-	$$('#webtronics_drawing > g').each(function(i){if(i.id.split(':',1)[0].toLowerCase()=='wire')namewires.push(i);});
+	$$('#webtronics_drawing > g').each(function(i){
+        if(i.getAttribute('class')=='namewire'){
+            namewires.push(i);
+        }
+    });
+//{if(i.id.split(':',1)[0].toLowerCase()=='wire')namewires.push(i);});
 	for(var i=0;i<namewires.length;i++){
 		for(var j=i;j<namewires.length;j++){
 			if(namewires[i]!==namewires[j]&&namewires[i].getAttribute('partvalue')==namewires[j].getAttribute('partvalue')){
+                console.log("found namewire" );
 				var pin1 =this.getconnects(namewires[i]);
 				var pin2= this.getconnects(namewires[j]); 
 				var line= this.createline('red',1,pin1[0].x,pin1[0].y,pin2[0].x,pin2[0].y);

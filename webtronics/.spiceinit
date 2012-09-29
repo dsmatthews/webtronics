@@ -1,0 +1,11 @@
+.control
+    cd spice   
+    set nobreak
+    set noprintscale
+    set filetype=ascii
+
+.endc
+
+
+
+

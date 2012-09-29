@@ -35,9 +35,9 @@ var webtronics={
 
                 "inductors":["coil","tapcoil","transformer"],
 
-                "power":["ac","battery","ground","positive"],
+                "power":["ac","battery","ground","namewire"],
 
-                "test":["scope"],
+                "test":["analysis","scope"],
 
         },
 
@@ -296,6 +296,9 @@ var webtronics={
             this.disablepage();
         },
 
+
+
+
 		file_new:function(){
 			$('webtronics_file_menu').style.display='none';
 			this.setMode('webtronics_select','select','Selection');
@@ -359,7 +362,40 @@ var webtronics={
           return html;            
         },
         
-        savepng:function(){
+         postspice:function(spice){
+            var text;
+			new Ajax.Request("spice.php",{
+			method:'post',
+			contentType:"text/plain",
+			asynchronous:true,
+			postBody:spice,
+			onSuccess:function(transport){
+                if($("webtronics_scope_display_image"))$("webtronics_scope_display_image").parentNode.removeChild($("webtronics_scope_display_image"));
+                var image=new Image();
+                image.src="data:image/png;base64,"+transport.responseText;
+                image.width=400;
+                image.height=400;
+                image.id="webtronics_scope_display_image";
+                $("webtronics_scope_display").style.display="block";
+                $("webtronics_scope_display_div").insert(image);
+                
+
+			},			
+			onFailure: function(){ 
+				console.log('Could not retrieve file...'); 
+                text= "server failure";
+			},
+			onException: function(req,exception) {
+				console.log(exception);
+				text= "server exception";
+				} 
+			});
+
+            return text;
+
+		},
+
+       savepng:function(){
             
             if(navigator.appName == 'Microsoft Internet Explorer'){
                 $('webtronics_image_div').innerHTML="<img id='webtronics_image_save' >";
@@ -590,6 +626,7 @@ I want to preserve the css color for inverted diagrams in png
 		    }
 		    if($('webtronics_netlist')){
 			    Event.observe($('webtronics_netlist'), 'click', function() {
+
                     var content=$$("#webtronics_netlist_text_div > *") 
                     for(var i=0;i<content.length;i++){
                         $("webtronics_netlist_text_div").removeChild(content[i]);
@@ -598,8 +635,15 @@ I want to preserve the css color for inverted diagrams in png
                     $("webtronics_netlist_text").style.display='block';
                     webtronics.center($('webtronics_netlist_text'));
                     webtronics.disablepage();
+
                 });
 		    }
+            if($('webtronics_run')){
+			    Event.observe($('webtronics_run'), 'click', function() {
+                    webtronics.postspice(webtronics.circuit.createnetlist());
+                });
+
+            }
 	
 		    if($('webtronics_invert')){
 
@@ -707,13 +751,35 @@ I want to preserve the css color for inverted diagrams in png
 			    });
 		    }
    /*netlist text events*/
-            if("webtronics_netlist_text_ok"){
+            if($("webtronics_netlist_text_ok")){
 			    Event.observe($('webtronics_netlist_text_ok'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
 				    $('webtronics_netlist_text').hide();
                     webtronics.enablepage();
 			    });
             }  
+     /*scope events*/
+           if($("webtronics_scope_display")){
+			    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
+				    webtronics.setMode('webtronics_select','select','Selection');
+				    $('webtronics_scope_display').hide();
+                    webtronics.enablepage();
+                });
+                Event.observe($("webtronics_scope_display"),'mousedown',function(e){
+                       var startx=e.layerX;
+                       var starty=e.layerY;
+                      Event.observe($("webtronics_scope_display"),'mousemove',function(e){
+                        $("webtronics_scope_display").style.top =e.clientY-starty + 'px';
+                        $("webtronics_scope_display").style.left =e.clientX-startx + 'px';
+                      });
+                        e.preventDefault();
+                });
+                Event.observe($("webtronics_scope_display"),'mouseup',function(){
+                    Event.stopObserving($("webtronics_scope_display"),'mousemove');
+                });            
+            
+            }
+
 
 
     /*text open events*/

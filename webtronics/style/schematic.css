@@ -241,14 +241,15 @@ div.modal{
 }
 
 #webtronics_image{
-	width:300px;
-	height:300px;
+	width:340px;
+	height:360px;
 	border:1px solid black;
 	background-color:#e7e7e7;
     overflow:hide;
 }
-
 /*display areas*/
+
+
 
 #webtronics_image_div{
 	width:100%;
@@ -259,7 +260,7 @@ div.modal{
 }
 #webtronics_image_div>img{
 	width:300px;
-	height:300px;
+	height:280px;
 }
 
 #webtronics_diagram_area {	
@@ -359,65 +360,4 @@ div#webtronics_context_menu .enabled:hover{
 }
 
 
-/*old
 
-
-div.contextmenu {
-        position: absolute;
-        top: 0;
-        left: 0;
-}
-div.contextmenu a {
-        display: block;
-        text-decoration: none;
-        cursor: default;
-        outline: none;
-        font-size: 11px;
-}
-.contextmenu .separator {
-        height: 1px;
-        padding: 0;
-        overflow: hidden;
-        display: block;
-        font-size: 1px;
-}
-.contextmenu ul, .contextmenu li {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-}
-.contextmenu li {
-        list-style-position: outside;
-}
-.contextmenu {
-        width: 12em;
-        background: #F4F5EB;
-        border-top: 1px solid #ddd;
-        border-left: 1px solid #ddd;
-        border-right: 1px solid #666;
-        border-bottom: 1px solid #666;
-        padding: 2px 0;
-}
-.contextmenu a {
-        color: #555;
-        padding: 4px 15px;
-        margin: 0 2px;
-}
-.contextmenu a:hover {
-        background: #006;
-        color: #fff;
-}
-.contextmenu a.disabled {
-        color: #bbb;
-}
-.contextmenu a.disabled:hover {
-        background: #F4F5EB;
-        color: #bbb;
-}
-.contextmenu .separator {
-        border-bottom: 1px solid #fff;
-        background: #999;
-        margin: 2px 4px;
-}
-  
-*/

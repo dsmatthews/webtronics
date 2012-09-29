@@ -22,6 +22,7 @@ toolbar
 			<fieldset>	
 				<legend>Circuit</legend>
 				<img id="webtronics_netlist" class="normal_button" title="view the netlist" src="./buttons/netlist.png">
+				<img id="webtronics_run" class="normal_button" title="run spice" src="./buttons/run.png">
 				<img id="webtronics_chips_open" class="normal_button" title="make chips" src="./buttons/icbut.png">
 				<img id="webtronics_delete" class="normal_button" title="Delete selected shape" src="./buttons/delete.png">
 			</fieldset>
@@ -233,7 +234,9 @@ add code text
 <img id="webtronics_open_text_ok" src="./buttons/ok.png"> 
 <img id="webtronics_open_text_cancel" src="./buttons/cancel.png">
 </div>
-
+<!--
+image display
+-->
 <div id ="webtronics_image" class="modal">
 <img id="webtronics_image_ok" src="./buttons/ok.png"> 
 <br>
@@ -241,6 +244,10 @@ add code text
 <img id="webtronics_image_save" >
 </div>    
 </div>
+
+<!--
+netlist display
+-->
 
 <div id="webtronics_netlist_text" class='modal'>
 <img id="webtronics_netlist_text_ok" src="./buttons/ok.png"> 
@@ -255,5 +262,16 @@ add code text
 </pre>
 </div>
 
+<!--
+simulation display
+-->
+<div id="webtronics_scope_display" class="modal" >
+<img id="webtronics_scope_display_ok" src="./buttons/ok.png"> 
+<div id="webtronics_scope_display_div">
+<img id="webtronics_scope_display_image">
 </div>
+</div>
+
+</div>
+
 </body></html>
