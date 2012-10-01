@@ -156,9 +156,8 @@ Schematic.prototype.createnetlist=function(){
 	var wires=new Array();
 	var command=""; 
 	var plot=new Array();
-	var models=new Array();
-	var subckt=new Array();
-
+    var firstdir =new Array();    
+    var lastdir=new Array();
 	var nodecount=1;
 	this.connectwires();
 	var spice=new String();
@@ -204,11 +203,10 @@ Schematic.prototype.createnetlist=function(){
 			var value=rx.exec(parts[i].getAttribute('partvalue'));
 			var model=parts[i].getAttribute("spice");
 			if(model){
-				console.log("model "+value[2]);
-   				subckt.push(model);
-				//spice=spice.concat(parts[i].getAttribute('partvalue')," ");
-
+                console.log("model "+value[2]);
+    			firstdir.push(model);
 			}
+            
 			if(value[1]){
                 spice=spice.concat(value[1]," ");
             }
@@ -224,21 +222,24 @@ Schematic.prototype.createnetlist=function(){
             }
 			spice=spice.concat("\n");
 		}
-		if(type=="plot"){
-			var rx=/(\w*)\s*(.*)/mi;
-			var value=rx.exec(parts[i].getAttribute('partvalue'));
-			command+=value[2]+"\n";
+        if(type=="plot"){
+            lastdir.push(parts[i].getAttribute('spice'));
 			plot.push(nodes[0]);
 		}
-
+        
 	}
-	if(models.length){
-		models=models.uniq();
-		for(var i=0;i<models.length;i++){
-			spice+=models[i]+"\n";
+
+	if(firstdir.length){
+		firstdir=firstdir.uniq();
+		for(var i=0;i<firstdir.length;i++){
+			spice=firstdir[i]+"\n"+spice;
 		}
-
-
+	}
+	if(lastdir.length){
+		lastdir=lastdir.uniq();
+		for(var i=0;i<lastdir.length;i++){
+			spice+=lastdir[i]+"\n";
+		}
 	}
 	if(plot.length){
 		command+=".plot tran"
@@ -246,19 +247,8 @@ Schematic.prototype.createnetlist=function(){
 			command+=" v("+plot[i]+")";
 		}
 		spice+=command+"\n";
-		
 	}
 	spice=spice.concat(".end \r\n");	
-	if(subckt.length){
-		subckt=subckt.uniq();
-		for(var i=0;i<subckt.length;i++){
-			spice=subckt[i]+"\n"+spice;
-		}		
-	}
-
-
-
-
 	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 

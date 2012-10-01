@@ -212,13 +212,25 @@ add text
 properties form
 -->
 <div id="webtronics_properties_form" class='modal'>
-<form>
+<form name="webtronics_properties_form">
 <input id="webtronics_part_id">part id<br>
-<input id="webtronics_part_value">value or model<br>
+<fieldset>
+<legend>value or model</legend>    
+<input id="webtronics_part_value">
 <select id="webtronics_part_model">
-		<option value="none">none</option>	
-</select>Value or Model<br>
-<!--input id="webtronics_model_text">external model<br-->
+		<option value="">none</option>	
+</select>
+</fieldset>
+<br>
+<fieldset>
+<legend>spice directive</legend>    
+<input id="webtronics_part_dir_value">
+<select id="webtronics_part_dir_model">
+		<option value="">none</option>	
+</select>
+
+</fieldset>
+<br>
 <img id="webtronics_properties_ok" src="./buttons/ok.png"> 
 <img id="webtronics_properties_cancel" src="./buttons/cancel.png">
 </form>

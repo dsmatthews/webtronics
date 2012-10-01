@@ -13,32 +13,47 @@ var webtronics={
 		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:spicemodel)$/,
 
         parts:{
-               "amplifier":{
+                "amplifier":{
                     "op-amp":{
-                        "lm324":"lm324.mod",
-                        "lm358":"lm358.mod",
-                        "ua741":"ua741.mod"
+                        "lm324":[".inc lm324.mod"],
+                        "lm358":[".inc lm358.mod"],
+                        "ua741":[".inc ua741.mod"]
                         }
                 },
                 "gates":{
-                    "and":{},
-                    "nand":{},
-                    "nor":{},
-                    "not":{},
-                    "or":{},
-                    "xnor":{},
-                    "xor":{}},
+                    "and":{
+                        "and1":[""]
+                        },
+                    "nand":{
+                        "nand1":[".inc digital.lib"]                        
+                        },
+                    "nor":{
+                        "nor1":[""]                        
+                        },
+                    "not":{
+                        "not1":[""]
+                          },
+                    "or":{
+                        "or1":[""]
+                        },
+                    "xnor":{
+                        "xnor":[""]                        
+                        },
+                    "xor":{
+                        "xor":[""]                        
+                        }
+                    },
 
                 "resistors":{
                     "photo-resistor":{},
                     "resistor":{
-                        "10":"",
-                        "100":"",
-                        "1.0K":"",
-                        "10K":"",
-                        "100K":"",
-                        "1.0M":"",
-                        "10M":""
+                        "10":[""],
+                        "100":[""],
+                        "1.0K":[""],
+                        "10K":[""],
+                        "100K":[""],
+                        "1.0M":[""],
+                        "10M":[""]
                     },
 
                     "vari-resistor":{},
@@ -48,12 +63,12 @@ var webtronics={
                 "transistors":{
                     "njfet":{},
                     "npn":{
-                        "2n3904":"models.lib",
-                        "2n2222":"models.lib"                    
+                        "2n3904":[".inc models.lib"],
+                        "2n2222":[".inc models.lib"]                    
                     },
                     "pjfet":{},
                     "pnp":{
-                        "2n3906":"models.lib"
+                        "2n3906":[".inc models.lib"]
                     },
                     "nmosfet":{},
                     "phototrans":{},
@@ -65,8 +80,8 @@ var webtronics={
 
                 "diodes":{
                     "diode":{
-                        "1n4148":"models.lib",
-                        "1n4007":"models.lib"
+                        "1n4148":[".inc models.lib"],
+                        "1n4007":[".inc models.lib"]
                     },
                     "led":{},
                     "photodiode":{},
@@ -88,13 +103,13 @@ var webtronics={
                 },
                 "capacitors":{
                     "capacitor":{
-                        "1pf":"",
-                        "10pf":"",
-                        "100pf":"",
-                        "1nf":"",
-                        "10nf":"",
-                        "100nf":"",
-                        "1uf":""
+                        "1pf":[""],
+                        "10pf":[""],
+                        "100pf":[""],
+                        "1nf":[""],
+                        "10nf":[""],
+                        "100nf":[""],
+                        "1uf":[""]
                     },
                     "polar-cap":{},
                     "varicap":{}
@@ -109,32 +124,39 @@ var webtronics={
                 },
                 "power":{
                     "ac":{
-                        "SIN(0 5 1KHZ)":"",
-                        "SIN(0 12 60HZ)":"",
-                        "SIN(0 120 60HZ)}":""
+                        "SIN(0 5 1KHZ)":[""],
+                        "SIN(0 12 60HZ)":[""],
+                        "SIN(0 120 60HZ)":[""],
+                        "PWL( 50ns 5 50ns 0)":[""],
+                        "PULSE(−1 1 2NS 2NS 2NS 50NS 100NS )":[""],
+                        
                     },
                     "battery":{
-                        "dc 5v":"",
-                        "dc 9v":"",
-                        "dc 12v":""
+                        "dc 5v":[""],
+                        "dc 9v":[""],
+                        "dc 12v":[""]
                     },
                     "ground":{},
                     "namewire":{}
                 },
+
+
                 "test":{
+/*
                     "analysis":{
-                        ".TRAN 1NS 100NS":"",
-                        ".TRAN 1NS 1000NS 500NS":"",
-                        ".TRAN 10NS 1US UIC":"",
-                        ".TRAN 1ms 100ms":""
+                        "tran":[".TRAN 1NS 100NS",
+                                ".TRAN 1NS 1000NS 500NS",
+                                ".TRAN 10NS 1US UIC",
+                                ".TRAN 1ms 100ms"]
                     },
+*/
                     "scope":{
-                        ".TRAN 1NS 100NS":"",
-                        ".TRAN 1NS 1000NS 500NS":"",
-                        ".TRAN 10NS 1US UIC":"",
-                        ".TRAN 1ms 100ms":""
-                    },
-                }
+                        "tran":[".TRAN 1NS 100NS",
+                                ".TRAN 1NS 1000NS 500NS",
+                                ".TRAN 10NS 1US UIC",
+                                ".TRAN 1ms 100ms"]
+                     }
+                }            
 
         },
 
@@ -242,23 +264,21 @@ var webtronics={
             var nodes=$("webtronics_part_model").childNodes;
 			for(var i=nodes.length;i>0;i--){
 				nodes[i-1].parentNode.removeChild(nodes[i-1]);
-
 			}
-			var option=document.createElement("option");
-			option.setAttribute("value","none");
-			option.innerHTML="none";
-			$("webtronics_part_model").appendChild(option);
+            nodes=$("webtronics_part_dir_model").childNodes;
+			for(var i=nodes.length;i>0;i--){
+				nodes[i-1].parentNode.removeChild(nodes[i-1]);
+			}
+			$("webtronics_part_model").appendChild(new Element("option",{"value":""}).update("none"));
+			$("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
 			var part=elem.getAttribute("class");
             var cat=this.getcategory(part);
             if(cat){    
                 for(var c in webtronics.parts[cat][part]){
-                    var option=document.createElement("option");
-    				console.log(c);
-    				option.setAttribute("value",c);
-    				option.innerHTML=c;
-    				$("webtronics_part_model").appendChild(option);
+                    $("webtronics_part_model").insert(new Element("option",{"value":c}).update(c));
                 }
             }
+            //$("webtronics_part_model").select("none");        
 		},
 
         center:function(e){
@@ -281,9 +301,7 @@ var webtronics={
 		},
 	
 		openProperties:function(){
-			$('webtronics_part_value').clear();
-			$('webtronics_part_id').clear();
-			//$('webtronics_model_text').clear();
+			document.forms['webtronics_properties_form'].reset();
 			var c=this.circuit.selected[0].getAttribute("class");
 			if(!c){
 				this.circuit.selected[0].setAttribute("c","ic");
@@ -302,6 +320,7 @@ var webtronics={
 			var value=rx.exec(this.circuit.selected[0].getAttribute('partvalue'));
 			if(value[1]!=""){$('webtronics_part_id').value=value[1];}
 			if(value[2]!=""){$('webtronics_part_value').value=value[2];}
+            $("webtronics_part_dir_value").value=this.circuit.selected[0].getAttribute('spice');
 
 			if(!webtronics.circuit.selected[0].getAttribute("partvalue")){
 				$('webtronics_part_id').value=this.circuit.getnextid(this.circuit.selected[0]);
@@ -470,27 +489,25 @@ var webtronics={
 			postBody:spice,
 			onSuccess:function(transport){
                 if($("webtronics_scope_display_image"))$("webtronics_scope_display_image").parentNode.removeChild($("webtronics_scope_display_image"));
-                var image=new Image();
-                image.src="data:image/png;base64,"+transport.responseText;
-                image.width=400;
-                image.height=400;
-                image.id="webtronics_scope_display_image";
-                $("webtronics_scope_display").style.display="block";
-                $("webtronics_scope_display_div").insert(image);
-                
-
+                var content;
+                if(transport.responseText.match("data:image/png;base64,")){                
+                    var content=new Element("img",{"src":transport.responseText,"width":400,"height":400,"id":"webtronics_scope_display_image"});
+                }
+                else{
+                    var content=new Element("textarea",{"width":400,"height":400,"id":"webtronics_scope_display_image"}).update(transport.responseText);
+                }            
+                if(content){
+                    $("webtronics_scope_display").style.display="block";
+                    $("webtronics_scope_display_div").insert(content);
+                }
 			},			
 			onFailure: function(){ 
 				console.log('Could not retrieve file...'); 
-                text= "server failure";
 			},
 			onException: function(req,exception) {
 				console.log(exception);
-				text= "server exception";
 				} 
 			});
-
-            return text;
 
 		},
 
@@ -776,23 +793,10 @@ I want to preserve the css color for inverted diagrams in png
 			    $('webtronics_properties_form').hide();
 			    webtronics.enablepage();
                 var model=webtronics.circuit.selected[0];
-                var part=model.getAttribute("class");
-                var cat=webtronics.getcategory(part);             
 		        model.setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
 		        webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-//			    if($("webtronics_model_text").value!=""){
-//                    model.setAttribute("spice",$("webtronics_model_text").value);
-                    if(webtronics.parts[cat][part][$('webtronics_part_value').value]){
-                        var spice=".inc "+webtronics.parts[cat][part][$('webtronics_part_value').value];
-                        console.log(spice);          
-                        model.setAttribute("spice",spice);
-                    }                        
-
-               // }
-                else {if(model.getAttribute("spice")){model.removeAttribute("spice");}
-                    console.log("we don't have that model "+$('webtronics_part_value').value);
-                }
-		        
+                console.log($('webtronics_part_dir_model').value); 
+                model.setAttribute("spice",$('webtronics_part_dir_value').value);
 		    });
 
 		    if($('webtronics_properties_cancel'))Event.observe($('webtronics_properties_cancel'), 'click', function() {
@@ -801,20 +805,26 @@ I want to preserve the css color for inverted diagrams in png
             });
 
 		    if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
-			    if($('webtronics_part_model').value!="none"){
-				    if($('webtronics_part_model').value.match(/\.model/i)!=null){
-					    $('webtronics_model_text').value=$('webtronics_part_model').value;
-				    }
-				    $('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].text;
-				
-			    }
-			    else {
-				    $('webtronics_model_text').clear();
-				    $('webtronics_part_value').clear();
-			    }
-		    }
-            );
+                var part=webtronics.circuit.selected[0].getAttribute("class");
+                var cat=webtronics.getcategory(part);
+                if($('webtronics_part_model').value){
+                    var nodes=$("webtronics_part_dir_model").childNodes;
+                    for(var i=nodes.length;i>0;i--){
+	                    nodes[i-1].parentNode.removeChild(nodes[i-1]);
+                    }
+        			$("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
+                    for(var i=0;i<webtronics.parts[cat][part][$('webtronics_part_model').value].length;i++){
+                        $("webtronics_part_dir_model").insert(new Element("option",{"value":webtronics.parts[cat][part][$('webtronics_part_model').value][i]}).update(webtronics.parts[cat][part][$('webtronics_part_model').value][i]));
+                    }
+                }
+                $('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].value;
 
+		    });
+
+		    if($('webtronics_part_dir_model'))Event.observe($('webtronics_part_dir_model'),'change',function(){
+                $('webtronics_part_dir_value').value=$("webtronics_part_dir_model").options[$("webtronics_part_dir_model").selectedIndex].value;
+         
+            });
 /*save as png modal*/
             if($("webtronics_image_ok")){
        		    Event.observe($('webtronics_image_ok'), 'click', function() {
@@ -870,7 +880,7 @@ I want to preserve the css color for inverted diagrams in png
 			    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
 				    $('webtronics_scope_display').hide();
-                    webtronics.enablepage();
+//                    webtronics.enablepage();
                 });
                 Event.observe($("webtronics_scope_display"),'mousedown',function(e){
                        var startx=e.layerX;

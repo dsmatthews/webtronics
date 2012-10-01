@@ -15,8 +15,8 @@
 		echo "no control directives allowed";
 		return;
 	};
-    $temp =tempfilesfx('/tmp',".ps");
-
+    $tempimage =tempfilesfx('/tmp',".ps");
+    $tempout=tempfilesfx('/tmp',".txt");
 	    //get plot and tran
     $control=
         ".control\n". 
@@ -34,28 +34,29 @@
     $cmd=preg_replace('/\.tran.*\n/','',$cmd);
     preg_match('/\.plot\s+[^\s]+\s+([^\n]+)/',$cmd,$plot);
     //$cmd=preg_replace('/\.plot.*\n/','',$cmd);
-    $hardcopy="  hardcopy ".$temp." ".$plot[1]." \n";
+    $hardcopy="  hardcopy ".$tempimage." ".$plot[1]." \n";
     $control.=$tran[0];
     $control.=$hardcopy;
     $control.=".endc\n";
     $cmd.=$control;
     $cmd=escapeshellarg($cmd);
 //    echo $cmd;
-    exec("echo $cmd | /usr/bin/ngspice");
+    exec("echo $cmd | /usr/bin/ngspice > $tempout");
 
     try{
-        $image = new Imagick($temp);    
+        $image = new Imagick($tempimage);    
+        $image->setImageFormat("png");
+        header('Content-type: text/plain');
+        echo "data:image/png;base64,".base64_encode ( $image);
     }
     catch(Exception $e){
-        echo "no plot found";
-        return;
+        header('Content-type: text/plain');
+        echo file_get_contents($tempout);
     }
-    $image->setImageFormat("png");
-//    $image->setImageFormat("inline");
-    header('Content-type: text/plain');
+
     #header('Content-length: '.strlen($output));
-    echo base64_encode ( $image);
-    unlink($temp);
+    unlink($tempimage);
+    unlink($tempout);
 
      
 ?>
