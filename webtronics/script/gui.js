@@ -9,8 +9,8 @@ var webtronics={
         mode:'',
 
 		Vlist:/\s*expression|\s*url|.*script/,
-		Alist:/^(x|y|x1|y1|x2|y2|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|font-size|font-weight|font-style|font-family)$/,
-		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:spicemodel)$/,
+		Alist:/^(x|y|x1|y1|x2|y2|dx|dy|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|font-size|font-weight|font-style|font-family)$/,
+		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:part|wtx:pins|wtx:id|wtx:type|wtx:name|wtx:category|wtx:value|wtx:label|wtx:spice|wtx:flip|wtx:model|metadata|)$/,
 
         parts:{
                 "amplifier":{
@@ -20,27 +20,37 @@ var webtronics={
                         "ua741":[".inc ua741.mod"]
                         }
                 },
-                "gates":{
+                "digital":{
+                    
+                    "adc_bridge":{
+                        "ideal_adc":[".inc digital.lib"]
+                        },
+                    "dac_bridge":{
+                        "ideal_dac":[".inc digital.lib"]
+                        },                    
+                    "source":{
+                        "ideal_10ns":[".inc digital.lib"]
+                        },                
                     "and":{
-                        "and1":[""]
+                        "and1":[".inc digital.lib"]
                         },
                     "nand":{
                         "nand1":[".inc digital.lib"]                        
                         },
                     "nor":{
-                        "nor1":[""]                        
+                        "nor1":[".inc digital.lib"]                        
                         },
                     "not":{
-                        "not1":[""]
+                        "not1":[".inc digital.lib"]
                           },
                     "or":{
-                        "or1":[""]
+                        "or1":[".inc digital.lib"]
                         },
                     "xnor":{
-                        "xnor":[""]                        
+                        "xnor":[".inc digital.lib"]                        
                         },
                     "xor":{
-                        "xor":[""]                        
+                        "xor":[".inc digital.lib"]                        
                         }
                     },
 
@@ -58,7 +68,15 @@ var webtronics={
 
                     "vari-resistor":{},
                     "potentiometer":{},
-                    "testresistor":{}
+                    "testresistor":{
+                        "10":[""],
+                        "100":[""],
+                        "1.0K":[""],
+                        "10K":[""],
+                        "100K":[""],
+                        "1.0M":[""],
+                        "10M":[""]
+                    },
                 },
                 "transistors":{
                     "njfet":{},
@@ -127,7 +145,7 @@ var webtronics={
                         "SIN(0 5 1KHZ)":[""],
                         "SIN(0 12 60HZ)":[""],
                         "SIN(0 120 60HZ)":[""],
-                        "PWL( 50ns 5 50ns 0)":[""],
+                        "PWL(0 0 10ns 0 10ns 5 20ns 5)R=0":[""],
                         "PULSE(−1 1 2NS 2NS 2NS 50NS 100NS )":[""],
                         
                     },
@@ -186,6 +204,7 @@ var webtronics={
 				/*this overrides the mimetype to xml for ie9*/
 				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
 				text=transport.responseText;
+                //return transport.responseText;
 				},
 			onFailure: function(){ 
 				console.log('Could not load file...'); 
@@ -250,15 +269,7 @@ var webtronics={
             this.circuit.mode=this.mode;
 
 		},
-/*lost the category have to search*/
-        getcategory:function(child){    
-            for(var a in webtronics.parts){
-                for( var b in webtronics.parts[a]){
-                    if(b==child)return a;
-                }
-            }
-        }, 
-            
+        
         
 		getvalues:function(elem){
             var nodes=$("webtronics_part_model").childNodes;
@@ -271,15 +282,14 @@ var webtronics={
 			}
 			$("webtronics_part_model").appendChild(new Element("option",{"value":""}).update("none"));
 			$("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
-			var part=elem.getAttribute("class");
-            var cat=this.getcategory(part);
+			var part=this.circuit.readwtx(elem,"name");
+            var cat=this.circuit.readwtx(elem,"category");
             if(cat){    
                 for(var c in webtronics.parts[cat][part]){
                     $("webtronics_part_model").insert(new Element("option",{"value":c}).update(c));
                 }
             }
-            //$("webtronics_part_model").select("none");        
-		},
+ 		},
 
         center:function(e){
         
@@ -302,9 +312,9 @@ var webtronics={
 	
 		openProperties:function(){
 			document.forms['webtronics_properties_form'].reset();
-			var c=this.circuit.selected[0].getAttribute("class");
+			var c=this.circuit.readwtx(this.circuit.selected[0],"name");
 			if(!c){
-				this.circuit.selected[0].setAttribute("c","ic");
+				this.writewtx(this.circuit.selected[0],"name","ic");
 			}
 			if(c=="ac"||c=="battery"	){
 				this.getvalues(this.circuit.selected[0]);
@@ -316,14 +326,15 @@ var webtronics={
 			else {
 				this.getvalues(this.circuit.selected[0]);
 			}
-			var rx=/(\w*)\s*(.*)/mi;
-			var value=rx.exec(this.circuit.selected[0].getAttribute('partvalue'));
-			if(value[1]!=""){$('webtronics_part_id').value=value[1];}
-			if(value[2]!=""){$('webtronics_part_value').value=value[2];}
-            $("webtronics_part_dir_value").value=this.circuit.selected[0].getAttribute('spice');
+            var id=this.circuit.readwtx(this.circuit.selected[0],"id");
+  			var value=this.circuit.readwtx(this.circuit.selected[0],"value");
 
-			if(!webtronics.circuit.selected[0].getAttribute("partvalue")){
-				$('webtronics_part_id').value=this.circuit.getnextid(this.circuit.selected[0]);
+        	if(id!=""){$('webtronics_part_id').value=id;}
+			if(value!=""){$('webtronics_part_value').value=value;}
+            $("webtronics_part_dir_value").value=this.circuit.readwtx(this.circuit.selected[0],'model');
+        
+			if(!this.circuit.readwtx(webtronics.circuit.selected[0],"value")){
+				$('webtronics_part_id').value=this.circuit.getnextid(this.circuit.selected[0],0);
 			}
 
 			this.disablepage();
@@ -364,7 +375,6 @@ var webtronics={
 		},
 
 		file_open:function(){
-			$('webtronics_file_menu').style.display='none';
             var file=new Element('input',{'type':'file'});
             var div=new Element('div',{'class':'modal'}).insert(file);
             Event.observe(file,'change',function(){
@@ -390,13 +400,12 @@ var webtronics={
                     $('webtronics_main_window').removeChild(div);
     		    }
 		    }.bind(this));
-            $('webtronics_main_window').insert(div);
+           $('webtronics_main_window').insert(div);
             div.style.display='block';
             file.focus();
             file.click();
+			$('webtronics_file_menu').style.display='none';
             div.style.display='none';
-            
-            			
 		},
 
         saveuri:function(){
@@ -419,7 +428,7 @@ var webtronics={
 
 		file_new:function(){
 			$('webtronics_file_menu').style.display='none';
-			this.setMode('webtronics_select','select','Selection');
+			//this.setMode('webtronics_select','select','Selection');
 			input_box=confirm("Click OK to Clear the Drawing.");
 			if (input_box==true){
                 $('webtronics_diagram_area').removeChild($("webtronics_frame"));
@@ -470,8 +479,6 @@ var webtronics={
           var html=new Element('div');
           if(spice2===null){
                 var lines=spice1.split('\n');
-                                
-                
                 for(var i=0;i<lines.length;i++){
                     html.insert(lines[i]);
                     html.insert(new Element('br'));
@@ -585,7 +592,8 @@ I want to preserve the css color for inverted diagrams in png
 		    {label:'save-png',cb:webtronics.savepng},
 		    {label:'new',cb:webtronics.file_new}]);
             menu.observe('mouseout',function(e){
-                if(!((e.relatedTarget == menu) || e.relatedTarget.descendantOf(menu))){
+                if((e.relatedTarget!=null)&&!((e.relatedTarget == menu) || e.relatedTarget.descendantOf(menu))){
+//                if(!(e.relatedTarget == menu) ){
                     menu.style.display='none';
                 }
             });    
@@ -685,6 +693,15 @@ I want to preserve the css color for inverted diagrams in png
                 $("webtronics_parts_list").insertBefore(category,$("webtronics_parts_list").firstChild);
 
             };
+/*chipmaker*/
+    $("webtronics_hor_pins").insert(Element("option",{"value":0}).update(0));
+    for(var i=1;i<50;i++){
+        if(i>3){
+            $("webtronics_hor_pins").insert(Element("option",{"value":i}).update(i*2));
+        }
+        $("webtronics_vert_pins").insert(Element("option",{"value":i}).update(i*2));
+
+    }
 
 
     /*menu events*/		
@@ -793,10 +810,10 @@ I want to preserve the css color for inverted diagrams in png
 			    $('webtronics_properties_form').hide();
 			    webtronics.enablepage();
                 var model=webtronics.circuit.selected[0];
-		        model.setAttribute('partvalue',$('webtronics_part_id').value+" "+$('webtronics_part_value').value);
-		        webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
-                console.log($('webtronics_part_dir_model').value); 
-                model.setAttribute("spice",$('webtronics_part_dir_value').value);
+                webtronics.circuit.writewtx(model,"id",$('webtronics_part_id').value);
+	            webtronics.circuit.writewtx(model,"value",$('webtronics_part_value').value);
+                webtronics.circuit.writewtx(model,"model",$('webtronics_part_dir_value').value);
+                webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
 		    });
 
 		    if($('webtronics_properties_cancel'))Event.observe($('webtronics_properties_cancel'), 'click', function() {
@@ -805,8 +822,8 @@ I want to preserve the css color for inverted diagrams in png
             });
 
 		    if($('webtronics_part_model'))Event.observe($('webtronics_part_model'),'change',function(){
-                var part=webtronics.circuit.selected[0].getAttribute("class");
-                var cat=webtronics.getcategory(part);
+                var part=webtronics.circuit.readwtx(webtronics.circuit.selected[0],"name");
+                var cat=webtronics.circuit.readwtx(webtronics.circuit.selected[0],"category");
                 if($('webtronics_part_model').value){
                     var nodes=$("webtronics_part_dir_model").childNodes;
                     for(var i=nodes.length;i>0;i--){
@@ -838,10 +855,16 @@ I want to preserve the css color for inverted diagrams in png
 
     /*chip box events*/
 		    Event.observe($('webtronics_vert_pins'), 'change', function() {
-			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+                $("webtronics_chip_display").parentNode.removeChild($("webtronics_chip_display"));
+                var div=new Element("div",{id:"webtronics_chip_display"})
+                    .insert(chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value));
+                $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
 		    });
 		    Event.observe($('webtronics_hor_pins'), 'change', function() {
-			    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+                $("webtronics_chip_display").parentNode.removeChild($("webtronics_chip_display"));
+                var div=new Element("div",{id:"webtronics_chip_display"})
+                    .update(chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value));
+                $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
 		    });
 		    Event.observe($('webtronics_chip_ok'), 'click', function() {
 			    webtronics.enablepage()

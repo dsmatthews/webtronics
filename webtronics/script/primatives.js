@@ -1,10 +1,5 @@
 Schematic.prototype.createtext = function(str,color,x,y){
   var svg;
-/* don't try to fix this, it's not worth it*/
-/*
-	svg=new Element('text',{'x':x,'y':y,'font-size':12,'stroke':color}).update(str);
-	svg.setAttributeNS(this.svgNs, 'xmlns', this.svgNs);
-*/
 
 	svg = document.createElementNS(this.svgNs, 'text');
 	svg.setAttributeNS(null, 'x', x);
@@ -16,6 +11,16 @@ Schematic.prototype.createtext = function(str,color,x,y){
 	svg.appendChild(document.createTextNode(str));
 	return svg;
 }
+
+
+Schematic.prototype.createtspan=function(str,dx,dy){
+   	var tspan = document.createElementNS(this.svgNs, 'tspan');
+   	tspan.setAttributeNS(null, 'dx', dx);
+   	tspan.setAttributeNS(null, 'dy', dy);
+    tspan.appendChild(document.createTextNode(str));
+    return tspan;    
+}
+
 
 Schematic.prototype.createline = function(lineColor,lineWidth,left, top,right,bottom){
   var svg;

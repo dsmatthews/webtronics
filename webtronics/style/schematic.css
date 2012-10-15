@@ -295,6 +295,7 @@ div.modal{
 	height:300px;
 	border:1px solid black;
 	background-color:#ffffff;
+    overflow: auto;
   } 
 
 

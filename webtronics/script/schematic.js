@@ -35,7 +35,7 @@
  
 function Schematic(elem) {
 	this.svgNs = 'http://www.w3.org/2000/svg';
-	this.wtxNs = 'http://localhost/webtronics';
+    this.wtxNs="http://code.google.com/p/webtronics";
 	this.container = elem;
 	this.grid = 10;
 	this.width=640;
@@ -61,10 +61,10 @@ function Schematic(elem) {
     this.inv=false;
 	this.mode = 'select';
 /*array of nodes*/
-	this.selected = new Array();
-	this.wirenodes=new Array();
+	this.selected = [];
+	this.wirenodes=[];
 /*selecting rectangle*/
-	this.history=new Array();
+	this.history=[];
 	this.undolevel=-1;	
 	this.drag=0;	
 	this.selectionRect = { x:0, y:0, width:0, height: 0 };
@@ -90,27 +90,22 @@ function Schematic(elem) {
 //	Event.observe(this.drawing, "DOMSubtreeModified", this.onChangeListener);
 
 }
-Schematic.prototype.getnextid=function(elem){
-	var type=this.getparttype(elem);
-	var ids=new Array();
+
+Schematic.prototype.getnextid=function(elem,count){
+	var type=this.readwtx(elem,"type");
+    if(!count)count=1;
+    var newid=type+count
 	var parts=this.drawing.getElementsByTagName("g");
 	for(var i=0;i<parts.length;i++){
-		var t=parts[i].getAttribute("partvalue").split(" ")[0];
-		if(t.match(type)){
-			ids.push(t);
+        var t=this.readwtx(parts[i],"id");
+        if((elem!=parts[i])&&(t==newid)){
+            count++;
+            newid=this.getnextid(elem,count);
 		}
-
 	}
-
-	if(ids.length){
-		var newid=ids.length+1;
-		return type+newid;
-
-	}
-	else return type+1;
-
-
+	return newid;
 }
+
 Schematic.prototype.undo=function(){
 /*current image is 0*/
 	if(this.undolevel<this.history.length-1){
@@ -221,6 +216,8 @@ Schematic.prototype.addtools=function(){
 			e.stopPropagation();}.bind(this));
 	this.zoomtools.appendChild(normal);
 	var grow=document.createElementNS(this.svgNs,'image');
+
+
 
 
 
@@ -354,7 +351,7 @@ Schematic.prototype.resize = function(shape, fromX, fromY, toX, toY) {
 
 
 Schematic.prototype.tracker = function(elem) {
-	var rect=Object();
+	var rect={};
 	if(elem&&(elem.nodeType==1)){	
 		try{
 			var bbox=elem.getBBox();
@@ -499,6 +496,7 @@ Schematic.prototype.showTracker = function(elem) {
 	if(elem.tagName=='g'){
 		svg=this.createtext('rotate','blue',rect.x+rect.width,rect.y);
 //		svg.rotatorfor=elem;
+
 		Event.observe(svg,"mousedown", function(e){
 			var data = $A(arguments);
 			data.shift();							
@@ -509,7 +507,7 @@ Schematic.prototype.showTracker = function(elem) {
 
 	}
 	
-	if (elem.getAttribute("flippable")=="true"){
+	if (this.readwtx(elem,"flip")=="true"){
 		svg=this.createtext('flip','blue',rect.x,rect.y+rect.height+10);
 		svg.rotatorfor=elem;
 		Event.observe(svg,"mousedown", function(e){
@@ -642,8 +640,8 @@ Schematic.prototype.deleteSelection = function() {
 	if(!this.selected.length)return; 
 /*delete selected nodes*/  
 	for(var i=this.selected.length;i>0;i--){
-		if(this.selected[i-1].tagName=='g'&&$('value-'+this.selected[i-1].id))
-			this.remove($('value-'+this.selected[i-1].id));
+		if(this.selected[i-1].tagName=='g'&&$(this.readwtx(this.selected[i-1],"label")))
+			this.remove($(this.readwtx(this.selected[i-1],"label")));
 		this.remove(this.selected[i-1]);
 	 	this.selected.pop();
 	}
@@ -652,32 +650,53 @@ Schematic.prototype.deleteSelection = function() {
 	this.refresh();
 }
 
+
 Schematic.prototype.createvalue=function(elem){
 /*create value text if attribute exists*/
-	var value=elem.getAttribute('partvalue');
-	if(value){
-		if(!$('value-'+elem.id)){
-			box=this.tracker(elem);	
-			var svg=this.createtext(value,'black',box.x,box.y);
-			svg.id='value-'+elem.id;
-			this.drawing.appendChild(svg);
-		}
-		else{
-				$('value-'+elem.id).removeChild($('value-'+elem.id).firstChild);
-				$('value-'+elem.id).appendChild(document.createTextNode(value));
-			
-		}	
+    try{
+    	var id=this.readwtx(elem,"id");
+	    var value=this.readwtx(elem,"value");
+        var label=this.readwtx(elem,"label");
 	}
-/* if there is no value and a value text exists remove it*/	
-	else if($('value-'+elem.id))this.remove($('value-'+elem.id));
+    catch(e){console.log(e);}
+    if(id){
+		if($(label)){
+				$(label).parentNode.removeChild($(label));
+        }
+	    var text=this.createtext("",'black',0,0-this.fontsize);
+	    this.drawing.appendChild(text);
+
+        var tspan=this.createtspan(id,0,0);
+        text.appendChild(tspan);
+        var box;
+        if(value){
+            box=this.tracker(text);
+            var tspan=this.createtspan(value,-box.width,box.height);
+            text.appendChild(tspan);
+        }
+        box=this.tracker(text);
+        text.setAttribute('x',this.parseXY(elem).x-box.width);
+        text.setAttribute('y',this.parseXY(elem).y-box.height);
+	    text.id='value-'+id+"-"+createUUID();
+        this.writewtx(elem,"label",text.id);
+	}
 }
 
 
 Schematic.prototype.select = function(elem) {
 
-
   	this.selected.push(elem);
-	if(elem.tagName=='g'&&!$('value-'+elem.id))this.createvalue(elem);
+	if(elem.tagName=='g'){
+        try{
+            var label=this.readwtx(elem,"label");
+        }
+        catch(e){
+            var label=null;
+        }
+        if(label){
+        if(!$(label))this.createvalue(elem);
+        }
+    }
  	this.showTracker(this.selected[this.selected.length-1]);
 	
 }
@@ -869,14 +888,12 @@ Schematic.prototype.dragSelection=function(x ,y){
 		for(var i=0;i<this.selected.length;i++){
 			floating.appendChild(this.selected[i]);
 	/*if a part is selected also get label*/
-			if(this.selected[i].tagName=='g'&&$('value-'+this.selected[i].id)){
-				floating.appendChild($('value-'+this.selected[i].id));
+			if(this.selected[i].tagName=='g'){
+                var label=this.readwtx(this.selected[i],"label");
+                if($(label)){
+    				floating.appendChild($(label));
+                }
 			}
-/*
-			if(this.selected[i].tagName=='g'&&$('number:'+this.selected[i].id)){
-				floating.appendChild($('number:'+this.selected[i].id));
-			}
-*/
 		}
 
 		var tracked=$$('.schematic_tracker');
@@ -967,12 +984,6 @@ Schematic.prototype.onMouseUp = function(event) {
 	        }
 		
         }
-/*
-        else	if(this.mode=='zoom'){
-	        this.unselect();
-	        this.zoomtorect(this.selectionRect);
-        }
-*/
         if (this.selection) {
 	        this.remove(this.selection);
 	        this.selectionRect.x=0;
@@ -1006,9 +1017,9 @@ Schematic.prototype.onMouseMove = function(event) {
 		if (this.selection) {
 
 			var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
-			mouseAt={x:0,y:0};
-			mouseAt.x = Math.round(real.x / this.grid) * this.grid;
-			mouseAt.y =Math.round(real.y / this.grid) * this.grid;
+			//mouseAt={x:0,y:0};
+			//mouseAt.x = Math.round(real.x / this.grid) * this.grid;
+			//mouseAt.y =Math.round(real.y / this.grid) * this.grid;
 			this.selectionRect.width=real.x-this.selectionRect.x;
 			this.selectionRect.height=real.y-this.selectionRect.y;
 			if(this.selectionRect.width<0)this.selection.setAttributeNS(null,'x', real.x);
@@ -1088,21 +1099,45 @@ Schematic.prototype.onWheel=function(event){
 }
 
 Schematic.prototype.getparttype=function(elem){
-var type;
-if(elem.id){
-	type=elem.id.split('-',1)[0];
-}
-return type;
+return this.readwtx(elem,"type");
 }
 
+/*change id for part group only*/
 Schematic.prototype.changeid=function(elem){
 	var type=this.getparttype(elem);
 	var id=type +'-'+ createUUID();
-    if($(id))this.changeid(elem);
-	else elem.setAttribute('id',id);
-
+    if($(id)){
+        this.changeid(elem);
+    }
+	else this.writewtx(elem,"id",id);
 }
 
+Schematic.prototype.readwtx=function(elem,value){
+    try{
+        return elem.getElementsByTagName("wtx:"+value)[0].textContent;
+    }
+    catch(e){    
+        try{
+            return elem.getElementsByTagNameNS(this.wtxNs,value)[0].textContent;
+        }
+        catch(f){
+            console.log(value +" not found");
+        }
+
+    }
+}
+
+Schematic.prototype.writewtx=function(elem,value,text){
+    try{
+        elem.getElementsByTagName("wtx:"+value)[0].textContent=text;
+    }
+    catch(e){
+        try{
+            elem.getElementsByTagNameNS(this.wtxNs,value)[0].textContent=text;
+        }
+        catch(f){value +"not written"}
+    }
+}
 
 Schematic.prototype.getgroup =function(elem){
 		if(this.drag)return;
@@ -1114,10 +1149,9 @@ Schematic.prototype.getgroup =function(elem){
 		this.mouseDown.x=this.svgRoot.getAttribute("width");
 		this.mouseDown.y=this.svgRoot.getAttribute("height");
 		newelem.setAttributeNS(null,'transform','matrix(1,0,0,1,'+this.mouseDown.x+','+this.mouseDown.y+')');
-		newelem.setAttribute('partvalue',''); 
+		this.readwtx(newelem,"value"); 
 		this.select(newelem);
-
-		this.changeid(this.selected[0]);
+//        this.changeid(this.selected[0]);
 		this.drag=1;
 }
 
@@ -1128,31 +1162,33 @@ Schematic.prototype.getfile =function(elem){
 	for(var i= ch.length;i>0;i--){
 /*only open these nodes*/
 /*get rid  of empty text*/
+
 		if(ch[i-1].tagName=='circle'||
 			ch[i-1].tagName=='line'||
-			(ch[i-1].tagName=='text'&&ch[i-1].hasChildNodes()&&this.getparttype(ch[i-1])!='value'))
+			(ch[i-1].tagName=='text'&&ch[i-1].childNodes.length&&(ch[i-1].id.split("-",1)!='value')))
 			{
-//			this.changeid(ch[i-1]);		
 			var newelem	= document.importNode(ch[i-1],true);
 			this.drawing.appendChild(newelem);
 			this.select(newelem);
 		}
+
 		else if(ch[i-1].tagName=='g'){
-/*remove child node ids*/	
 			var c=ch[i-1].getElementsByTagName('*');
 			for(var j=0;j<c.length;j++)c[j].removeAttribute('id');
-			var oldid=ch[i-1].id
-/*change ids first because they might conflict with existing ids*/
-			this.changeid(ch[i-1]);		
-/*if there is a partvalue attribute find the value, set the id to the new id */								
-			if(ch[i-1].getAttribute('partvalue')){
-				var oldvalue = ch[i-1].ownerDocument.getElementById('value-'+oldid);
-				if(oldvalue!=null){
-//					oldvalue.id='value:'+ch[i-1].id;		
-					var newvalue= document.importNode(oldvalue,true);
-					newvalue.id='value-'+ch[i-1].id;		
-					this.drawing.appendChild(newvalue);
-				}
+            var label=this.readwtx(ch[i-1],"label");
+			if(label!=null){
+                if($(label)){
+                    console.log("id taken");           
+                }
+                else{
+
+			        var oldvalue = ch[i-1].ownerDocument.getElementById(label);
+                    if(oldvalue!=null){
+				        var newvalue= document.importNode(oldvalue,true);
+				        newvalue.id=label;		
+				        this.drawing.appendChild(newvalue);
+			        }
+                }
 			}
 			var newelem= document.importNode(ch[i-1],true);
 			this.drawing.appendChild(newelem);
@@ -1164,7 +1200,7 @@ Schematic.prototype.getfile =function(elem){
 }
 
 Schematic.prototype.copy=function(){
-	var buffer=new Array();
+	var buffer=[];
 	for(var i=0;i<this.selected.length;i++){
 		var svgnode=this.selected[i].cloneNode(true);
 		buffer.push(svgnode);
@@ -1178,11 +1214,16 @@ Schematic.prototype.paste=function(elem){
 //change ids first
 		for(var i=0;i<elem.length;i++){
 			if(elem[i].tagName==='g'){
-				var id=elem[i].id;
-				this.changeid(elem[i]);
+                var label=this.readwtx(elem[i],"label");
+                do{
+    	            var type=this.getparttype(elem[i]);
+	                var id=type+'-'+ createUUID();
+                }while($(id));
+				this.readwtx(elem[i],"label");
 				for(var j=0;j<elem.length;j++){
-					if(elem[j].id==='value-'+id){
-						elem[j].id='value-'+elem[i].id;
+					if(elem[j].id==label){
+						elem[j].id=this.readwtx(elem[i],"label");
+                        break;      
 					}
 				}
 			}
@@ -1191,7 +1232,7 @@ Schematic.prototype.paste=function(elem){
 		this.unselect();
 //		this.mouseDown.x=this.svgRoot.getAttribute("width");
 //		this.mouseDown.y=this.svgRoot.getAttribute("height");
-		var newelems=new Array();
+		var newelems=[];
 		for(var i=0 ;i<elem.length;i++){
 			newelems[i]=elem[i].cloneNode(true);
 			this.drawing.appendChild(newelems[i]);

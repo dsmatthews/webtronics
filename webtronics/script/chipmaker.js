@@ -14,27 +14,60 @@ var chipmaker={
 
 
 	},
+createwtx:function(pins){
+    var data=new Element("metadata",{"class":"part"})
+        .update(new Element("wtx:part",{"xmlns:wtx":"http://code.google.com/p/webtronics"})
+            .insert(new Element("wtx:pins").update(JSON.stringify(pins)))
+            .insert(new Element("wtx:id"))
+            .insert(new Element("wtx:type"))
+            .insert(new Element("wtx:name"))
+            .insert(new Element("wtx:category"))
+            .insert(new Element("wtx:value"))
+            .insert(new Element("wtx:label"))
+            .insert(new Element("wtx:spice"))
+            .insert(new Element("wtx:flip"))
+            .insert(new Element("wtx:model")));
 
-drawchip:function(h,v,elem){
+    return data;
+/*
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":10},
+                {"pin":2,"x":40,"y":10}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>r</wtx:id>
+    <wtx:type>r</wtx:type>
+    <wtx:name>resistor</wtx:name>
+    <wtx:category>resistors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
+*/
+},
+drawchip:function(h,v){
 	var svgNamespace = 'http://www.w3.org/2000/svg';
 	var svg;
-	var container =  elem;
 	var fontsize=8;
- 	var svgRoot = container.getElementsByTagName("svg")[0];
-	if(!svgRoot){
-	svgRoot=container.ownerDocument.createElementNS(svgNamespace, "svg");
+	svgRoot=document.createElementNS(svgNamespace, "svg");
 	svgRoot.setAttributeNS(null, 'stroke','black');
-
-	container.appendChild(svgRoot);
-	}
+	svgRoot.setAttributeNS(null, 'width','99%');
+	svgRoot.setAttributeNS(null, 'height','99%');
 	var chipG = svgRoot.getElementsByTagName("g")[0];
-	if(!chipG){
-		chipG=container.ownerDocument.createElementNS(svgNamespace, 'g');
-		chipG.setAttributeNS(null, 'stroke', 'black');
-		chipG.setAttributeNS(null, 'stroke-width', '2px');
-		svgRoot.appendChild(chipG);
-	}
-  	this.clear(chipG);
+
+	chipG=document.createElementNS(svgNamespace, 'g');
+	chipG.setAttributeNS(null, 'stroke', 'black');
+	chipG.setAttributeNS(null, 'stroke-width', '2px');
+	svgRoot.appendChild(chipG);
 /*space between pins*/
 	var space=20;
 /*length of pins */
@@ -43,7 +76,7 @@ drawchip:function(h,v,elem){
 	var start=pinl;
 	var hor=h*space;
 	var pincount=0;
- 	var pins=Array();
+ 	var pins={pins:{analog:[],digital:[]}};
 	
 	if(h==0)
 	{
@@ -52,7 +85,7 @@ drawchip:function(h,v,elem){
 	start=0;
 	}
 
-	svg = container.ownerDocument.createElementNS(svgNamespace, 'rect');
+	svg = document.createElementNS(svgNamespace, 'rect');
   	svg.setAttributeNS(null, 'x', pinl);
   	svg.setAttributeNS(null, 'y', start);	
   	svg.setAttributeNS(null, 'width', hor);
@@ -62,23 +95,24 @@ drawchip:function(h,v,elem){
 	chipG.appendChild(svg);
 /* left horizontal pins*/
 	for(;y<(v*space+start+10);y+=space){
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg = document.createElementNS(svgNamespace, 'line');
 		svg.setAttributeNS(null, 'x1',0 );
 		svg.setAttributeNS(null, 'y1', y);
 		svg.setAttributeNS(null, 'x2', pinl);
 		svg.setAttributeNS(null, 'y2', y);
 		chipG.appendChild(svg);
 		
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg = document.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'x', 0);
 		svg.setAttributeNS(null, 'y', y);
 		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
 		svg.setAttributeNS(null, 'stroke-width','0px');
 
-		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
+		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
-		pins[pincount]=0+','+y;	
+
+		pins.pins["analog"].push({pin:pincount+1,x:0,y:y});	
 		pincount++;
 	}
   	y=space
@@ -93,23 +127,23 @@ drawchip:function(h,v,elem){
 	}
 /*vertical bottom pins*/
 	for(var x=space;x<h*space+space;x+=space){
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg = document.createElementNS(svgNamespace, 'line');
 		svg.setAttributeNS(null, 'x1',x);
 		svg.setAttributeNS(null, 'y1',v*space+pinl);
 		svg.setAttributeNS(null, 'x2',x);
 		svg.setAttributeNS(null, 'y2',v*space+space);
 		chipG.appendChild(svg);
 
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg = document.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
 		svg.setAttributeNS(null, 'stroke-width','0px');
-		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
+		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
 		var box=svg.getBoundingClientRect();
 		svg.setAttributeNS(null, 'x', (x+(box.width/2)));
 		svg.setAttributeNS(null, 'y',(v*space+pinl+fontsize));
-		pins[pincount]=x+','+(v*space+space);		
+		pins.pins["analog"].push({pin:pincount+1,x:x,y:(v*space+space)});	
 		pincount++;
 	}
    	y=space
@@ -123,23 +157,23 @@ drawchip:function(h,v,elem){
 	}
 /*horizontal right pins*/
 	for(var y2=(v*space-start);y2>=y;y2-=space){
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg = document.createElementNS(svgNamespace, 'line');
 		svg.setAttributeNS(null, 'x1',hor );
 		svg.setAttributeNS(null, 'y1',y2);
 		svg.setAttributeNS(null, 'x2',hor+pinl);
 		svg.setAttributeNS(null, 'y2',y2);
 		chipG.appendChild(svg);
 
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg = document.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'x', hor);
 		svg.setAttributeNS(null, 'y', y2);
 		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
 		svg.setAttributeNS(null, 'stroke-width','0px');
 
-		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
+		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
-		pins[pincount]=(hor+pinl)+','+y2;
+		pins.pins["analog"].push({pin:pincount+1,x:(hor+pinl),y:y2});	
 		pincount++;
 	}
    y=space
@@ -152,34 +186,34 @@ drawchip:function(h,v,elem){
 	}
 /*vertical top pins*/
   for(var x=h*space;x>=space;x-=space){
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'line');
+		svg = document.createElementNS(svgNamespace, 'line');
 		svg.setAttributeNS(null, 'x1',x );
 		svg.setAttributeNS(null, 'y1', 0);
 		svg.setAttributeNS(null, 'x2', x);
 		svg.setAttributeNS(null, 'y2', pinl);
 		chipG.appendChild(svg);
 
-		svg = container.ownerDocument.createElementNS(svgNamespace, 'text');
+		svg = document.createElementNS(svgNamespace, 'text');
 		svg.setAttributeNS(null, 'font-size', fontsize);
 		svg.setAttributeNS(null, 'stroke','blue');
 		svg.setAttributeNS(null, 'stroke-width','0px');
-		svg.appendChild(container.ownerDocument.createTextNode(pincount+1));
+		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
 		var box=svg.getBoundingClientRect();
 		svg.setAttributeNS(null, 'x', x);
 		svg.setAttributeNS(null, 'y', fontsize);
-		pins[pincount]=x+','+0;
+		pins.pins["analog"].push({pin:pincount+1,x:x,y:0});	
 		pincount++;
 	}
 
 	
-	svg=container.ownerDocument.createElementNS(svgNamespace,'circle');
+	svg=document.createElementNS(svgNamespace,'circle');
 	svg.setAttributeNS(null, 'cx', 20);
 	svg.setAttributeNS(null, 'cy', start+10);	
 	svg.setAttributeNS(null, 'r', 3);
 	chipG.id = 'U-' + createUUID();
-	chipG.setAttribute('connects',pins.join(';'));
 	chipG.appendChild(svg);
-
-	}
+    chipG.appendChild(this.createwtx(pins));
+    return svgRoot;
+}
 }
