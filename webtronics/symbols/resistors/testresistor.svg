@@ -3,18 +3,35 @@
 
 <svg
    xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
+   version="1.1"
    width="40"
    height="19.999998"
 >
-<defs>
-</defs>
-  <g connects="0,10;40,10"
-	stroke='black'
+  <g stroke='black'
 	stroke-width='2px' 
-    id="R"
-	partvalue="100k"
-    class="testresistor">
+    >
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":{
+                "pin1"{"x":0,"y":10},
+                "pin2":{"x":40,"y":10}},
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>r</wtx:id>
+    <wtx:type>r</wtx:type>
+    <wtx:name>testresistor</wtx:name>
+    <wtx:category>resistors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
 	<path
        d="M 5.1400289,10.973441 7.5009997,5.0436578 10.530362,14.908323 14.248435,4.3282724 18.324457,14.77488 21.761826,4.4617163 25.849828,14.589134 29.504786,4.5222528 33.128938,14.818135 35.33864,10.115602"
        id="path3444"

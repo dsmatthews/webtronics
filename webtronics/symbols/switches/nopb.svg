@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
+   version="1.1"
    width="40.776154"
    height="20"
 >
@@ -13,6 +13,27 @@
 	stroke-width='2px' 
      id="S"
     class="nopb">
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":20},{"pin":2,"x":40,"y":20}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>s</wtx:id>
+    <wtx:type>s</wtx:type>
+    <wtx:name>nopb</wtx:name>
+    <wtx:category>switches</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <path
        d="M 14.823,17.426654 C 14.823,18.563832 14.108298,19.485697 13.226668,19.485697 C 12.345039,19.485697 11.630336,18.563832 11.630336,17.426654 C 11.630336,16.289476 12.345039,15.367611 13.226668,15.367611 C 14.108298,15.367611 14.823,16.289476 14.823,17.426654 L 14.823,17.426654 z"
        id="path3734"

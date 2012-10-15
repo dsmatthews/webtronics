@@ -9,7 +9,33 @@
 *                | | | | |
 .SUBCKT UA741    1 2 3 4 5
 -->
- <g id="u" flippable="true" connects="0,10;0,50;30,0;30,60;60,30"  stroke="#000" stroke-width="2px" class="op-amp">
+ <g id="u" stroke="#000" stroke-width="2px" class="op-amp">
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":10},
+                {"pin":2,"x":0,"y":50},
+                {"pin":3,"x":30,"y":0},
+                {"pin":4,"x":30,"y":60},
+                {"pin":5,"x":60,"y":30}],
+
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>u</wtx:id>
+    <wtx:type>u</wtx:type>
+    <wtx:name>op-amp</wtx:name>
+    <wtx:category>amplifier</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:spice></wtx:spice>
+    <wtx:label></wtx:label>
+    <wtx:flip>true</wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
   <path id="path1887" fill="none" d="M50,30,10,60,10,0,50,30z"/>
   <path id="path1889" d="M0,10,10,10"/>
   <path id="path1893" d="M0,50,10,50"/>

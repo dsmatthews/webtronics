@@ -13,6 +13,31 @@
 	stroke-width='2px' 
      id="R"
     class="potentiometer" >
+
+                    
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":10},
+                {"pin":2,"x":40,"y":10},
+                {"pin":3,"x":20,"y":30}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>r</wtx:id>
+    <wtx:type>r</wtx:type>
+    <wtx:name>potentiometer</wtx:name>
+    <wtx:category>resistors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:flip></wtx:flip>
+    <wtx:spice></wtx:spice>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <path
        d="M 5.7390669,11.013002 L 8.4081832,0.47680307 L 10.86377,19.264244 L 14.920825,0.60374518 L 18.230531,19.391186 L 21.860529,0.47680307 L 25.650159,19.530659 L 29.334053,0.60374518 L 32.910155,19.435044 L 34.886846,10.143204"
        id="path3444"

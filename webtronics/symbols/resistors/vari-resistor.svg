@@ -14,6 +14,28 @@
 	stroke-width='2px' 
      id="R"
     class="vari-resistor">
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":10},
+                {"pin":2,"x":40,"y":10}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>r</wtx:id>
+    <wtx:type>r</wtx:type>
+    <wtx:name>variresistor</wtx:name>
+    <wtx:category>resistors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <path
        d="M 5.3415991,11.079275 8.0153231,0.54357924 10.475149,19.330121 14.539209,0.67051526 17.854627,19.457059 21.490891,0.54357924 25.287064,19.596525 28.977318,0.67051526 32.559593,19.500914 34.539695,10.209518"
        id="path3444"

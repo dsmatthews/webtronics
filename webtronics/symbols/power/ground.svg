@@ -13,6 +13,21 @@
 	stroke-width='2px' 
      id="Gnd"
     class="ground">
+<metadata>
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":{"analog":[{"pin":1,"x":10,"y":0}],"digital":[]}}</wtx:pins>
+    <wtx:id>gnd</wtx:id>
+    <wtx:type>gnd</wtx:type>
+    <wtx:name>ground</wtx:name>
+    <wtx:category>power</wtx:category>
+    <wtx:flip></wtx:flip>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
+
     <path
        d="M 10,0 L 10,11"
        id="path3694"

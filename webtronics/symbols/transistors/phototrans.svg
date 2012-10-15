@@ -11,9 +11,29 @@
      id="Q"
      stroke="#000"
      stroke-width="2px"
-     connects="30,0;30,40"
-     flippable="true"
      class="phototrans">
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":30,"y":0},
+                {"pin":2,"x":30,"y":40}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>q</wtx:id>
+    <wtx:type>q</wtx:type>
+    <wtx:name>phototrans</wtx:name>
+    <wtx:category>transistors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip>true</wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <rect
        width="40"
        height="40"

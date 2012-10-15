@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
+   version="1.1"
    width="20"
    height="20.112738"
 >
@@ -12,6 +12,27 @@
     id="wire"
     class="namewire"
     >
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":10,"y":20}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>wire</wtx:id>
+    <wtx:type>wire</wtx:type>
+    <wtx:name>namewire</wtx:name>
+    <wtx:category>power</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <rect
        width="20"
        height="20"

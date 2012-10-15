@@ -6,13 +6,37 @@
    width="40"
 height="20"	
 >
- <defs>
-</defs>
   <g connects="0,10;40,10"
 	stroke='black'
 	stroke-width='2px' 
      id="g2232"
     class="zener">
+<metadata class="part" >
+    <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+        <wtx:pins>
+        {"pins":
+            {
+                "analog":[
+                    {"pin":1,"x":0,"y":10},
+                    {"pin":2,"x":40,"y":10},
+               ],
+                "digital":[]
+            }
+        }
+    </wtx:pins>
+    <wtx:id>d</wtx:id>
+
+    <wtx:type>d</wtx:type>
+    <wtx:name>zener</wtx:name>
+    <wtx:category>diodes</wtx:category>
+    <wtx:flip></wtx:flip>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:model></wtx:model>
+    </wtx:part>
+</metadata>
+
     <path
        d="M 14.639172,0.38974096 L 10.056699,0.45435962 L 10.056699,19.706003 L 5,19.660362"
        id="path2210"

@@ -11,6 +11,33 @@
 	stroke-width='2px' 
      id="L"
     class="tapcoil">
+
+<metadata class="part" >
+    <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+        <wtx:pins>
+        {"pins":
+            {
+                "analog":[
+                    {"pin":1,"x":0,"y":10},
+                    {"pin":2,"x":30,"y":20}
+                    {"pin":3,"x":60,"y":10}
+                ],
+                "digital":[]
+            }
+        }
+    </wtx:pins>
+    <wtx:id>l</wtx:id>
+
+    <wtx:type>l</wtx:type>
+    <wtx:name>tapcoil</wtx:name>
+    <wtx:category>inductors</wtx:category>
+    <wtx:flip></wtx:flip>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:model></wtx:model>
+    </wtx:part>
+</metadata>
   <path id="path2905" fill="none" d="m0,10,10,0s0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10,0-10,5-10,5,10,5,10h10"/>
     <path
        d="M30,10 , 30,20"

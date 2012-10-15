@@ -2,17 +2,36 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
+   version="1.1"
    width="49.242374"
    height="20"
 >
- <defs>
-</defs>
   <g connects="0,20;50,20"
 	stroke='black'
 	stroke-width='2px' 
      id="g2173"
     class="spst-switch">
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":20},{"pin":2,"x":50,"y":20}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>s</wtx:id>
+    <wtx:type>s</wtx:type>
+    <wtx:name>nopb</wtx:name>
+    <wtx:category>switches</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <path
        d="M 17.954546,17.082309 C 17.954546,18.417563 16.924911,19.5 15.654792,19.5 C 14.384672,19.5 13.355037,18.417563 13.355037,17.082309 C 13.355037,15.747055 14.384672,14.664618 15.654792,14.664618 C 16.924911,14.664618 17.954546,15.747055 17.954546,17.082309 L 17.954546,17.082309 z"
        id="path3791"

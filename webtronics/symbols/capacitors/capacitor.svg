@@ -12,6 +12,28 @@
 	stroke-width='2px' 
      id="C"
     class="capacitor" >
+<metadata class="part" >
+<wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+    <wtx:pins>{"pins":
+        {
+            "analog":[
+                {"pin":1,"x":0,"y":10},
+                {"pin":2,"x":30,"y":10}],
+            "digital":[]
+        }
+    }
+    </wtx:pins>
+    <wtx:id>c</wtx:id>
+    <wtx:type>c</wtx:type>
+    <wtx:name>capacitor</wtx:name>
+    <wtx:category>capacitors</wtx:category>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:flip></wtx:flip>
+    <wtx:model></wtx:model>
+</wtx:part>
+</metadata>
     <path
        d="M 10,0 10,20"
        id="path3412"
