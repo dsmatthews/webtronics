@@ -6,13 +6,36 @@
    width="40.500751"
    height="40.857143"
 >
-  <defs>
-</defs>
   <g connects="0,20;40,20"
 	stroke='black'
 	stroke-width='2px' 
      id="G"
     class="not">
+<metadata class="part" >
+    <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
+        <wtx:pins>
+        {"pins":
+            {
+                "analog":[],
+                "digital":[
+                    [{"pin":1,"x":0,"y":20}],
+                    {"pin":3,"x":40,"y":20}
+                ]
+            }
+        }
+    </wtx:pins>
+    <wtx:id>not</wtx:id>
+
+    <wtx:type>not</wtx:type>
+    <wtx:name>not</wtx:name>
+    <wtx:category>digital</wtx:category>
+    <wtx:flip></wtx:flip>
+    <wtx:value></wtx:value>
+    <wtx:label></wtx:label>
+    <wtx:spice></wtx:spice>
+    <wtx:model></wtx:model>
+    </wtx:part>
+</metadata>
     <path
        d="M 31.864774,20.071429 L 8.753888,40.357143 L 8.753888,0.5 L 31.982663,20.418568 L 39.882814,20.418568"
        id="path1887"

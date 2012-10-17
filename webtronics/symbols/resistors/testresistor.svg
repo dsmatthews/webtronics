@@ -15,7 +15,7 @@
     <wtx:pins>{"pins":
         {
             "analog":{
-                "pin1"{"x":0,"y":10},
+                "pin1":{"x":0,"y":10},
                 "pin2":{"x":40,"y":10}},
             "digital":[]
         }

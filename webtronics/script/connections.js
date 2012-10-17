@@ -205,11 +205,12 @@ Schematic.prototype.tovector=function(pins,nodenumber){
         for(var i=0;i<pins.length;i++){
             if(i==0)v+="[a"+nodenumber;
             else v+="a"+nodenumber;
-            if(i==pins.length-1)v+="]"
+            if(i==pins.length-1)v+="]";
         }
     }
     return v;
 }
+
 Schematic.prototype.getwtxdata=function(parts){
     list=[];
     for(var i=0;i<parts.length;i++){
@@ -515,14 +516,27 @@ Schematic.prototype.showallconnects=function(){
 			for(var type in list[i].pins){
                 var flatlist=list[i].pins["digital"].flatten();
                 for(var j=0;j<flatlist.length;j++){
-			        var svg=this.createrect('green',100,flatlist[j].x-3,flatlist[j].y-3,6,6);
-			        svg.setAttribute('class',"schematic_connector");
-			        this.info.appendChild(svg);
+			        var rect=this.createrect('green',100,flatlist[j].x-3,flatlist[j].y-3,6,6);
+			        rect.setAttribute('class',"schematic_connector");
+			        this.info.appendChild(rect);
                 }
                 for(var j=0;j<list[i].pins["analog"].length;j++){
-			        var svg=this.createdot('red',list[i].pins["analog"][j].x,list[i].pins["analog"][j].y);
-			        svg.setAttribute('class',"schematic_connector");
-			        this.info.appendChild(svg);
+			        var circle=this.createdot('red',list[i].pins["analog"][j].x,list[i].pins["analog"][j].y);
+			        circle.setAttribute('class',"schematic_connector");
+/*
+                    Event.observe(circle,"mouseover",function(e){
+                        this.mode='select';
+                        console.log("over");
+    			        e.setAttribute('visibility',"visible");
+                    }.bind(this));
+                    Event.observe(circle,"mouseout",function(e){
+                        this.mode='line';
+                        console.log("out");
+                        e.setAttribute("visibility","hidden");
+                    }.bind(this));
+			        circle.setAttribute('visibility',"hidden");
+*/
+			        this.info.appendChild(circle);
                 }
 			}
 		}
