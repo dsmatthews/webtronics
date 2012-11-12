@@ -10,20 +10,17 @@
   <g
 	stroke='black'
 	stroke-width='2px' 
-     id="v" connects="0,10;50,10" class="battery">
+     id="v" class="battery">
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":0,"y":10},
-                {"pin":2,"x":50,"y":10}],
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+    <wtx:analog>
+        <wtx:node index="1" x="0" y="10"/>
+        <wtx:node index="2" x="50" y="10"/>
+    </wtx:analog>
     </wtx:pins>
-    <wtx:id>r</wtx:id>
-    <wtx:type>r</wtx:type>
+    <wtx:id>v</wtx:id>
+    <wtx:type>v</wtx:type>
     <wtx:name>battery</wtx:name>
     <wtx:category>power</wtx:category>
     <wtx:value></wtx:value>

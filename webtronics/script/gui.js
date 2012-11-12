@@ -9,9 +9,9 @@ var webtronics={
         mode:'',
 
 		Vlist:/\s*expression|\s*url|.*script/,
-		Alist:/^(x|y|x1|y1|x2|y2|dx|dy|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|font-size|font-weight|font-style|font-family)$/,
-		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:part|wtx:pins|wtx:id|wtx:type|wtx:name|wtx:category|wtx:value|wtx:label|wtx:spice|wtx:flip|wtx:model|metadata|)$/,
-
+		Alist:/^(x|y|x1|y1|x2|y2|dx|dy|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|index|font-size|font-weight|font-style|font-family)$/,
+		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:part|wtx:pins|wtx:analog|wtx:digital|wtx:node|wtx:id|wtx:type|wtx:name|wtx:category|wtx:value|wtx:label|wtx:spice|wtx:flip|wtx:model|metadata|)$/,
+/* .lib files contain spice .model devices .mod devices contain .subckt devices and the id must begin with x*/
         parts:{
                 "amplifier":{
                     "op-amp":{
@@ -29,7 +29,7 @@ var webtronics={
                         "ideal_dac":[".inc digital.lib"]
                         },                    
                     "source":{
-                        "ideal_10ns":[".inc digital.lib"]
+                        "ideal_10ns":[".inc dclock.mod"]
                         },                
                     "and":{
                         "and1":[".inc digital.lib"]
@@ -147,6 +147,7 @@ var webtronics={
                         "SIN(0 120 60HZ)":[""],
                         "PWL(0 0 10ns 0 10ns 5 20ns 5)R=0":[""],
                         "PULSE(−1 1 2NS 2NS 2NS 50NS 100NS )":[""],
+                        "SFFM( 0 1V 20K 5 1K)":[""]                    
                         
                     },
                     "battery":{
@@ -177,6 +178,13 @@ var webtronics={
                 }            
 
         },
+        models:{
+            "ne555.mod":{
+                "image":"555.svg",
+                "code":"" 
+            }
+        },
+
 
 		docfromtext:function(txt){
 			var xmlDoc;
@@ -272,14 +280,10 @@ var webtronics={
         
         
 		getvalues:function(elem){
-            var nodes=$("webtronics_part_model").childNodes;
-			for(var i=nodes.length;i>0;i--){
-				nodes[i-1].parentNode.removeChild(nodes[i-1]);
-			}
-            nodes=$("webtronics_part_dir_model").childNodes;
-			for(var i=nodes.length;i>0;i--){
-				nodes[i-1].parentNode.removeChild(nodes[i-1]);
-			}
+            
+
+			$("webtronics_part_model").options.length=0;
+			$("webtronics_part_dir_model").options.length=0;
 			$("webtronics_part_model").appendChild(new Element("option",{"value":""}).update("none"));
 			$("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
 			var part=this.circuit.readwtx(elem,"name");
@@ -305,7 +309,11 @@ var webtronics={
         },
 
 		returnchip:function(){
-		this.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
+            if($('webtronics_chip_display').getElementsByTagName('g').length){
+    		    this.circuit.getgroup($('webtronics_chip_display').getElementsByTagName('g')[0]);
+                this.circuit.writewtx(this.circuit.selected[0],"id",this.circuit.getnextid(this.circuit.selected[0],0));
+                this.circuit.createvalue(this.circuit.selected[0]);
+            }
 			$('webtronics_chips_box').hide();
 			this.setMode('webtronics_select','select','Selection');
 		},
@@ -314,7 +322,7 @@ var webtronics={
 			document.forms['webtronics_properties_form'].reset();
 			var c=this.circuit.readwtx(this.circuit.selected[0],"name");
 			if(!c){
-				this.writewtx(this.circuit.selected[0],"name","ic");
+				this.circuit.writewtx(this.circuit.selected[0],"name","ic");
 			}
 			if(c=="ac"||c=="battery"	){
 				this.getvalues(this.circuit.selected[0]);
@@ -716,7 +724,7 @@ I want to preserve the css color for inverted diagrams in png
 		    Event.observe($('webtronics_chips_open'), 'click', function() {
 			    webtronics.circuit.clearinfo();
     		    webtronics.setMode('webtronics_chips_open','select','Selection');
-    		    chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value,$('webtronics_chip_display'));
+                chipmaker.openmaker();
     		    $('webtronics_chips_box').style.display = "block";
     		    webtronics.center($('webtronics_chips_box'));
 			    webtronics.disablepage();
@@ -825,10 +833,7 @@ I want to preserve the css color for inverted diagrams in png
                 var part=webtronics.circuit.readwtx(webtronics.circuit.selected[0],"name");
                 var cat=webtronics.circuit.readwtx(webtronics.circuit.selected[0],"category");
                 if($('webtronics_part_model').value){
-                    var nodes=$("webtronics_part_dir_model").childNodes;
-                    for(var i=nodes.length;i>0;i--){
-	                    nodes[i-1].parentNode.removeChild(nodes[i-1]);
-                    }
+                    $("webtronics_part_dir_model").options.length=0;
         			$("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
                     for(var i=0;i<webtronics.parts[cat][part][$('webtronics_part_model').value].length;i++){
                         $("webtronics_part_dir_model").insert(new Element("option",{"value":webtronics.parts[cat][part][$('webtronics_part_model').value][i]}).update(webtronics.parts[cat][part][$('webtronics_part_model').value][i]));
@@ -866,6 +871,20 @@ I want to preserve the css color for inverted diagrams in png
                     .update(chipmaker.drawchip($('webtronics_hor_pins').value,$('webtronics_vert_pins').value));
                 $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
 		    });
+
+		    Event.observe($('webtronics_chip_spice_select'), 'change', function() {
+                $("webtronics_chip_display").parentNode.removeChild($("webtronics_chip_display"));
+                var div=new Element("div",{id:"webtronics_chip_display"})
+                $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
+                $("webtronics_chip_spice").value=$('webtronics_chip_spice_select').value;
+                if($('webtronics_chip_spice_select').value!="none"){
+                    div.update(webtronics.openfile("symbols/ic/"+webtronics.models[$('webtronics_chip_spice_select').value].image));
+                    var model=$("webtronics_chip_display").getElementsByTagName("g")[0];
+                    webtronics.circuit.writewtx(model,"model",".inc "+$('webtronics_chip_spice_select').value);
+                }
+		    });
+
+
 		    Event.observe($('webtronics_chip_ok'), 'click', function() {
 			    webtronics.enablepage()
 			    webtronics.returnchip();

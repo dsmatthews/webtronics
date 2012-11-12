@@ -3,14 +3,11 @@
   <g id="v" stroke="#000" stroke-width="2px" connects="0,20;60,20" class="ac">
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":0,"y":20},
-                {"pin":2,"x":60,"y":20}],
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+    <wtx:analog>
+                <wtx:node index="1" x="0" y="20"/>
+                <wtx:node index="2" x="60" y="20"/>
+    </wtx:analog>
     </wtx:pins>
     <wtx:id>v</wtx:id>
     <wtx:type>v</wtx:type>

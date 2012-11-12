@@ -4,18 +4,14 @@
 <metadata class="part" >
     <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
         <wtx:pins>
-        {"pins":
-            {
-                "analog":[],
-                "digital":[
-                    [{"pin":1,"x":50,"y":10}]
-                ]
-            }
-        }
+        <wtx:digital>
+            <wtx:node index="1" x="50" y="10" />
+        </wtx:digital>
+
     </wtx:pins>
     <wtx:id>clock</wtx:id>
 
-    <wtx:type>clock</wtx:type>
+    <wtx:type>xclock</wtx:type>
     <wtx:name>source</wtx:name>
     <wtx:category>digital</wtx:category>
     <wtx:flip></wtx:flip>

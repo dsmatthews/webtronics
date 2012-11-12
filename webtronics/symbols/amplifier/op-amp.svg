@@ -12,21 +12,17 @@
  <g id="u" stroke="#000" stroke-width="2px" class="op-amp">
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":0,"y":10},
-                {"pin":2,"x":0,"y":50},
-                {"pin":3,"x":30,"y":0},
-                {"pin":4,"x":30,"y":60},
-                {"pin":5,"x":60,"y":30}],
-
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+		<wtx:analog>
+			<wtx:node index="1" x="0" y="10"/>
+			<wtx:node index="2" x="0" y="50"/>
+			<wtx:node index="3" x="30" y="0"/>
+			<wtx:node index="4" x="30" y="60"/>
+			<wtx:node index="5" x="60" y="30"/>
+		</wtx:analog>
     </wtx:pins>
     <wtx:id>u</wtx:id>
-    <wtx:type>u</wtx:type>
+    <wtx:type>xu</wtx:type>
     <wtx:name>op-amp</wtx:name>
     <wtx:category>amplifier</wtx:category>
     <wtx:value></wtx:value>

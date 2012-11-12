@@ -1112,31 +1112,40 @@ Schematic.prototype.changeid=function(elem){
 	else this.writewtx(elem,"id",id);
 }
 
-Schematic.prototype.readwtx=function(elem,value){
-    try{
-        return elem.getElementsByTagName("wtx:"+value)[0].textContent;
-    }
-    catch(e){    
-        try{
-            return elem.getElementsByTagNameNS(this.wtxNs,value)[0].textContent;
-        }
-        catch(f){
-            console.log(value +" not found");
-        }
+Schematic.prototype.getwtxtagname=function(elem,tagname){
 
+
+    var tag=elem.getElementsByTagName("wtx:"+tagname);
+    if(!tag.length){
+        tag=elem.getElementsByTagName(tagname);
     }
+    if(!tag.length){
+        tag=elem.getElementsByTagNameNS(this.wtxNs,tagname);
+    }
+    if(!tag.length){
+        tag=elem.getElementsByTagNameNS("*",tagname);
+    }
+    return tag;
+
+}
+
+Schematic.prototype.getwtxattribute=function(elem,attrib){
+    var value=elem.getAttribute(attrib);
+    if(value==undefined)value=elem.getAttributeNS(this.wtxNs,attrib);
+    if(value==undefined)value=elem.getAttributeNS("*",attrib);
+
+    return value;
+}
+
+Schematic.prototype.readwtx=function(elem,value){
+    var tag=this.getwtxtagname(elem,value);
+    if(tag[0])return tag[0].textContent;
+    else return "";
 }
 
 Schematic.prototype.writewtx=function(elem,value,text){
-    try{
-        elem.getElementsByTagName("wtx:"+value)[0].textContent=text;
-    }
-    catch(e){
-        try{
-            elem.getElementsByTagNameNS(this.wtxNs,value)[0].textContent=text;
-        }
-        catch(f){value +"not written"}
-    }
+    var tag=this.getwtxtagname(elem,value);
+    if(tag[0])tag[0].textContent=text;
 }
 
 Schematic.prototype.getgroup =function(elem){

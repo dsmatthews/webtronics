@@ -14,14 +14,29 @@ var chipmaker={
 
 
 	},
+
+openmaker:function(){
+    $("webtronics_chip_display").parentNode.removeChild($("webtronics_chip_display"));
+    var div=new Element("div",{id:"webtronics_chip_display"});
+    $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
+    document.forms['webtronics_chips_form'].reset();
+    $("webtronics_chip_spice_select").options.length=0;
+    $("webtronics_chip_spice_select").appendChild(new Element("option",{"value":""}).update("none"));
+
+    for(var part in webtronics.models){
+        $("webtronics_chip_spice_select").insert(new Element("option",{"value":part}).update(part)); 
+    }
+},
+
+
 createwtx:function(pins){
     var data=new Element("metadata",{"class":"part"})
         .update(new Element("wtx:part",{"xmlns:wtx":"http://code.google.com/p/webtronics"})
-            .insert(new Element("wtx:pins").update(JSON.stringify(pins)))
-            .insert(new Element("wtx:id"))
-            .insert(new Element("wtx:type"))
+            .insert(new Element("wtx:pins").insert(pins))
+            .insert(new Element("wtx:id").update("xu"))
+            .insert(new Element("wtx:type").update("xu"))
             .insert(new Element("wtx:name"))
-            .insert(new Element("wtx:category"))
+            .insert(new Element("wtx:category").update("ic"))
             .insert(new Element("wtx:value"))
             .insert(new Element("wtx:label"))
             .insert(new Element("wtx:spice"))
@@ -32,14 +47,11 @@ createwtx:function(pins){
 /*
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":0,"y":10},
-                {"pin":2,"x":40,"y":10}],
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+        <analog>
+        </analog>
+        <digital>
+        </digital>    
     </wtx:pins>
     <wtx:id>r</wtx:id>
     <wtx:type>r</wtx:type>
@@ -76,8 +88,7 @@ drawchip:function(h,v){
 	var start=pinl;
 	var hor=h*space;
 	var pincount=0;
- 	var pins={pins:{analog:[],digital:[]}};
-	
+	var connections=new Element("wtx:analog");
 	if(h==0)
 	{
 	hor=60;
@@ -111,8 +122,7 @@ drawchip:function(h,v){
 
 		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
-
-		pins.pins["analog"].push({pin:pincount+1,x:0,y:y});	
+        connections.insert(new Element("wtx:node",{"index":pincount,"x":"0","y":y}));
 		pincount++;
 	}
   	y=space
@@ -143,7 +153,8 @@ drawchip:function(h,v){
 		var box=svg.getBoundingClientRect();
 		svg.setAttributeNS(null, 'x', (x+(box.width/2)));
 		svg.setAttributeNS(null, 'y',(v*space+pinl+fontsize));
-		pins.pins["analog"].push({pin:pincount+1,x:x,y:(v*space+space)});	
+
+        connections.insert(new Element("wtx:node",{"index":pincount,"x":x,"y":v*space+space}));
 		pincount++;
 	}
    	y=space
@@ -173,7 +184,7 @@ drawchip:function(h,v){
 
 		svg.appendChild(document.createTextNode(pincount+1));
 		chipG.appendChild(svg);
-		pins.pins["analog"].push({pin:pincount+1,x:(hor+pinl),y:y2});	
+        connections.insert(new Element("wtx:node",{"index":pincount,"x":hor+pinl,"y":y2}));
 		pincount++;
 	}
    y=space
@@ -202,7 +213,7 @@ drawchip:function(h,v){
 		var box=svg.getBoundingClientRect();
 		svg.setAttributeNS(null, 'x', x);
 		svg.setAttributeNS(null, 'y', fontsize);
-		pins.pins["analog"].push({pin:pincount+1,x:x,y:0});	
+        connections.insert(new Element("wtx:node",{"index":pincount,"x":x,"y":0}));
 		pincount++;
 	}
 
@@ -213,7 +224,7 @@ drawchip:function(h,v){
 	svg.setAttributeNS(null, 'r', 3);
 	chipG.id = 'U-' + createUUID();
 	chipG.appendChild(svg);
-    chipG.appendChild(this.createwtx(pins));
+    chipG.appendChild(this.createwtx(connections));
     return svgRoot;
 }
 }

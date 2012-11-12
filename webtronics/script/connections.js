@@ -1,41 +1,15 @@
 Schematic.prototype.getconnects=function(elem){
-    var text=this.readwtx(elem,"pins");
     var pins=[];    
-    if(text){
-        try{
-            var js=text.evalJSON(true);
-        }
-        catch(e){
-            return;
-        }
-        if(typeof js.pins.analog=="object"){
-        	var analog=js.pins.analog;
-	        var matrix=this.parseMatrix(elem);
-	        var pin=this.svgRoot.createSVGPoint();
-	        for(var i=0;i<analog.length;i++){
-		        pin.x=analog[i].x
-		        pin.y=analog[i].y;
-		        pin = pin.matrixTransform(matrix);
-		        analog[i]={x:Math.round(pin.x),y:Math.round(pin.y)};
-	        }
-            analog.each(function(item){pins.push(item)});
-        }
-        var js=text.evalJSON(true);
-        if(typeof js.pins.digital=="object"){
-        	var digital=js.pins.digital.flatten();
-	        var matrix=this.parseMatrix(elem);
-	        var pin=this.svgRoot.createSVGPoint();
-	        for(var i=0;i<digital.length;i++){
-		        pin.x=digital[i].x
-		        pin.y=digital[i].y;
-		        pin = pin.matrixTransform(matrix);
-		        digital[i]={x:Math.round(pin.x),y:Math.round(pin.y)};
-	        }
-            digital.each(function(item){pins.push(item)});
-        }
-    }    
- //console.log(pins);
- return pins;
+    var nodes=this.getwtxtagname(elem,"node");
+    var matrix=this.parseMatrix(elem);
+    var pin=this.svgRoot.createSVGPoint();
+    for(var i=0;i<nodes.length;i++){
+        pin.x=this.getwtxattribute(nodes[i],"x");
+        pin.y=this.getwtxattribute(nodes[i],"y");
+        pin = pin.matrixTransform(matrix);
+        pins[i]={x:Math.round(pin.x),y:Math.round(pin.y)};
+    }
+    return pins;
 }
 
 Schematic.prototype.matrixxform=function(point,matrix){
@@ -108,7 +82,7 @@ Schematic.prototype.sortnetlist=function(list){
 		else if(list[i].type=='r'){
 			R.push(list[i]);
 		}
-		else if(list[i].type=='u'){	
+		else if(list[i].type=='xu'){	
 			U.push(list[i]);
 		}
 /* this is the best way I could think to tell if a part i digital */
@@ -172,9 +146,17 @@ Schematic.prototype.connectwires=function(list){
         if(list[i].type=="wire"){
             for(var j=i;j<list.length;j++){
                 if((list[i]!=list[j])&&(list[i].id==list[j].id)){
-    				var line= this.createline('yellow',1,list[i].pins["analog"][0].x,list[i].pins["analog"][0].y,list[j].pins["analog"][0].x,list[j].pins["analog"][0].y);
+                    var node1=this.getwtxtagname(list[i].elem,"node")[0];
+                    var node2=this.getwtxtagname(list[j].elem,"node")[0];
+                    var point1={x:this.getwtxattribute(node1,"x"),y:this.getwtxattribute(node1,"y")}
+                    point1=this.matrixxform(point1,this.parseMatrix(list[i].elem));
+                    var point2={x:this.getwtxattribute(node2,"x"),y:this.getwtxattribute(node2,"y")}
+                    point2=this.matrixxform(point2,this.parseMatrix(list[j].elem));
+                    
+    				var line= this.createline('yellow',1,point1.x,point1.y,point2.x,point2.y);
     				line.setAttributeNS(null,'class','namewire');
     				this.info.appendChild(line);
+//console.log(line);            
                     break; 
                }
             }    
@@ -196,58 +178,32 @@ Schematic.prototype.getconnected=function(wirelist,wire){
     return -1;
 }
 /*check for vectors and convert them*/
-Schematic.prototype.tovector=function(pins,nodenumber){
+Schematic.prototype.tovector=function(pin,nodenumber){
     var v ="";   
-    if(pins.pin){
+    if(pin.parentNode.tagName=="wtx:vector"){
+        var vector=Element.descendants(pin.parentNode);
+        if(pin==vector[0]){v+="["}
         v+="a"+nodenumber;
+        if(pin==vector[vector.length-1]){v+="]";}
     }
     else{
-        for(var i=0;i<pins.length;i++){
-            if(i==0)v+="[a"+nodenumber;
-            else v+="a"+nodenumber;
-            if(i==pins.length-1)v+="]";
-        }
+        v+="a"+nodenumber;
     }
+
     return v;
 }
 
 Schematic.prototype.getwtxdata=function(parts){
     list=[];
     for(var i=0;i<parts.length;i++){
-        var part={error:"", pins:{}, id:"", type:"", name:"", category:"", value:"", spice:"", model:""}
+        var part={error:"", elem:{}, type:"", name:"", category:"", value:"", spice:"", model:""}
+/*
         try{
-            var p=this.readwtx(parts[i],'pins');
+            part.nodes=this.getwtxpins(part[i]);        
         }
-        catch(e){
-            part.error="wtx:pins not found";}    
-        if(p){
-            try{
-                var json=p.evalJSON(true);
-            }
-            catch(e){
-                part.error="could not parse pin data";        
-            }
-            if(json){
-                var matrix=this.parseMatrix(parts[i]);
-                for(var nodetype in json.pins){
-                    for(var j=0;j<json.pins[nodetype].length;j++){
-                        if(!json.pins[nodetype][j].pin){
-                            for(var k=0;k<json.pins[nodetype][j].length;k++){
-                                var point=this.matrixxform(json.pins[nodetype][j][k],matrix);
-                                json.pins[nodetype][j][k].x=point.x;
-                                json.pins[nodetype][j][k].y=point.y;
-                            }
-                        }                
-                        else{
-                            var point=this.matrixxform(json.pins[nodetype][j],matrix);
-                            json.pins[nodetype][j].x=point.x;
-                            json.pins[nodetype][j].y=point.y;
-                        }
-                    }
-                }
-            part.pins=json.pins;
-            }
-        }
+        catch{part.error="wtx:pins not found"}
+*/
+        part.elem=parts[i];
         try{
             part.id=this.readwtx(parts[i],'id');
         }
@@ -311,54 +267,53 @@ Schematic.prototype.getnodes=function(parts){
         if(parts[i].type=="plot")sections.lastdir.push(parts[i].model);
         else sections.firstdir.push(parts[i].model);
         var net={error:parts[i].error,partid:parts[i].id,pins:[],model:parts[i].value};
-        for(var nodetype in parts[i].pins){        
-            if(nodetype=="analog"){
-                for(var j=0;j<parts[i].pins[nodetype].length;j++){ 
-                    var wire=this.followwires(null,parts[i].pins[nodetype][j]);
-                    var found=this.getconnected(analogwires,wire);
-
-                   if(parts[i].type=='gnd'){
-                        if(!analogwires[0])analogwires[0]=[];
-                        for(var k=0;k<wire.length;k++)analogwires[0].push(wire[k])
-/* add analog ground to digital wirelist*/
-                        if(!digitalwires[0])digitalwires.push(analogwires[0]);
-                        net=null;
-                    }
-                    
-                    else if(found<0){
-                        net.pins.push(analogcount);
-                        analogwires.push(wire);
-                        analogcount++;
-                    }
-                    else{ 
-                        net.pins.push(found);
-                    }
+        var nodes=this.getwtxtagname(parts[i].elem,"node");        
+        for(var j=0;j<nodes.length;j++){
+            var point={x:this.getwtxattribute(nodes[j],"x"),y:this.getwtxattribute(nodes[j],"y")};
+            point=this.matrixxform(point,this.parseMatrix(parts[i].elem));
+            var wire=this.followwires(null,point);
+            if(nodes[j].parentNode.tagName=="wtx:analog"){
+                var found=this.getconnected(analogwires,wire);
+               if(parts[i].type=='gnd'){
+                    if(!analogwires[0])analogwires[0]=[];
+                    for(var k=0;k<wire.length;k++)analogwires[0].push(wire[k])
+    /* add analog ground to digital wirelist*/
+                    if(!digitalwires[0])digitalwires.push(analogwires[0]);
+                    net=null;
+                }
+                
+                else if(found<0){
+                    net.pins.push(analogcount);
+                    analogwires.push(wire);
+                    analogcount++;
+                }
+                else{ 
+                    net.pins.push(found);
                 }
             }
             else{
-               if(digitalwires.length==0){
-                    net.error="no ground node";                      
+                if(digitalwires.length==0){
+                net.error="no ground node";                      
                 } 
-               for(var j=0;j<parts[i].pins[nodetype].flatten().length;j++){ 
-                
-                    var point=parts[i].pins[nodetype].flatten()[j];
-                    var wire=this.followwires(null,point);
-                    var found=this.getconnected(digitalwires,wire);
-                    if(found<0){
-                        var v=this.tovector(parts[i].pins[nodetype][j],digitalcount);
-                        net.pins.push(v);
-                        digitalwires.push(wire);
-                        digitalcount++;
-                    }
-                    else{ 
-                        var v=this.tovector(parts[i].pins[nodetype][j],found);
-                        net.pins.push(v);
-                    }
+                var found=this.getconnected(digitalwires,wire);
+                if(found<0){
+                    var v=this.tovector(nodes[j],digitalcount);
+                    net.pins.push(v);
+                    digitalwires.push(wire);
+                    digitalcount++;
                 }
-            }
+                else{ 
+                    var v=this.tovector(nodes[j],found);
+                    net.pins.push(v);
+                }
+                
+            }        
+
         }
         if(parts[i].type=="plot"){
-            var wire=this.followwires(null,parts[i].pins["analog"][0]);
+            var point={x:this.getwtxattribute(nodes[0],"x"),y:this.getwtxattribute(nodes[0],"y")};
+            point=this.matrixxform(point,this.parseMatrix(parts[i].elem));
+            var wire=this.followwires(null,point);
             var found=this.getconnected(analogwires,wire);
             if(found>-1){sections.plot.push(found);}
             else {
@@ -510,35 +465,28 @@ Schematic.prototype.isconnects=function(radius,x,y){
 Schematic.prototype.showallconnects=function(){
 	if(this.connections){	
 		var parts=$$('#webtronics_drawing > g');
-        var list=this.getwtxdata(parts);
-    	this.connectwires(list);
-		for(var i=0 ;i<list.length;i++){
-			for(var type in list[i].pins){
-                var flatlist=list[i].pins["digital"].flatten();
-                for(var j=0;j<flatlist.length;j++){
-			        var rect=this.createrect('green',100,flatlist[j].x-3,flatlist[j].y-3,6,6);
-			        rect.setAttribute('class',"schematic_connector");
-			        this.info.appendChild(rect);
-                }
-                for(var j=0;j<list[i].pins["analog"].length;j++){
-			        var circle=this.createdot('red',list[i].pins["analog"][j].x,list[i].pins["analog"][j].y);
+    	this.connectwires(this.getwtxdata(parts));
+		for(var i=0 ;i<parts.length;i++){
+            var nodes=this.getwtxtagname(parts[i],"node");
+            
+			for(var j=0;j<nodes.length;j++){
+                var x=this.getwtxattribute(nodes[j],"x");
+                var y=this.getwtxattribute(nodes[j],"y");
+                var point=this.matrixxform({x:x,y:y},this.parseMatrix(parts[i]));
+
+                if(nodes[j].parentNode.tagName=="wtx:analog"){
+			        var circle=this.createdot('red',point.x,point.y);
 			        circle.setAttribute('class',"schematic_connector");
-/*
-                    Event.observe(circle,"mouseover",function(e){
-                        this.mode='select';
-                        console.log("over");
-    			        e.setAttribute('visibility',"visible");
-                    }.bind(this));
-                    Event.observe(circle,"mouseout",function(e){
-                        this.mode='line';
-                        console.log("out");
-                        e.setAttribute("visibility","hidden");
-                    }.bind(this));
-			        circle.setAttribute('visibility',"hidden");
-*/
 			        this.info.appendChild(circle);
                 }
-			}
+                else{
+                    var rect=this.createrect('green',100,point.x-3,point.y-3,6,6);
+                    rect.setAttribute('class',"schematic_connector");
+                    this.info.appendChild(rect);
+                }
+
+
+            }
 		}
 	}
 }

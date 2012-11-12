@@ -15,14 +15,11 @@
     class="speaker" >
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":10,"y":30},
-                {"pin":2,"x":40,"y":30}],
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+		<wtx:analog>
+			<wtx:node index="1" x="10" y="30"/>
+			<wtx:node index="2" x="40" y="30"/>
+		</wtx:analog>
     </wtx:pins>
     <wtx:id>r</wtx:id>
     <wtx:type>r</wtx:type>

@@ -6,13 +6,12 @@
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
 <!--pin data -->
     <wtx:pins>
-        {"pins":
-            {
-                "analog":[{"pin":1,"x":0,"y":10}],
-                "digital":[{"pin":2,"x":30,"y":10}]
-            }
-        
-        }
+        <wtx:analog>
+            <wtx:node index="1" x="0" y="10" />
+        </wtx:analog>
+        <wtx:digital>
+            <wtx:node index="2" x="30" y="10" />
+        </wtx:digital>
     </wtx:pins>
 <!--id for svg diagram and spice-->
     <wtx:id>ada</wtx:id>

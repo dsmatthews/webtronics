@@ -3,14 +3,10 @@
  <g id="Plot" stroke="#000" stroke-width="2px" connects="0,20" class="scope">
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-    <wtx:pins>{"pins":
-        {
-            "analog":[
-                {"pin":1,"x":0,"y":20}
-            ],
-            "digital":[]
-        }
-    }
+    <wtx:pins>
+        <wtx:analog>
+            <wtx:node index="1" x="0" y="20" />
+        </wtx:analog>
     </wtx:pins>
     <wtx:id>plot</wtx:id>
     <wtx:type>plot</wtx:type>

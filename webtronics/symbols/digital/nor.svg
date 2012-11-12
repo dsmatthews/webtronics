@@ -15,17 +15,12 @@
     class="nor">
 <metadata class="part" >
     <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
-        <wtx:pins>
-        {"pins":
-            {
-                "analog":[],
-                "digital":[
-                    [{"pin":1,"x":0,"y":10}],
-                    [{"pin":2,"x":0,"y":30}],
-                    {"pin":3,"x":60,"y":20}
-                ]
-            }
-        }
+    <wtx:pins>
+        <wtx:digital>
+            <wtx:node index="1" x="0" y="10" />
+            <wtx:node index="2" x="0" y="30" />
+            <wtx:node index="3" x="60" y="20" />
+        </wtx:digital>
     </wtx:pins>
     <wtx:id>nor</wtx:id>
 
