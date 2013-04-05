@@ -47,7 +47,9 @@
 		
 		// store class on canvas
 		if (target.svg != null) target.svg.stop();
-		target.svg = svg = build();
+		var svg = build();
+		// on i.e. 8 for flash canvas, we can't assign the property so check for it
+		if (!(target.childNodes.length == 1 && target.childNodes[0].nodeName == 'OBJECT')) target.svg = svg;
 		svg.opts = opts;
 		
 		var ctx = target.getContext('2d');
@@ -189,7 +191,9 @@
 			// definition extensions
 				// get the definition from the definitions table
 				svg.Property.prototype.getDefinition = function() {
-					var name = this.value.replace(/^(url\()?#([^\)]+)\)?$/, '$2');
+					var name = this.value.match(/#([^\)']+)/);
+					if (name) { name = name[1]; }
+					if (!name) { name = this.value; }
 					return svg.Definitions[name];
 				}
 				
@@ -197,12 +201,12 @@
 					return this.value.indexOf('url(') == 0
 				}
 				
-				svg.Property.prototype.getFillStyleDefinition = function(e) {
+				svg.Property.prototype.getFillStyleDefinition = function(e, opacityProp) {
 					var def = this.getDefinition();
 					
 					// gradient
 					if (def != null && def.createGradient) {
-						return def.createGradient(svg.ctx, e);
+						return def.createGradient(svg.ctx, e, opacityProp);
 					}
 					
 					// pattern
@@ -233,7 +237,7 @@
 				}
 			
 				// get the length as pixels
-				svg.Property.prototype.toPixels = function(viewPort) {
+				svg.Property.prototype.toPixels = function(viewPort, processPercent) {
 					if (!this.hasValue()) return 0;
 					var s = this.value+'';
 					if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
@@ -245,7 +249,9 @@
 					if (s.match(/mm$/)) return this.numValue() * this.getDPI(viewPort) / 25.4;
 					if (s.match(/in$/)) return this.numValue() * this.getDPI(viewPort);
 					if (s.match(/%$/)) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
-					return this.numValue();
+					var n = this.numValue();
+					if (processPercent && n < 1.0) return n * svg.ViewPort.ComputeSize(viewPort);
+					return n;
 				}
 
 			// time extensions
@@ -528,11 +534,12 @@
 				}
 			}
 			
-			var data = svg.trim(svg.compressSpaces(v)).split(/\s(?=[a-z])/);
+			var data = svg.trim(svg.compressSpaces(v)).replace(/\)(\s?,\s?)/g,') ').split(/\s(?=[a-z])/);
 			for (var i=0; i<data.length; i++) {
 				var type = data[i].split('(')[0];
 				var s = data[i].split('(')[1].replace(')','');
 				var transform = new this.Type[type](s);
+				transform.type = type;
 				this.transforms.push(transform);
 			}
 		}
@@ -626,18 +633,19 @@
 				if (this.attribute('visibility').value == 'hidden') return;
 			
 				ctx.save();
+				if (this.attribute('mask').hasValue()) { // mask
+					var mask = this.attribute('mask').getDefinition();
+					if (mask != null) mask.apply(ctx, this);
+				}
+				else if (this.style('filter').hasValue()) { // filter
+					var filter = this.style('filter').getDefinition();
+					if (filter != null) filter.apply(ctx, this);
+				}
+				else {	
 					this.setContext(ctx);
-						// mask
-						if (this.attribute('mask').hasValue()) {
-							var mask = this.attribute('mask').getDefinition();
-							if (mask != null) mask.apply(ctx, this);
-						}
-						else if (this.style('filter').hasValue()) {
-							var filter = this.style('filter').getDefinition();
-							if (filter != null) filter.apply(ctx, this);
-						}
-						else this.renderChildren(ctx);				
-					this.clearContext(ctx);
+					this.renderChildren(ctx);	
+					this.clearContext(ctx);							
+				}
 				ctx.restore();
 			}
 			
@@ -670,6 +678,7 @@
 				for (var i=0; i<node.childNodes.length; i++) {
 					var childNode = node.childNodes[i];
 					if (childNode.nodeType == 1) this.addChild(childNode, true); //ELEMENT_NODE
+					if (this.captureTextNodes && childNode.nodeType == 3) this.addChild(new svg.Element.tspan(childNode), false); // TEXT_NODE
 				}
 				
 				// add attributes
@@ -744,7 +753,7 @@
 			this.setContext = function(ctx) {
 				// fill
 				if (this.style('fill').isUrlDefinition()) {
-					var fs = this.style('fill').getFillStyleDefinition(this);
+					var fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
 					if (fs != null) ctx.fillStyle = fs;
 				}
 				else if (this.style('fill').hasValue()) {
@@ -760,7 +769,7 @@
 									
 				// stroke
 				if (this.style('stroke').isUrlDefinition()) {
-					var fs = this.style('stroke').getFillStyleDefinition(this);
+					var fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
 					if (fs != null) ctx.strokeStyle = fs;
 				}
 				else if (this.style('stroke').hasValue()) {
@@ -773,7 +782,10 @@
 					strokeStyle = strokeStyle.addOpacity(this.style('stroke-opacity').value);
 					ctx.strokeStyle = strokeStyle.value;
 				}
-				if (this.style('stroke-width').hasValue()) ctx.lineWidth = this.style('stroke-width').toPixels();
+				if (this.style('stroke-width').hasValue()) {
+					var newLineWidth = this.style('stroke-width').toPixels();
+					ctx.lineWidth = newLineWidth == 0 ? 0.001 : newLineWidth; // browsers don't respect 0
+			    }
 				if (this.style('stroke-linecap').hasValue()) ctx.lineCap = this.style('stroke-linecap').value;
 				if (this.style('stroke-linejoin').hasValue()) ctx.lineJoin = this.style('stroke-linejoin').value;
 				if (this.style('stroke-miterlimit').hasValue()) ctx.miterLimit = this.style('stroke-miterlimit').value;
@@ -944,7 +956,8 @@
 				var ry = this.attribute('ry').toPixels('y');
 				if (this.attribute('rx').hasValue() && !this.attribute('ry').hasValue()) ry = rx;
 				if (this.attribute('ry').hasValue() && !this.attribute('rx').hasValue()) rx = ry;
-				
+				rx = Math.min(rx, width / 2.0);
+				ry = Math.min(ry, height / 2.0);
 				if (ctx != null) {
 					ctx.beginPath();
 					ctx.moveTo(x + rx, y);
@@ -1378,16 +1391,15 @@
 							if (r(u,v) <= -1) ad = Math.PI;
 							if (r(u,v) >= 1) ad = 0;
 
-							if (sweepFlag == 0 && ad > 0) ad = ad - 2 * Math.PI;
-							if (sweepFlag == 1 && ad < 0) ad = ad + 2 * Math.PI;
-
 							// for markers
+							var dir = 1 - sweepFlag ? 1.0 : -1.0;
+							var ah = a1 + dir * (ad / 2.0);
 							var halfWay = new svg.Point(
-								centp.x + rx * Math.cos((a1 + (a1 + ad)) / 2),
-								centp.y + ry * Math.sin((a1 + (a1 + ad)) / 2)
+								centp.x + rx * Math.cos(ah),
+								centp.y + ry * Math.sin(ah)
 							);
-							pp.addMarkerAngle(halfWay, (a1 + (a1 + ad)) / 2 + (sweepFlag == 0 ? -1 : 1) * Math.PI / 2);
-							pp.addMarkerAngle(cp, (a1 + ad) + (sweepFlag == 0 ? -1 : 1) * Math.PI / 2);
+							pp.addMarkerAngle(halfWay, ah - dir * Math.PI / 2);
+							pp.addMarkerAngle(cp, ah - dir * Math.PI);
 
 							bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
 							if (ctx != null) {
@@ -1434,21 +1446,35 @@
 			this.base(node);
 			
 			this.createPattern = function(ctx, element) {
+				var width = this.attribute('width').toPixels('x', true);
+				var height = this.attribute('height').toPixels('y', true);
+			
 				// render me using a temporary svg element
 				var tempSvg = new svg.Element.svg();
 				tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-				tempSvg.attributes['x'] = new svg.Property('x', this.attribute('x').value);
-				tempSvg.attributes['y'] = new svg.Property('y', this.attribute('y').value);
-				tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
-				tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+				tempSvg.attributes['width'] = new svg.Property('width', width + 'px');
+				tempSvg.attributes['height'] = new svg.Property('height', height + 'px');
+				tempSvg.attributes['transform'] = new svg.Property('transform', this.attribute('patternTransform').value);
 				tempSvg.children = this.children;
 				
 				var c = document.createElement('canvas');
-				document.body.appendChild(c);
-				c.width = this.attribute('width').toPixels('x') + this.attribute('x').toPixels('x');
-				c.height = this.attribute('height').toPixels('y')  + this.attribute('y').toPixels('y');
-				tempSvg.render(c.getContext('2d'));		
-				return ctx.createPattern(c, 'repeat');
+				c.width = width;
+				c.height = height;
+				var cctx = c.getContext('2d');
+				if (this.attribute('x').hasValue() && this.attribute('y').hasValue()) {
+					cctx.translate(this.attribute('x').toPixels('x', true), this.attribute('y').toPixels('y', true));
+				}
+				// render 3x3 grid so when we transform there's no white space on edges
+				for (var x=-1; x<=1; x++) {
+					for (var y=-1; y<=1; y++) {
+						cctx.save();
+						cctx.translate(x * c.width, y * c.height);
+						tempSvg.render(cctx);
+						cctx.restore();
+					}
+				}
+				var pattern = ctx.createPattern(c, 'repeat');
+				return pattern;
 			}
 		}
 		svg.Element.pattern.prototype = new svg.Element.ElementBase;
@@ -1506,23 +1532,31 @@
 			this.stops = [];			
 			for (var i=0; i<this.children.length; i++) {
 				var child = this.children[i];
-				this.stops.push(child);
+				if (child.type == 'stop') this.stops.push(child);
 			}	
 			
 			this.getGradient = function() {
 				// OVERRIDE ME!
 			}			
 
-			this.createGradient = function(ctx, element) {
+			this.createGradient = function(ctx, element, parentOpacityProp) {
 				var stopsContainer = this;
 				if (this.attribute('xlink:href').hasValue()) {
 					stopsContainer = this.attribute('xlink:href').getDefinition();
 				}
+				
+				var addParentOpacity = function (color) {
+					if (parentOpacityProp.hasValue()) {
+						var p = new svg.Property('color', color);
+						return p.addOpacity(parentOpacityProp.value).value;
+					}
+					return color;
+				};
 			
 				var g = this.getGradient(ctx, element);
-				if (g == null) return stopsContainer.stops[stopsContainer.stops.length - 1].color;
+				if (g == null) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
 				for (var i=0; i<stopsContainer.stops.length; i++) {
-					g.addColorStop(stopsContainer.stops[i].offset, stopsContainer.stops[i].color);
+					g.addColorStop(stopsContainer.stops[i].offset, addParentOpacity(stopsContainer.stops[i].color));
 				}
 				
 				if (this.attribute('gradientTransform').hasValue()) {
@@ -1567,6 +1601,16 @@
 			
 			this.getGradient = function(ctx, element) {
 				var bb = element.getBoundingBox();
+				
+				if (!this.attribute('x1').hasValue()
+				 && !this.attribute('y1').hasValue()
+				 && !this.attribute('x2').hasValue()
+				 && !this.attribute('y2').hasValue()) {
+					this.attribute('x1', true).value = 0;
+					this.attribute('y1', true).value = 0;
+					this.attribute('x2', true).value = 1;
+					this.attribute('y2', true).value = 0;
+				 }
 				
 				var x1 = (this.gradientUnits == 'objectBoundingBox' 
 					? bb.x() + bb.width() * this.attribute('x1').numValue() 
@@ -1634,6 +1678,8 @@
 			this.base(node);
 			
 			this.offset = this.attribute('offset').numValue();
+			if (this.offset < 0) this.offset = 0;
+			if (this.offset > 1) this.offset = 1;
 			
 			var stopColor = this.style('stop-color');
 			if (this.style('stop-opacity').hasValue()) stopColor = stopColor.addOpacity(this.style('stop-opacity').value);
@@ -1681,7 +1727,8 @@
 				// if we're past the end time
 				if (this.duration > this.maxDuration) {
 					// loop for indefinitely repeating animations
-					if (this.attribute('repeatCount').value == 'indefinite') {
+					if (this.attribute('repeatCount').value == 'indefinite'
+					 || this.attribute('repeatDur').value == 'indefinite') {
 						this.duration = 0.0
 					}
 					else if (this.attribute('fill').valueOrDefault('remove') == 'remove' && !this.removed) {
@@ -1776,8 +1823,21 @@
 		
 		// animate transform element
 		svg.Element.animateTransform = function(node) {
-			this.base = svg.Element.animate;
+			this.base = svg.Element.AnimateBase;
 			this.base(node);
+			
+			this.calcValue = function() {
+				var p = this.progress();
+				
+				// tween value linearly
+				var from = svg.ToNumberArray(p.from.value);
+				var to = svg.ToNumberArray(p.to.value);
+				var newValue = '';
+				for (var i=0; i<from.length; i++) {
+					newValue += from[i] + (to[i] - from[i]) * p.progress + ' ';
+				}
+				return newValue;
+			};
 		}
 		svg.Element.animateTransform.prototype = new svg.Element.animate;
 		
@@ -1850,22 +1910,9 @@
 		
 		// text element
 		svg.Element.text = function(node) {
+			this.captureTextNodes = true;
 			this.base = svg.Element.RenderedElementBase;
 			this.base(node);
-			
-			if (node != null) {
-				// add children
-				this.children = [];
-				for (var i=0; i<node.childNodes.length; i++) {
-					var childNode = node.childNodes[i];
-					if (childNode.nodeType == 1) { // capture tspan and tref nodes
-						this.addChild(childNode, true);
-					}
-					else if (childNode.nodeType == 3) { // capture text
-						this.addChild(new svg.Element.tspan(childNode), false);
-					}
-				}
-			}
 			
 			this.baseSetContext = this.setContext;
 			this.setContext = function(ctx) {
@@ -1875,45 +1922,52 @@
 			}
 			
 			this.renderChildren = function(ctx) {
-				var textAnchor = this.style('text-anchor').valueOrDefault('start');
-				var x = this.attribute('x').toPixels('x');
-				var y = this.attribute('y').toPixels('y');
+				this.textAnchor = this.style('text-anchor').valueOrDefault('start');
+				this.x = this.attribute('x').toPixels('x');
+				this.y = this.attribute('y').toPixels('y');
 				for (var i=0; i<this.children.length; i++) {
-					var child = this.children[i];
+					this.renderChild(ctx, this, i);
+				}
+			}
+			
+			this.renderChild = function(ctx, parent, i) {
+				var child = parent.children[i];
+				if (child.attribute('x').hasValue()) {
+					child.x = child.attribute('x').toPixels('x');
+				}
+				else {
+					if (this.attribute('dx').hasValue()) this.y += this.attribute('dx').toPixels('x');
+					if (child.attribute('dx').hasValue()) this.x += child.attribute('dx').toPixels('x');
+					child.x = this.x;
+				}
 				
-					if (child.attribute('x').hasValue()) {
-						child.x = child.attribute('x').toPixels('x');
+				var childLength = child.measureText(ctx);
+				if (this.textAnchor != 'start' && (i==0 || child.attribute('x').hasValue())) { // new group?
+					// loop through rest of children
+					var groupLength = childLength;
+					for (var j=i+1; j<this.children.length; j++) {
+						var childInGroup = this.children[j];
+						if (childInGroup.attribute('x').hasValue()) break; // new group
+						groupLength += childInGroup.measureText(ctx);
 					}
-					else {
-						if (this.attribute('dx').hasValue()) y += this.attribute('dx').toPixels('x');
-						if (child.attribute('dx').hasValue()) x += child.attribute('dx').toPixels('x');
-						child.x = x;
-					}
-					
-					var childLength = child.measureText(ctx);
-					if (textAnchor != 'start' && (i==0 || child.attribute('x').hasValue())) { // new group?
-						// loop through rest of children
-						var groupLength = childLength;
-						for (var j=i+1; j<this.children.length; j++) {
-							var childInGroup = this.children[j];
-							if (childInGroup.attribute('x').hasValue()) break; // new group
-							groupLength += childInGroup.measureText(ctx);
-						}
-						child.x -= (textAnchor == 'end' ? groupLength : groupLength / 2.0);
-					}
-					x = child.x + childLength;
-					
-					if (child.attribute('y').hasValue()) {
-						child.y = child.attribute('y').toPixels('y');
-					}
-					else {
-						if (this.attribute('dy').hasValue()) y += this.attribute('dy').toPixels('y');
-						if (child.attribute('dy').hasValue()) y += child.attribute('dy').toPixels('y');
-						child.y = y;
-					}	
-					y = child.y;
-					
-					child.render(ctx);
+					child.x -= (this.textAnchor == 'end' ? groupLength : groupLength / 2.0);
+				}
+				this.x = child.x + childLength;
+				
+				if (child.attribute('y').hasValue()) {
+					child.y = child.attribute('y').toPixels('y');
+				}
+				else {
+					if (this.attribute('dy').hasValue()) this.y += this.attribute('dy').toPixels('y');
+					if (child.attribute('dy').hasValue()) this.y += child.attribute('dy').toPixels('y');
+					child.y = this.y;
+				}	
+				this.y = child.y;
+				
+				child.render(ctx);
+				
+				for (var i=0; i<child.children.length; i++) {
+					this.renderChild(ctx, child, i);
 				}
 			}
 		}
@@ -1975,8 +2029,8 @@
 					return;
 				}
 			
-				if (ctx.strokeStyle != '') ctx.strokeText(svg.compressSpaces(this.getText()), this.x, this.y);
 				if (ctx.fillStyle != '') ctx.fillText(svg.compressSpaces(this.getText()), this.x, this.y);
+				if (ctx.strokeStyle != '') ctx.strokeText(svg.compressSpaces(this.getText()), this.x, this.y);
 			}
 			
 			this.getText = function() {
@@ -2015,12 +2069,11 @@
 		
 		// tspan 
 		svg.Element.tspan = function(node) {
+			this.captureTextNodes = true;
 			this.base = svg.Element.TextElementBase;
 			this.base(node);
 			
-			this.text = node.nodeType == 3 ? node.nodeValue : // text
-						node.childNodes.length > 0 ? node.childNodes[0].nodeValue : // element
-						node.text;
+			this.text = node.nodeValue || node.text || '';
 			this.getText = function() {
 				return this.text;
 			}
@@ -2130,6 +2183,14 @@
 				}
 				ctx.restore();
 			}
+			
+			this.getBoundingBox = function() {
+				var x = this.attribute('x').toPixels('x');
+				var y = this.attribute('y').toPixels('y');
+				var width = this.attribute('width').toPixels('x');
+				var height = this.attribute('height').toPixels('y');
+				return new svg.BoundingBox(x, y, x + width, y + height);
+			}
 		}
 		svg.Element.image.prototype = new svg.Element.RenderedElementBase;
 		
@@ -2186,7 +2247,10 @@
 			this.base(node);
 			
 			// text, or spaces then CDATA
-			var css = node.childNodes[0].nodeValue + (node.childNodes.length > 1 ? node.childNodes[1].nodeValue : '');
+			var css = ''
+			for (var i=0; i<node.childNodes.length; i++) {
+			  css += node.childNodes[i].nodeValue;
+			}
 			css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
 			css = svg.compressSpaces(css); // replace whitespace
 			var cssDefs = css.split('}');
@@ -2343,13 +2407,13 @@
 				var bb = element.getBoundingBox();
 				var x = this.attribute('x').toPixels('x');
 				var y = this.attribute('y').toPixels('y');
-				if (x == 0 || y == 0) {
+				if (element.type == 'image' || x == 0 || y == 0) {
 					x = bb.x1;
 					y = bb.y1;
 				}
 				var width = this.attribute('width').toPixels('x');
 				var height = this.attribute('height').toPixels('y');
-				if (width == 0 || height == 0) {
+				if (element.type == 'image' || width == 0 || height == 0) {
 					width = bb.width();
 					height = bb.height();
 				}
@@ -2359,7 +2423,7 @@
 				element.style('filter').value = '';
 				
 				// max filter distance
-				var extraPercent = .20;
+				var extraPercent = element.type == 'image' ? 0 : .20;
 				var px = extraPercent * width;
 				var py = extraPercent * height;
 				
@@ -2387,6 +2451,39 @@
 			}		
 		}
 		svg.Element.filter.prototype = new svg.Element.ElementBase;
+		
+		svg.Element.feColorMatrix = function(node) {
+			this.base = svg.Element.ElementBase;
+			this.base(node);
+			
+			function imGet(img, x, y, width, height, rgba) {
+				return img[y*width*4 + x*4 + rgba];
+			}
+			
+			function imSet(img, x, y, width, height, rgba, val) {
+				img[y*width*4 + x*4 + rgba] = val;
+			}
+			
+			this.apply = function(ctx, x, y, width, height) {
+				// only supporting grayscale for now per Issue 195, need to extend to all matrix
+				// assuming x==0 && y==0 for now
+				var srcData = ctx.getImageData(0, 0, width, height);
+				for (var y = 0; y < height; y++) {
+					for (var x = 0; x < width; x++) {
+						var r = imGet(srcData.data, x, y, width, height, 0);
+						var g = imGet(srcData.data, x, y, width, height, 1);
+						var b = imGet(srcData.data, x, y, width, height, 2);
+						var gray = (r + g + b) / 3;
+						imSet(srcData.data, x, y, width, height, 0, gray);
+						imSet(srcData.data, x, y, width, height, 1, gray);
+						imSet(srcData.data, x, y, width, height, 2, gray);
+					}
+				}
+				ctx.clearRect(0, 0, width, height);
+				ctx.putImageData(srcData, 0, 0);
+			}
+		}
+		svg.Element.filter.prototype = new svg.Element.feColorMatrix;
 		
 		svg.Element.feGaussianBlur = function(node) {
 			this.base = svg.Element.ElementBase;

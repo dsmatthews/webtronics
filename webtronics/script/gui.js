@@ -649,6 +649,7 @@ I want to preserve the css color for inverted diagrams in png
 		    });
        
 	    $('webtronics_toolbar').onselectstart = function() {return false;} 
+
 	    $('webtronics_diagram_area').onselectstart = function() {return false;} 
 	    $('webtronics_side_bar').onselectstart = function() {return false;} 
 
