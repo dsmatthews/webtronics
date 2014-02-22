@@ -4,7 +4,14 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
-   </head>
+    <style>
+    #gnucap_scope_display_div{
+      width:100%;
+      height:100%;
+    }
+    </style>
+    
+    </head>
   <body bgcolor="white" >
     <script type='text/javascript'>
 var graph={
@@ -48,7 +55,7 @@ var graph={
 	}
       }
     }
-    var element=document.getElementById("webtronics_scope_display_div");
+    var element=document.getElementById("gnucap_scope_display_div");
     var svgNamespace = 'http://www.w3.org/2000/svg';
     colors=["red","blue","green","gold","hotpink","orange"];
     element.innerHTML="";
@@ -113,7 +120,7 @@ var graph={
   },
   
    printerr:function(t){
-    var element=document.getElementById("webtronics_scope_display_div");
+    var element=document.getElementById("gnucap_scope_display_div");
     var text = document.createElement("textarea");
     text.cols=48;
     text.rows=32;
@@ -187,7 +194,7 @@ var graph={
       Module.setStatus('Downloading...');
       
   </script>
-  <div id="webtronics_scope_display_div" >
+  <div id="gnucap_scope_display_div" >
   <script async type="text/javascript" src="gnucap-ugly.js" ></script>
   </div>
   </body>

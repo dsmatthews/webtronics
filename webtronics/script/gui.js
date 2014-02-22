@@ -469,9 +469,13 @@ var webtronics={
 	spicenetlist:"",
 	gnucapjs:function(netlist){
 	  webtronics.spicenetlist=netlist;
-	  $("webtronics_scope_display_iframe").src="gnucapjs/gnucap.html";
+/*add a new frame */
+	  $('webtronics_scope_display_div').innerHTML='';
+          var frame=new Element('iframe',{id:'webtronics_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
+         $('webtronics_scope_display_div').insert(frame);
           $("webtronics_scope_display").style.display="block"
 	},
+/*
          postspice:function(spice){
             var text;
 			new Ajax.Request("spice.php",{
@@ -502,7 +506,7 @@ var webtronics={
 			});
 
 		},
-
+*/
        savepng:function(){
             
             if(navigator.appName == 'Microsoft Internet Explorer'){
@@ -563,7 +567,7 @@ I want to preserve the css color for inverted diagrams in png
 			    window.console.log = function(){};
 		    }
             webtronics.setsize();
-	    $('webtronics_scope_display_iframe').src="";
+//	    $('webtronics_scope_display_iframe').src="";
 	    var menu;
             $("webtronics_invert").checked=false;
             $("webtronics_graph").checked=false;
