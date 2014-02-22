@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Emscripten-Generated Code</title>
+   </head>
+  <body bgcolor="white" >
+    <script type='text/javascript'>
+var graph={
+  parsegnucap:function(t){
+  console.log(t);
+  var points = [];
+      try{
+	var text = t.split(/#Time.*\n/)[1];
+	var samples=text.split('\n');
+	}
+	catch(e){
+	graph.printerr(t);
+	return;
+	}
+    for(var i=0;i<samples.length;i++){
+      var s = samples[i].match(/\S+/g);
+      if(s!=null){
+	points[i]=[];
+	for(var j=0;j<s.length;j++){
+//convert micro
+	  if(s[j][s[j].length-1]=='u'){
+	    s[j].replace('u','');
+	    s[j]=parseFloat(s[j])*0.000001;
+	  }
+//convert nano
+	  if(s[j][s[j].length-1]=='n'){
+	    s[j].replace('n','');
+	    s[j]=parseFloat(s[j])*0.000000001;
+	  }
+//convert pico
+	  if(s[j][s[j].length-1]=='p'){
+	    s[j].replace('p','');
+	    s[j]=parseFloat(s[j])*0.000000000001;
+	  }
+//convert femto
+	  if(s[j][s[j].length-1]=='f'){
+	    s[j].replace('f','');
+	    s[j]=parseFloat(s[j])*0.00000000000001;
+	  }
+	  points[i][j]=parseFloat(s[j]);
+	}
+      }
+    }
+    var element=document.getElementById("webtronics_scope_display_div");
+    var svgNamespace = 'http://www.w3.org/2000/svg';
+    colors=["red","blue","green","gold","hotpink","orange"];
+    element.innerHTML="";
+    var svgRoot=document.createElementNS(svgNamespace, "svg");
+    svgRoot.setAttribute("xmlns",svgNamespace);
+    svgRoot.setAttributeNS(null, 'width','320');
+    svgRoot.setAttributeNS(null, 'height','240');
+    var graphG=document.createElementNS(svgNamespace, 'g');
+    
+    var min=points[0][1];
+    var max=points[0][1];
+  //calculate max and min height
+    for(var i=0;i<points.length;i++){
+      for(var j=1;j < points[i].length;j++){
+	min=Math.min(min,points[i][j]);
+	max=Math.max(max,points[i][j]);
+      }
+    }
+    var hsize=svgRoot.getAttribute('width')/points.length;
+    var vsize=svgRoot.getAttribute('height')/(max-min);
+    for(var sample=1;sample<points[0].length;sample++){
+      path=document.createElementNS(svgNamespace, "path");
+      var line="";
+      for(var time=0;time<points.length;time++){
+	var x=parseInt(hsize*time);
+	var y =parseInt(vsize * (max-points[time][sample]));
+	if(isNaN(x)||isNaN(y)){
+	  graph.printerr(t);
+	  return;
+	}
+	if(time==0){
+	  line += " M0 "+ y;
+	}
+	else{
+	  line += " L" + x + " " + y;
+	}
+      }
+      path.setAttributeNS(null,"d",line);		
+      console.log(colors[sample-1]);
+      path.setAttributeNS(null,"stroke",colors[sample-1]);
+      path.setAttributeNS(null,"stroke-width",1);
+      path.setAttributeNS(null,"fill","none");
+      graphG.appendChild(path);
+    }	
+    svgRoot.appendChild(graph.createtext("min="+min+" max="+max+" time="+points[points.length-1][0],"black",10,svgRoot.getAttribute('height')));  
+    svgRoot.appendChild(graphG);
+    element.appendChild(svgRoot);
+  },
+  createtext:function(str,color,x,y){
+	  var svgNamespace = 'http://www.w3.org/2000/svg';
+	  var svg;
+
+	  svg = document.createElementNS(svgNamespace, 'text');
+	  svg.setAttributeNS(null, 'x', x);
+	  svg.setAttributeNS(null, 'y', y);
+	  svg.setAttributeNS(null, 'font-size', 12);
+	  svg.setAttributeNS(null, 'fill', color);
+	  svg.setAttributeNS(null, 'stroke-width', '0px');
+	  
+	  svg.appendChild(document.createTextNode(str));
+	  return svg;
+  },
+  
+   printerr:function(t){
+    var element=document.getElementById("webtronics_scope_display_div");
+    var text = document.createElement("textarea");
+    text.cols=48;
+    text.rows=32;
+    text.value=t;
+    element.appendChild(text);
+    
+    
+    },
+ }
+  
+  
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var simdata="";
+
+      var Module = {
+	preRun: [function(){
+		  FS.writeFile("/temp",parent.webtronics.spicenetlist);
+		 }],
+        postRun:[function(){
+		  console.log('test');
+		 }],
+	arguments:["-b","/temp"],
+        print: (function() {
+	  return function(text) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+            // These replacements are necessary if you render to raw HTML
+            //text = text.replace(/&/g, "&amp;");
+            //text = text.replace(/</g, "&lt;");
+            //text = text.replace(/>/g, "&gt;");
+            //text = text.replace('\n', '<br>', 'g');
+            simdata += text + "\n";
+             };
+        })(),
+        printErr: function(text) {
+          text = Array.prototype.slice.call(arguments).join(' ');
+          if (0) { // XXX disabled for safety typeof dump == 'function') {
+            dump(text + '\n'); // fast, straight to the real console
+          } else {
+            console.log(text);
+          }
+	      
+       },
+//        canvas: document.getElementById('canvas'),
+        setStatus: function(text) {
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+          if (m) {
+            text = m[1];
+//             progressElement.value = parseInt(m[2])*100;
+//             progressElement.max = parseInt(m[4])*100;
+//             progressElement.hidden = false;
+//             spinnerElement.hidden = false;
+          } else {
+//             progressElement.value = null;
+//             progressElement.max = null;
+//             progressElement.hidden = true;
+
+//code is finished
+	      if (!text){
+		graph.parsegnucap(simdata);
+	      }
+          }
+//	    statusElement.innerHTML = text;
+        },
+      };
+      Module.setStatus('Downloading...');
+      
+  </script>
+  <div id="webtronics_scope_display_div" >
+  <script async type="text/javascript" src="gnucap-ugly.js" ></script>
+  </div>
+  </body>
+</html>

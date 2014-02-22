@@ -61,7 +61,13 @@ toolbar
 
 			
 			<br>	
-			<a href="http://code.google.com/p/webtronics"><img src="icons/logo.png"/></a>
+			<a href="http://code.google.com/p/webtronics" target="_blank"><img src="icons/logo.png"/></a>
+			<br>
+			<a href="http://www.gnucap.org/dokuwiki/doku.php?id=gnucap:start" target="_blank">GNUCAP</a>
+			<br>
+			<a href="https://github.com/kripken/emscripten" target="_blank">EMSCRIPTEN</a>
+			
+			
 		</div>
 
 
@@ -106,8 +112,8 @@ make chips
             </select>
          </fieldset>
     </form>
-    <img id="webtronics_chip_ok" src="./buttons/ok.png">
-    <img id="webtronics_chip_cancel" src="./buttons/cancel.png">
+    <img id="webtronics_chip_ok" class="normal_button" src="./buttons/ok.png">
+    <img id="webtronics_chip_cancel" class="normal_button" src="./buttons/cancel.png">
 </div>
 
 <!--
@@ -140,8 +146,8 @@ properties form
 
 </fieldset>
 <br/>
-<img id="webtronics_properties_ok" src="./buttons/ok.png"> 
-<img id="webtronics_properties_cancel" src="./buttons/cancel.png">
+<img id="webtronics_properties_ok" class="normal_button" src="./buttons/ok.png"> 
+<img id="webtronics_properties_cancel" class="normal_button" src="./buttons/cancel.png">
 </form>
 </div>
 
@@ -159,7 +165,7 @@ add code text
 image display
 -->
 <div id ="webtronics_image" class="modal">
-<img id="webtronics_image_ok" src="./buttons/ok.png"> 
+<img id="webtronics_image_ok" class="normal_button" src="./buttons/ok.png"> 
 <br>
 <div id='webtronics_image_div' >
 <img id="webtronics_image_save" >
@@ -180,17 +186,17 @@ netlist display
   
 * represents missing value
 </pre>
-<img id="webtronics_netlist_text_ok" src="./buttons/ok.png"> 
+<img id="webtronics_netlist_text_ok" class="normal_button" src="./buttons/ok.png"> 
+<img id="webtronics_netlist_text_run" class="normal_button" src="./buttons/run.png"> 
 </div>
 
 <!--
 simulation display
 -->
 <div id="webtronics_scope_display" class="modal" >
-<img id="webtronics_scope_display_ok" src="./buttons/ok.png"> 
-<div id="webtronics_scope_display_div">
-<img id="webtronics_scope_display_image">
-</div>
+<img id="webtronics_scope_display_ok" class="normal_button" src="./buttons/ok.png"> 
+<iframe id="webtronics_scope_display_iframe">
+</iframe>
 </div>
 
 </div>

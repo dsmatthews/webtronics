@@ -6,6 +6,30 @@
 //           also precalculate the size of the array needed.
 
 
+function openfile(Name){
+	var text;
+//console.log(Name);
+	new Ajax.Request(Name,{
+	method:'get',
+	asynchronous:false,
+	contentType:"text/xml",
+	onSuccess: function(transport){
+		/*this overrides the mimetype to xml for ie9*/
+		//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
+		text=transport.responseText;
+//return transport.responseText;
+		},
+	onFailure: function(){ 
+		console.log('Could not load file...'); 
+	},
+	onException: function(req,exception) {
+		console.log(exception);
+		return true;
+		}, 
+	});
+	return text;
+}
+
 function encode64(input) {
     if(window.btoa){
         return window.btoa(input);

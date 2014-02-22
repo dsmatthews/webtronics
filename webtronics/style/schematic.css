@@ -239,11 +239,7 @@ float:left;
 float:left;
 }
 #webtronics_netlist_text_div{
-	width:300px;
-	height:300px;
-	border:1px solid black;
-	background-color:#ffffff;
-    overflow:auto;
+    overflow:hide;
 }
 
 #webtronics_image{
@@ -365,5 +361,14 @@ div#webtronics_context_menu .enabled:hover{
     color:#ffffff;
 }
 
-
+div#webtronics_scope_display_iframe{
+   width:80%;
+   height:90%;
+  position:absolute;
+}
+div#webtronics_scope_display{
+   width:380px;
+   height:260px;
+  overflow: hidden;
+}
 

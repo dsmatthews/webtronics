@@ -17,7 +17,7 @@ var webtronics={
                     "op-amp":{
                         "lm324":[".inc lm324.mod"],
                         "lm358":[".inc lm358.mod"],
-                        "ua741":[".inc ua741.mod"]
+                        "741":[".inc ua741.mod",".inc lm741.mod"]
                         }
                 },
                 "digital":{
@@ -200,31 +200,6 @@ var webtronics={
 			} 
 			return xmlDoc;
 		},
-
-		openfile:function(Name){
-			var text;
-            //console.log(Name);
-			new Ajax.Request(Name,{
-			method:'get',
-			asynchronous:false,
-			contentType:"text/xml",
-			onSuccess: function(transport){
-				/*this overrides the mimetype to xml for ie9*/
-				//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-				text=transport.responseText;
-                //return transport.responseText;
-				},
-			onFailure: function(){ 
-				console.log('Could not load file...'); 
-			},
-			onException: function(req,exception) {
-				console.log(exception);
-				return true;
-				}, 
-			});
-			return text;
-		},
-
 
 
 		setsize:function(){
@@ -484,17 +459,19 @@ var webtronics={
         },
 
         formatnetlist:function(spice1,spice2){
-          var html=new Element('div');
-          if(spice2===null){
-                var lines=spice1.split('\n');
-                for(var i=0;i<lines.length;i++){
-                    html.insert(lines[i]);
-                    html.insert(new Element('br'));
-                }
-          }
-          return html;            
+          var html=new Element('textarea');
+	  html.id="webtronics_netlist_text_area";
+	  html.cols=40;
+	  html.rows=15;
+	  html.value=spice1;
+	  return html;            
         },
-        
+	spicenetlist:"",
+	gnucapjs:function(netlist){
+	  webtronics.spicenetlist=netlist;
+	  $("webtronics_scope_display_iframe").src="gnucapjs/gnucap.html";
+          $("webtronics_scope_display").style.display="block"
+	},
          postspice:function(spice){
             var text;
 			new Ajax.Request("spice.php",{
@@ -586,7 +563,8 @@ I want to preserve the css color for inverted diagrams in png
 			    window.console.log = function(){};
 		    }
             webtronics.setsize();
-            var menu;
+	    $('webtronics_scope_display_iframe').src="";
+	    var menu;
             $("webtronics_invert").checked=false;
             $("webtronics_graph").checked=false;
             $("webtronics_connections").checked=false;
@@ -676,7 +654,7 @@ I want to preserve the css color for inverted diagrams in png
   
                 for(var partname in webtronics.parts[cat]){
                     var part=new Element("div",{"id":"webtronics_"+partname,'style':"display:none",'title':partname})
-                                        .update(webtronics.openfile("symbols/"+cat+'/'+partname+'.svg'));
+                                        .update(openfile("symbols/"+cat+'/'+partname+'.svg'));
                        
 		            Event.observe(part,'mousedown',function(e){
 			            webtronics.circuit.unselect();
@@ -767,7 +745,7 @@ I want to preserve the css color for inverted diagrams in png
 				    });
 		    }
 		    if($('webtronics_netlist')){
-			    Event.observe($('webtronics_netlist'), 'click', function() {
+		    Event.observe($('webtronics_netlist'), 'click', function() {
 
                     var content=$$("#webtronics_netlist_text_div > *") 
                     for(var i=0;i<content.length;i++){
@@ -782,7 +760,8 @@ I want to preserve the css color for inverted diagrams in png
 		    }
             if($('webtronics_run')){
 			    Event.observe($('webtronics_run'), 'click', function() {
-                    webtronics.postspice(webtronics.circuit.createnetlist());
+//                    webtronics.postspice(webtronics.circuit.createnetlist());
+		      webtronics.gnucapjs(webtronics.circuit.createnetlist());
                 });
 
             }
@@ -879,7 +858,7 @@ I want to preserve the css color for inverted diagrams in png
                 $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
                 $("webtronics_chip_spice").value=$('webtronics_chip_spice_select').value;
                 if($('webtronics_chip_spice_select').value!="none"){
-                    div.update(webtronics.openfile("symbols/ic/"+webtronics.models[$('webtronics_chip_spice_select').value].image));
+                    div.update(openfile("symbols/ic/"+webtronics.models[$('webtronics_chip_spice_select').value].image));
                     var model=$("webtronics_chip_display").getElementsByTagName("g")[0];
                     webtronics.circuit.writewtx(model,"model",".inc "+$('webtronics_chip_spice_select').value);
                 }
@@ -918,6 +897,13 @@ I want to preserve the css color for inverted diagrams in png
                     webtronics.enablepage();
 			    });
             }  
+            if($("webtronics_netlist_text_run")){
+			    Event.observe($('webtronics_netlist_text_run'), 'click', function() {
+				    webtronics.gnucapjs($("webtronics_netlist_text_area").value);
+				    //$('webtronics_netlist_text').hide();
+				    //webtronics.enablepage();
+			    });
+            }  
      /*scope events*/
            if($("webtronics_scope_display")){
 			    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
@@ -954,6 +940,7 @@ I want to preserve the css color for inverted diagrams in png
 
 	
         }.bind(this));
+
     }
 }
 webtronics.init();

@@ -252,7 +252,13 @@ Schematic.prototype.mixedsignals=function(analogwires,digitalwires){
     return false;
 }
 
-
+/*return model file text*/
+Schematic.prototype.dumpmodel=function(model){
+  var name="../spice/"+ model.split(' ')[1];
+  var text= openfile(name);
+  return text;
+  
+}
 
 
 /* creates all netlist data from parts data*/
@@ -337,14 +343,16 @@ Schematic.prototype.createnetlist=function(){
     var partswtx=this.sortnetlist(this.getwtxdata(parts));
 	if(partswtx[0].type.toLowerCase()!='gnd')return 'no ground node';
 	this.connectwires(partswtx);
-	var spice="";
+	var spice=".title webtronics\n";
     var sections=this.getnodes(partswtx);
-	if(sections.firstdir.length){
+ /* 
+      if(sections.firstdir.length){
 		sections.firstdir=sections.firstdir.uniq();
 		for(var i=0;i<sections.firstdir.length;i++){
 			if(sections.firstdir[i]!="")spice=sections.firstdir[i]+"\n"+spice;
 		}
 	}
+*/
 	if(sections.netlist.length){
         var command="";
 		for(var i=0;i<sections.netlist.length;i++){
@@ -358,14 +366,17 @@ Schematic.prototype.createnetlist=function(){
             if(command!="")spice+=command+'\n';
 		}
 	}
-	if(sections.lastdir.length){
-		sections.lastdir=sections.lastdir.uniq();
-		for(var i=0;i<sections.lastdir.length;i++){
-			if(sections.lastdir[i]!="")spice+=sections.lastdir[i]+"\n";
+//dump models into spice	
+      if(sections.firstdir.length){
+		sections.firstdir=sections.firstdir.uniq();
+		for(var i=0;i<sections.firstdir.length;i++){
+			if(sections.firstdir[i]!=""){
+			  spice+=this.dumpmodel(sections.firstdir[i]);
+			}
 		}
 	}
 	if(sections.plot.length){
-		var command=".plot tran"
+		var command=".print tran"
 		for(var i=0;i<sections.plot.length;i++){
 /*digital*/
             if(sections.plot[i].toString().match('a')){
@@ -376,6 +387,13 @@ Schematic.prototype.createnetlist=function(){
         }
 		if(command!=null)spice+=command+"\n";
 	}
+	if(sections.lastdir.length){
+		sections.lastdir=sections.lastdir.uniq();
+		for(var i=0;i<sections.lastdir.length;i++){
+			if(sections.lastdir[i]!="")spice+=sections.lastdir[i]+"\n";
+		}
+	}
+
 	spice=spice.concat(".end \n");	
 	var connector=$$('#information > .namewire')
 	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
