@@ -5,14 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
     <style>
-    #gnucap_scope_display_div{
-      width:100%;
-      height:100%;
-    }
     </style>
     
     </head>
   <body bgcolor="white" >
+  <div id="gnucap_scope_display_div" >
+    <div class="emscripten" id="status">Downloading...</div>
+  </div>
     <script type='text/javascript'>
 var graph={
   parsegnucap:function(t){
@@ -83,8 +82,7 @@ var graph={
 	var x=parseInt(hsize*time);
 	var y =parseInt(vsize * (max-points[time][sample]));
 	if(isNaN(x)||isNaN(y)){
-	  graph.printerr(t);
-	  return;
+	  console.log(samples[time]);
 	}
 	if(time==0){
 	  line += " M0 "+ y;
@@ -94,7 +92,6 @@ var graph={
 	}
       }
       path.setAttributeNS(null,"d",line);		
-      console.log(colors[sample-1]);
       path.setAttributeNS(null,"stroke",colors[sample-1]);
       path.setAttributeNS(null,"stroke-width",1);
       path.setAttributeNS(null,"fill","none");
@@ -136,27 +133,22 @@ var graph={
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
       var simdata="";
-
       var Module = {
 	preRun: [function(){
 		  FS.writeFile("/temp",parent.webtronics.spicenetlist);
 		 }],
         postRun:[function(){
-		  console.log('test');
+		  //console.log('test');
 		 }],
 	arguments:["-b","/temp"],
-        print: (function() {
-	  return function(text) {
-            text = Array.prototype.slice.call(arguments).join(' ');
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
-            simdata += text + "\n";
-             };
-        })(),
-        printErr: function(text) {
+        print:function(text) {
+	    text = Array.prototype.slice.call(arguments).join(' ');
+	    simdata += text + "\n";
+// 	    if(text.match(/^\s[0-9.]+/)){
+// 	    statusElement.innerHTML += text+"<br>";
+// 	    }
+	    },
+	printErr: function(text) {
           text = Array.prototype.slice.call(arguments).join(' ');
           if (0) { // XXX disabled for safety typeof dump == 'function') {
             dump(text + '\n'); // fast, straight to the real console
@@ -167,7 +159,7 @@ var graph={
        },
 //        canvas: document.getElementById('canvas'),
         setStatus: function(text) {
-          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+	  if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.text) return;
           var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
           var now = Date.now();
@@ -177,7 +169,6 @@ var graph={
 //             progressElement.value = parseInt(m[2])*100;
 //             progressElement.max = parseInt(m[4])*100;
 //             progressElement.hidden = false;
-//             spinnerElement.hidden = false;
           } else {
 //             progressElement.value = null;
 //             progressElement.max = null;
@@ -185,17 +176,15 @@ var graph={
 
 //code is finished
 	      if (!text){
+		document.getElementById('gnucap_scope_display_div').innerHTML='';
 		graph.parsegnucap(simdata);
-	      }
+		}
           }
-//	    statusElement.innerHTML = text;
+	    statusElement.innerHTML = text;
         },
       };
       Module.setStatus('Downloading...');
-      
   </script>
-  <div id="gnucap_scope_display_div" >
   <script async type="text/javascript" src="gnucap-ugly.js" ></script>
-  </div>
   </body>
 </html>
