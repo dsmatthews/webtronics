@@ -5,13 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
     <style>
+      #gnucap_scope_display_div{
+      
+	background-color:#ffffff;
+      
+      }
     </style>
-    
     </head>
   <body bgcolor="white" >
-  <div id="gnucap_scope_display_div" >
-    <div class="emscripten" id="status">Downloading...</div>
-  </div>
+  <div id="gnucap_scope_display_div" >Downloading...</div>
     <script type='text/javascript'>
 var graph={
   parsegnucap:function(t){
@@ -59,9 +61,11 @@ var graph={
     colors=["red","blue","green","gold","hotpink","orange"];
     element.innerHTML="";
     var svgRoot=document.createElementNS(svgNamespace, "svg");
+    var width=320;
+    var height=220;
     svgRoot.setAttribute("xmlns",svgNamespace);
-    svgRoot.setAttributeNS(null, 'width','320');
-    svgRoot.setAttributeNS(null, 'height','240');
+    svgRoot.setAttributeNS(null, 'width',width);
+    svgRoot.setAttributeNS(null, 'height',height+20);
     var graphG=document.createElementNS(svgNamespace, 'g');
     
     var min=points[0][1];
@@ -73,8 +77,8 @@ var graph={
 	max=Math.max(max,points[i][j]);
       }
     }
-    var hsize=svgRoot.getAttribute('width')/points.length;
-    var vsize=svgRoot.getAttribute('height')/(max-min);
+    var hsize=width/points.length;
+    var vsize=height/(max-min);
     for(var sample=1;sample<points[0].length;sample++){
       path=document.createElementNS(svgNamespace, "path");
       var line="";
@@ -129,7 +133,7 @@ var graph={
  }
   
   
-      var statusElement = document.getElementById('status');
+      var statusElement = document.getElementById('gnucap_scope_display_div');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
       var simdata="";
@@ -164,6 +168,7 @@ var graph={
           var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
           var now = Date.now();
           if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+	  statusElement.innerHTML = text;
           if (m) {
             text = m[1];
 //             progressElement.value = parseInt(m[2])*100;
@@ -176,11 +181,9 @@ var graph={
 
 //code is finished
 	      if (!text){
-		document.getElementById('gnucap_scope_display_div').innerHTML='';
 		graph.parsegnucap(simdata);
 		}
           }
-	    statusElement.innerHTML = text;
         },
       };
       Module.setStatus('Downloading...');
