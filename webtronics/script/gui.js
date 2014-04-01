@@ -99,7 +99,7 @@ var webtronics={
                 "diodes":{
                     "diode":{
                         "1n4148":[".inc models.lib"],
-                        "1n4007":[".inc models.lib"]
+                        "1n4007":[".inc models.lib"],
                         "1n34a":[".inc models.lib"]
                     },
                     "led":{},
