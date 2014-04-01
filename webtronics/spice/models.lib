@@ -6,6 +6,10 @@
 .model 1n4148   D(Is=5.84n N=1.94 Rs=.7017 Ikf=44.17m Xti=3 Eg=1.11 Cjo=.95p
 +               M=.55 Vj=.75 Fc=.5 Isr=11.07n Nr=2.088 Bv=100 Ibv=100u Tt=11.07n)
 
+.MODEL 1N34A D(bv=75 cjo=0.5e-12 eg=0.67 ibv=18e-3
++                is=2e-7 rs=7 n=1.3 vj=0.1 m=0.27 )
+
+
 .model 2N3904   NPN(Is=6.734f Xti=3 Eg=1.11 Vaf=74.03 Bf=416.4 Ne=1.259
 +               Ise=6.734f Ikf=66.78m Xtb=1.5 Br=.7371 Nc=2 Isc=0 Ikr=0 Rc=1
 +               Cjc=3.638p Mjc=.3085 Vjc=.75 Fc=.5 Cje=4.493p Mje=.2593 Vje=.75
