@@ -15,7 +15,7 @@
   <body bgcolor="white" >
   <div id="gnucap_scope_display_div" >Downloading...</div>
     <script type='text/javascript'>
-var graph={
+  var graph={
   parsegnucap:function(t){
   console.log(t);
   var points = [];
@@ -131,63 +131,22 @@ var graph={
     
     },
  }
-  
-  
-      var statusElement = document.getElementById('gnucap_scope_display_div');
-      var progressElement = document.getElementById('progress');
-      var spinnerElement = document.getElementById('spinner');
       var simdata="";
-      var Module = {
-	preRun: [function(){
-		  FS.writeFile("/temp",parent.webtronics.spicenetlist);
-		 }],
-        postRun:[function(){
-		  //console.log('test');
-		 }],
-	arguments:["-b","/temp"],
-        print:function(text) {
-	    text = Array.prototype.slice.call(arguments).join(' ');
-	    simdata += text + "\n";
-// 	    if(text.match(/^\s[0-9.]+/)){
-// 	    statusElement.innerHTML += text+"<br>";
-// 	    }
-	    },
-	printErr: function(text) {
-          text = Array.prototype.slice.call(arguments).join(' ');
-          if (0) { // XXX disabled for safety typeof dump == 'function') {
-            dump(text + '\n'); // fast, straight to the real console
-          } else {
-            console.log(text);
-          }
-	      
-       },
-//        canvas: document.getElementById('canvas'),
-        setStatus: function(text) {
-	  if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-          if (text === Module.setStatus.text) return;
-          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-          var now = Date.now();
-          if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
-	  statusElement.innerHTML = text;
-          if (m) {
-            text = m[1];
-//             progressElement.value = parseInt(m[2])*100;
-//             progressElement.max = parseInt(m[4])*100;
-//             progressElement.hidden = false;
-          } else {
-//             progressElement.value = null;
-//             progressElement.max = null;
-//             progressElement.hidden = true;
-
-//code is finished
-	      if (!text){
-		graph.parsegnucap(simdata);
-		}
-          }
-        },
+      var statusElement = document.getElementById('gnucap_scope_display_div');
+      var gnucapWorker = new Worker("gnucap-io.js");
+      gnucapWorker.onmessage = function (oEvent) {
+	if(oEvent.data=="SIMULATION COMPLETED"){
+	  graph.parsegnucap(simdata);
+	}
+	else{
+	  simdata += oEvent.data;
+	  statusElement.innerHTML=(oEvent.data.match(/\d+\S*/));
+	  }
       };
-      Module.setStatus('Downloading...');
-  </script>
-  <script async type="text/javascript" src="gnucap-ugly.js" ></script>
+      var spicenetlist= parent.webtronics.spicenetlist;
+      gnucapWorker.postMessage(spicenetlist); // start the worker.
+
+      </script>
+  <!--script async type="text/javascript" src="gnucap-ugly.js" ></script-->
   </body>
 </html>
