@@ -28,7 +28,7 @@
         var samples=text.split('\n');
         }
         catch(e){
-        graph.printerr(t);
+        //graph.printerr(t);
         return;
         }
     for(var i=0;i<samples.length;i++){
@@ -60,10 +60,8 @@
         }
       }
     }
-    var element=document.getElementById("gnucap_scope_display_div");
     var svgNamespace = 'http://www.w3.org/2000/svg';
     colors=["red","blue","green","gold","hotpink","orange"];
-    element.innerHTML="";
     var width=320;
     var height=220;
     var graphG=document.createElementNS(svgNamespace, 'g');
@@ -77,6 +75,7 @@
         max=Math.max(max,points[i][j]);
       }
     }
+    if(isNaN(min)||isNaN(max))return;
     var hsize=width/points.length;
     var vsize=height/(max-min);
     for(var sample=1;sample<points[0].length;sample++){
@@ -150,7 +149,13 @@
 	}
 	if(oEvent.data=="SIMULATION COMPLETED"){
 	    var svg=graph.parsegnucap(simdata);
-	    if(svg!=undefined)statusElement.appendChild(svg);
+	    if(svg!=undefined){
+	      statusElement.innerHTML="";
+	      statusElement.appendChild(svg);
+	    }
+	    else{
+	      outputtext.value+="COULD NOT PARSE OUTPUT DATA";
+	    }
 	}
 	else{
 	  simdata += oEvent.data;
