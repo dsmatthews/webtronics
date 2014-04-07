@@ -8,11 +8,15 @@
       #gnucap_scope_display_div{
       
 	background-color:#ffffff;
-      
+	overflow:hidden;
+	width:320px;
+	height:240px;
       }
       #statusElement{
       border-width:0;
       padding:0;
+	width:100%;
+	height:100%;
       }
     </style>
     </head>
@@ -127,16 +131,6 @@
           return svg;
   },
  
-   printerr:function(t){
-    var element=document.getElementById("gnucap_scope_display_div");
-    var text = document.createElement("textarea");
-    text.cols=48;
-    text.rows=32;
-    text.value=t;
-    element.appendChild(text);
-   
-   
-    },
  }
       var simdata="";
       var statusElement = document.getElementById('gnucap_scope_display_div');
@@ -147,8 +141,6 @@
       gnucapWorker.onmessage = function (oEvent) {
 	if(simdata==""){
 	  statusElement.textContent="";
-	  outputtext.cols = 48;
-	  outputtext.rows = 32;
 	  outputtext.id="statusElement";
 	  statusElement.appendChild( outputtext );
 	}
