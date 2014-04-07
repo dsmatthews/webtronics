@@ -31,10 +31,13 @@
         //graph.printerr(t);
         return;
         }
+    var k=0;
     for(var i=0;i<samples.length;i++){
+// if first character is not a digit skip this line
+      //if(samples[i].match(/^\s*\d/)==null)continue;
       var s = samples[i].match(/\S+/g);
       if(s!=null){
-        points[i]=[];
+        points[k]=[];
         for(var j=0;j<s.length;j++){
 //convert micro
           if(s[j][s[j].length-1]=='u'){
@@ -56,9 +59,10 @@
             s[j].replace('f','');
             s[j]=parseFloat(s[j])*0.00000000000001;
           }
-          points[i][j]=parseFloat(s[j]);
+          points[k][j]=parseFloat(s[j]);
         }
       }
+      k++;
     }
     var svgNamespace = 'http://www.w3.org/2000/svg';
     colors=["red","blue","green","gold","hotpink","orange"];
@@ -137,8 +141,9 @@
       var simdata="";
       var statusElement = document.getElementById('gnucap_scope_display_div');
       var outputtext = document.createElement("textarea");
-      
       var gnucapWorker = new Worker("gnucap-io.js");
+      var newtext = "";
+      var timer=undefined;
       gnucapWorker.onmessage = function (oEvent) {
 	if(simdata==""){
 	  statusElement.textContent="";
@@ -154,15 +159,27 @@
 	      statusElement.appendChild(svg);
 	    }
 	    else{
-	      outputtext.value+="COULD NOT PARSE OUTPUT DATA";
-	    }
+		newtext+="COULD NOT PARSE OUTPUT DATA";
+		updatetext();
+
+		}
 	}
 	else{
 	  simdata += oEvent.data;
-	  outputtext.value+=oEvent.data;
-	  outputtext.scrollTop = outputtext.scrollHeight + outputtext.clientHeight;
+	  newtext+=oEvent.data;
+	  updatetext();
 	}
-      };
+      }
+//limit update rate
+      function updatetext(){
+      	  if(timer==undefined)timer=setTimeout(function(){
+			      outputtext.value+=newtext;
+			      outputtext.scrollTop = outputtext.scrollHeight + outputtext.clientHeight;
+			      timer=undefined;
+			      newtext=""},500);
+      }
+      
+      
       var spicenetlist= parent.webtronics.spicenetlist;
       gnucapWorker.postMessage(spicenetlist); // start the worker.
 

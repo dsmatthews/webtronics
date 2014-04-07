@@ -14,6 +14,16 @@
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
     <wtx:pins>
 		<wtx:analog>
+<!--
+all opamp models must be in this order
+* CONNECTIONS:   NON-INVERTING INPUT
+*                | INVERTING INPUT
+*                | | POSITIVE POWER SUPPLY
+*                | | | NEGATIVE POWER SUPPLY
+*                | | | | OPEN COLLECTOR OUTPUT
+*                | | | | |
+.SUBCKT LM339    1 2 3 4 5
+-->
 			<wtx:node index="1" x="0" y="10"/>
 			<wtx:node index="2" x="0" y="50"/>
 			<wtx:node index="3" x="30" y="0"/>

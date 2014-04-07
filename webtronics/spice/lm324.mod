@@ -1,120 +1,70 @@
-
-
-*//////////////////////////////////////////////////////////////////////
-* (C) National Semiconductor, Inc.
-* Models developed and under copyright by:
-* National Semiconductor, Inc.  
-
-*/////////////////////////////////////////////////////////////////////
-* Legal Notice: This material is intended for free software support.
-* The file may be copied, and distributed; however, reselling the 
-*  material is illegal
-
-*////////////////////////////////////////////////////////////////////
-* For ordering or technical information on these models, contact:
-* National Semiconductor's Customer Response Center
-*                 7:00 A.M.--7:00 P.M.  U.S. Central Time
-*                                (800) 272-9959
-* For Applications support, contact the Internet address:
-*  amps-apps@galaxy.nsc.com
-
-*//////////////////////////////////////////////////////////
-*LM324 Low Power Quad OPERATIONAL AMPLIFIER MACRO-MODEL
-*//////////////////////////////////////////////////////////
+* WARNING : please consider following remarks before usage
 *
-* connections:      non-inverting input
-*                   |   inverting input
-*                   |   |   positive power supply
-*                   |   |   |   negative power supply
-*                   |   |   |   |   output
-*                   |   |   |   |   |
-*                   |   |   |   |   |
-.SUBCKT LM324    1   2  99  50  28
+* 1) All models are a tradeoff between accuracy and complexity (ie. simulation 
+*    time).
+* 2) Macromodels are not a substitute to breadboarding, they rather confirm the
+*    validity of a design approach and help to select surrounding component values.
 *
-*Features:
-*Eliminates need for dual supplies
-*Large DC voltage gain =             100dB
-*High bandwidth =                     1MHz
-*Low input offset voltage =            2mV
-*Wide supply range =        +-1.5V to +-16V
+* 3) A macromodel emulates the NOMINAL performance of a TYPICAL device within 
+*    SPECIFIED OPERATING CONDITIONS (ie. temperature, supply voltage, etc.).
+*    Thus the macromodel is often not as exhaustive as the datasheet, its goal
+*    is to illustrate the main parameters of the product.
 *
-*NOTE: Model is for single device only and simulated
-*      supply current is 1/4 of total device current.
-*      Output crossover distortion with dual supplies
-*      is not modeled.
+* 4) Data issued from macromodels used outside of its specified conditions
+*    (Vcc, Temperature, etc) or even worse: outside of the device operating 
+*    conditions (Vcc, Vicm, etc) are not reliable in any way.
 *
-****************INPUT STAGE**************
 *
-IOS 2 1 5N
-*^Input offset current
-R1 1 3 500K
-R2 3 2 500K
-I1 99 4 100U
-R3 5 50 517
-R4 6 50 517
-Q1 5 2 4 QX
-Q2 6 7 4 QX
-*Fp2=1.2 MHz
-C4 5 6 128.27P
-*
-***********COMMON MODE EFFECT***********
-*
-I2 99 50 75U
-*^Quiescent supply current
-EOS 7 1 POLY(1) 16 49 2E-3 1
-*Input offset voltage.^
-R8 99 49 60K
-R9 49 50 60K
-*
-*********OUTPUT VOLTAGE LIMITING********
-V2 99 8 1.63
-D1 9 8 DX
-D2 10 9 DX
-V3 10 50 .635
-*
-**************SECOND STAGE**************
-*
-EH 99 98 99 49 1
-G1 98 9 POLY(1) 5 6 0 9.8772E-4 0 .3459
-*Fp1=7.86 Hz
-R5 98 9 101.2433MEG
-C3 98 9 200P
-*
-***************POLE STAGE***************
-*
-*Fp=2 MHz
-G3 98 15 9 49 1E-6
-R12 98 15 1MEG
-C5 98 15 7.9577E-14
-*
-*********COMMON-MODE ZERO STAGE*********
-*
-*Fpcm=10 KHz
-G4 98 16 3 49 5.6234E-8               
-L2 98 17 15.9M
-R13 17 16 1K
-*
-**************OUTPUT STAGE**************
-*
-F6 50 99 POLY(1) V6 300U 1
-E1 99 23 99 15 1
-R16 24 23 17.5
-D5 26 24 DX
-V6 26 22 .63V
-R17 23 25 17.5
-D6 25 27 DX
-V7 22 27 .63V
-V5 22 21 0.27V
-D4 21 15 DX
-V4 20 22 0.27V
-D3 15 20 DX
-L3 22 28 500P
-RL3 22 28 100K
-*
-***************MODELS USED**************
-*
-.MODEL DX D(IS=1E-15)
-.MODEL QX PNP(BF=1.111E3)
-*
+** Standard Linear Ics Macromodels, 1993. 
+** CONNECTIONS :
+* 1 INVERTING INPUT
+* 2 NON-INVERTING INPUT
+* 3 OUTPUT
+* 4 POSITIVE POWER SUPPLY
+* 5 NEGATIVE POWER SUPPLY
+.SUBCKT LM324 2 1 4 5 3
+***************************
+.MODEL MDTH D IS=1E-8 KF=3.104131E-15 CJO=10F
+* INPUT STAGE
+CIP 2 5 1.000000E-12
+CIN 1 5 1.000000E-12
+EIP 10 5 2 5 1
+EIN 16 5 1 5 1
+RIP 10 11 2.600000E+01
+RIN 15 16 2.600000E+01
+RIS 11 15 2.003862E+02
+DIP 11 12 MDTH 400E-12
+DIN 15 14 MDTH 400E-12
+VOFP 12 13 DC 0 
+VOFN 13 14 DC 0
+IPOL 13 5 1.000000E-05
+CPS 11 15 3.783376E-09
+DINN 17 13 MDTH 400E-12
+VIN 17 5 0.000000e+00
+DINR 15 18 MDTH 400E-12
+VIP 4 18 2.000000E+00
+FCP 4 5 VOFP 3.400000E+01
+FCN 5 4 VOFN 3.400000E+01
+FIBP 2 5 VOFN 2.000000E-03
+FIBN 5 1 VOFP 2.000000E-03
+* AMPLIFYING STAGE
+FIP 5 19 VOFP 3.600000E+02
+FIN 5 19 VOFN 3.600000E+02
+RG1 19 5 3.652997E+06
+RG2 19 4 3.652997E+06
+CC 19 5 6.000000E-09
+DOPM 19 22 MDTH 400E-12
+DONM 21 19 MDTH 400E-12
+HOPM 22 28 VOUT 7.500000E+03
+VIPM 28 4 1.500000E+02
+HONM 21 27 VOUT 7.500000E+03
+VINM 5 27 1.500000E+02
+EOUT 26 23 19 5 1
+VOUT 23 5 0
+ROUT 26 3 20
+COUT 3 5 1.000000E-12
+DOP 19 25 MDTH 400E-12
+VOP 4 25 2.242230E+00
+DON 24 19 MDTH 400E-12
+VON 24 5 7.922301E-01
 .ENDS
-*$
