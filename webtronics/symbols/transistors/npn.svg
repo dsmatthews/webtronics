@@ -5,6 +5,7 @@
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
     <wtx:pins>
         <wtx:analog>
+	  <!--spice order for transistors is collector base emmitter-->	  
             <wtx:node index="1" x="30" y="0" />
             <wtx:node index="2" x="0" y="20" />
             <wtx:node index="3" x="30" y="40" />

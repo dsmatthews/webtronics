@@ -17,7 +17,6 @@
 <metadata class="part" >
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
     <wtx:pins>
-    <wtx:pins>
 		<wtx:analog>
 			<wtx:node index="1" x="0" y="10"/>
 			<wtx:node index="2" x="40" y="10"/>

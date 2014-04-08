@@ -23,7 +23,8 @@
   <body bgcolor="white" >
   <div id="gnucap_scope_display_div" >Downloading...</div>
     <script type='text/javascript'>
-  var graph={
+
+    var graph={
   parsegnucap:function(t){
   console.log(t);
   var points = [];
@@ -73,7 +74,7 @@
     var width=320;
     var height=220;
     var graphG=document.createElementNS(svgNamespace, 'g');
-   
+
     var min=points[0][1];
     var max=points[0][1];
   //calculate max and min height

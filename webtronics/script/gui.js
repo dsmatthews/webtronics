@@ -473,7 +473,7 @@ var webtronics={
 /*add a new frame */
 	  $('webtronics_scope_display_div').innerHTML='';
           var frame=new Element('iframe',{id:'webtronics_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
-         $('webtronics_scope_display_div').insert(frame);
+	  $('webtronics_scope_display_div').insert(frame);
           $("webtronics_scope_display").style.display="block"
 	},
 /*
@@ -914,7 +914,8 @@ I want to preserve the css color for inverted diagrams in png
 			    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
 				    $('webtronics_scope_display').hide();
-//                    webtronics.enablepage();
+				    $('webtronics_scope_display_div').innerHTML="";
+				    //                    webtronics.enablepage();
                 });
                 Event.observe($("webtronics_scope_display"),'mousedown',function(e){
                        var startx=e.layerX;
