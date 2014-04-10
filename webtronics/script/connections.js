@@ -263,18 +263,32 @@ Schematic.prototype.dumpmodel=function(model){
 
 /* creates all netlist data from parts data*/
 Schematic.prototype.getnodes=function(parts){
-    var sections={firstdir:[],netlist:[],lastdir:[],plot:[]};    
-	var digitalcount=1;
+    var sections={netlist:[],firstdir:[],simulation:[],lastdir:[]};    
+    var trannodes=[];
+    var digitalcount=1;
     var analogcount=1;
-	var digitalwires=[];
-	var analogwires=[];
+    var digitalwires=[];
+    var analogwires=[];
     for(var i=0;i<parts.length; i++){
         if(parts[i].type=="wire")continue;
-        if(parts[i].type=="plot")sections.lastdir.push(parts[i].model);
-        else sections.firstdir.push(parts[i].model);
+// check what type of simulation to use
+	if(parts[i].type=="plot"){
+	  if(sections.simulation.length==0 && parts[i].model.length){
+	    sections.simulation.push(parts[i].model);
+	  }
+	}
+	else if(parts[i].type=="v"){
+	  if(sections.simulation.length==0 && parts[i].model.length){
+	      sections.simulation.push(".op");
+	      sections.simulation.push(".print ac i("+parts[i].id+")");
+	      sections.simulation.push(parts[i].model);
+	  }
+	}
+	else sections.firstdir.push(parts[i].model);
         var net={error:parts[i].error,partid:parts[i].id,pins:[],model:parts[i].value};
         var nodes=this.getwtxtagname(parts[i].elem,"node");        
-        for(var j=0;j<nodes.length;j++){
+//node numbering loop
+	for(var j=0;j<nodes.length;j++){
             var point={x:this.getwtxattribute(nodes[j],"x"),y:this.getwtxattribute(nodes[j],"y")};
             point=this.matrixxform(point,this.parseMatrix(parts[i].elem));
             var wire=this.followwires(null,point);
@@ -316,19 +330,40 @@ Schematic.prototype.getnodes=function(parts){
             }        
 
         }
+//after all wires are numbered check which ones are plotted
         if(parts[i].type=="plot"){
             var point={x:this.getwtxattribute(nodes[0],"x"),y:this.getwtxattribute(nodes[0],"y")};
             point=this.matrixxform(point,this.parseMatrix(parts[i].elem));
             var wire=this.followwires(null,point);
             var found=this.getconnected(analogwires,wire);
-            if(found>-1){sections.plot.push(found);}
+            if(found>-1){trannodes.push(found);}
             else {
                 var found=this.getconnected(digitalwires,wire);
-                if(found>-1){sections.plot.push("a"+found);}
+                if(found>-1){trannodes.push("a"+found);}
             }
         }
         else if(net!=null)sections.netlist.push(net);
 	}
+//create tran print nodes
+    if(sections.simulation.length==1){
+      for(var i=0;i<trannodes.length;i++){
+	  var command=".print tran"
+	  for(var i=0;i<trannodes.length;i++){
+  /*digital*/
+	      if(trannodes[i].toString().match('a')){
+		  command+=" "+trannodes[i];
+	      }
+  /*analog*/
+	      else{command+=" v("+trannodes[i]+")"}    
+	  }
+	
+      }
+	  if(command!=null){
+	    sections.simulation.unshift(command);
+	    sections.simulation.unshift(".op");
+	  }
+      
+    }
     if(this.mixedsignals(analogwires,digitalwires)){
         return {firstdir:[],netlist:[{error:"pin is both analog and digital"}],lastdir:[],plot:[]};
     }
@@ -375,17 +410,11 @@ Schematic.prototype.createnetlist=function(){
 			}
 		}
 	}
-	if(sections.plot.length){
-		var command=".print tran"
-		for(var i=0;i<sections.plot.length;i++){
-/*digital*/
-            if(sections.plot[i].toString().match('a')){
-                command+=" "+sections.plot[i];
-            }
-/*analog*/
-            else{command+=" v("+sections.plot[i]+")"}    
-        }
-		if(command!=null)spice+=command+"\n";
+	if(sections.simulation.length){
+	var command=".print tran"
+		for(var i=0;i<sections.simulation.length;i++){
+			if(sections.simulation[i]!="")spice+=sections.simulation[i]+"\n";
+		}
 	}
 	if(sections.lastdir.length){
 		sections.lastdir=sections.lastdir.uniq();

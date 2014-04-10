@@ -137,7 +137,17 @@ var webtronics={
                     "crystal":{}
                 },
                 "inductors":{
-                    "coil":{},
+                    "coil":{
+		      "1h":[""],
+		      "100mh":[""],
+		      "10mh":[""],
+		      "1mh":[""],
+		      "100uh":[""],
+		      "10uh":[""],
+		      "100nh":[""],
+		      "10nh":[""],
+		      "1h":[""]
+		    },
                     "tapcoil":{},
                     "transformer":{}
                 },
@@ -148,8 +158,8 @@ var webtronics={
                         "SIN(0 120 60HZ)":[""],
                         "PWL(0 0 10ns 0 10ns 5 20ns 5)R=0":[""],
                         "PULSE(−1 1 2NS 2NS 2NS 50NS 100NS )":[""],
-                        "SFFM( 0 1V 20K 5 1K)":[""]                    
-                        
+                        "SFFM( 0 1V 20K 5 1K)":[""],                    
+                        "AC 1 SIN":[".ac lin 20 100 200 ",]
                     },
                     "battery":{
                         "dc 5v":[""],
