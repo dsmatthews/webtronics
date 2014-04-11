@@ -88,7 +88,9 @@ var webtronics={
                     "pnp":{
                         "2n3906":[".inc models.lib"]
                     },
-                    "nmosfet":{},
+                    "nmosfet":{
+		      "2n7000":["inc 2n7000.mod"]
+		    },
                     "phototrans":{},
                     "pmosfet":{}
                 },

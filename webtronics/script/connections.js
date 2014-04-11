@@ -82,7 +82,7 @@ Schematic.prototype.sortnetlist=function(list){
 		else if(list[i].type=='r'){
 			R.push(list[i]);
 		}
-		else if(list[i].type=='xu'){	
+		else if(list[i].type=='u'){	
 			U.push(list[i]);
 		}
 /* this is the best way I could think to tell if a part i digital */
@@ -284,7 +284,11 @@ Schematic.prototype.getnodes=function(parts){
 	      sections.simulation.push(parts[i].model);
 	  }
 	}
-	else sections.firstdir.push(parts[i].model);
+	else{
+	  if(parts[i].model.match(/\.mod/i) && !parts[i].id.match(/^x/))parts[i].id="x"+parts[i].id;
+	  sections.firstdir.push(parts[i].model);
+	  
+	}
         var net={error:parts[i].error,partid:parts[i].id,pins:[],model:parts[i].value};
         var nodes=this.getwtxtagname(parts[i].elem,"node");        
 //node numbering loop
