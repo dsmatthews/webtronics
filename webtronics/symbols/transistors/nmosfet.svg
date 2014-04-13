@@ -10,7 +10,7 @@
   <g  connects="0,20;30,0;30,40"
 	stroke='black'
 	stroke-width='2px' 
-     id="Q"
+     id="m"
     class="nmosfet"
 	flippable="true"
 	>
@@ -18,13 +18,16 @@
 <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
     <wtx:pins>
         <wtx:analog>
-            <wtx:node index="1" x="30" y="0" />
+<!--pin order is gate drain source substrate 
+substrate is connected to source-->
+	    <wtx:node index="1" x="30" y="0" />
             <wtx:node index="2" x="0" y="20" />
             <wtx:node index="3" x="30" y="40" />
+            <wtx:node index="4" x="30" y="40" />
         </wtx:analog>
     </wtx:pins>
-    <wtx:id>q</wtx:id>
-    <wtx:type>q</wtx:type>
+    <wtx:id>m</wtx:id>
+    <wtx:type>m</wtx:type>
     <wtx:name>nmosfet</wtx:name>
     <wtx:category>transistors</wtx:category>
     <wtx:value></wtx:value>

@@ -11,8 +11,8 @@
 
 
 .MODEL 1N5711 D IS=5.5987E-9 N=1.0023 RS=30.053 IKF=19.036 CJO=1.7605E-12
-+ M=.20029 VJ=.3905 ISR=24.229E-9 NR=4.1695 FC=0.5 TT=0 XTI=2
-*$
++               M=.20029 VJ=.3905 ISR=24.229E-9 NR=4.1695 FC=0.5 TT=0 XTI=2
+*               $
 
 .model 2N3904   NPN(Is=6.734f Xti=3 Eg=1.11 Vaf=74.03 Bf=416.4 Ne=1.259
 +               Ise=6.734f Ikf=66.78m Xtb=1.5 Br=.7371 Nc=2 Isc=0 Ikr=0 Rc=1
@@ -31,4 +31,18 @@
 +               Vjc=1.006 Fc=.5 Cje=10.39p Mje=.6931 Vje=.9937 Tr=10n Tf=181.2p
 +               Itf=4.881m Xtf=.7939 Vtf=10 Rb=10)
 
+
+.MODEL 2N7000   NMOS (LEVEL=3   RS=0.205           NSUB=1.0E15
++               DELTA=0.1      KAPPA=0.0506    TPG=1              CGDO=3.1716E-9
++               RD=0.239       VTO=1.000       VMAX=1.0E7         ETA=0.0223089
++               NFS=6.6E10     TOX=1.0E-7      LD=1.698E-9        UO=862.425
++               XJ=6.4666E-7   THETA=1.0E-5    CGSO=9.09E-9       L=2.5E-6
++               W=0.8E-2)
+
+.MODEL 2N7002   NMOS (LEVEL=3   RS=0.0405          NSUB=1.0E15
++               DELTA=0.1      KAPPA=0.0506    TPG=1              CGDO=6.1716E-10
++               RD=1.22        VTO=2.00        VMAX=1.0E7         ETA=0.0223089
++               NFS=6.6E10     TOX=1.0E-7      LD=1.698E-9        UO=862.425
++               XJ=6.4666E-7   THETA=1.0E-5    CGSO=9.10E-9       L=2.5E-6
++               W=0.5E-2)
 

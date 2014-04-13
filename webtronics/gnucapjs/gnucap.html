@@ -31,6 +31,8 @@
       try{      
 	var text = t.split(/(#Time|#Freq).*\n/);
 	text=text[text.length-1];
+ 	var plots= t.match(/(#Time|#Freq).*\n/);
+ 	plots=plots[0].split(/\s+/);
         var samples=text.split('\n');
         }
         catch(e){
@@ -114,8 +116,12 @@
     svgRoot.setAttribute("xmlns",svgNamespace);
     svgRoot.setAttributeNS(null, 'width',width);
     svgRoot.setAttributeNS(null, 'height',height+20);
-    svgRoot.appendChild(graph.createtext("min="+min+" max="+max,"black",10,svgRoot.getAttribute('height')-12));
-    svgRoot.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],"black",10,svgRoot.getAttribute('height')));  
+//add the text
+    for(var i=1;i<plots.length;i++){
+      svgRoot.appendChild(graph.createtext(plots[i],colors[i-1],0,i*12));
+    }
+    svgRoot.appendChild(graph.createtext("min="+min+" max="+max,"black",0,svgRoot.getAttribute('height')-12));
+    svgRoot.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],"black",0,svgRoot.getAttribute('height')));  
     svgRoot.appendChild(graphG);
     return svgRoot;
   },

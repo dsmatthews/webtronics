@@ -35,6 +35,7 @@ Schematic.prototype.sortnetlist=function(list){
 	var K=[];
 	var L=[];
 	var M=[];
+	var N=[];
 	var P=[];
 	var Q=[];
 	var R=[];
@@ -72,6 +73,9 @@ Schematic.prototype.sortnetlist=function(list){
 		}
 		else if(list[i].type=='m'){
 			M.push(list[i]);
+		}
+		else if(list[i].type=='n'){
+			N.push(list[i]);
 		}
 		else if(list[i].type=='plot'){
 			P.push(list[i]);
@@ -111,6 +115,7 @@ Schematic.prototype.sortnetlist=function(list){
 	K.sort(sortfunction);
 	L.sort(sortfunction);
 	M.sort(sortfunction);
+	N.sort(sortfunction);
 	P.sort(sortfunction);
 	Q.sort(sortfunction);
 	R.sort(sortfunction);
@@ -129,6 +134,7 @@ Schematic.prototype.sortnetlist=function(list){
 	K.each(function(item){newlist.push(item)});		
 	L.each(function(item){newlist.push(item)});		
 	M.each(function(item){newlist.push(item)});		
+	N.each(function(item){newlist.push(item)});		
 	Q.each(function(item){newlist.push(item)});		
 	R.each(function(item){newlist.push(item)});		
 	U.each(function(item){newlist.push(item)});		

@@ -1,5 +1,3 @@
-
-
 * 2N7000 model
 * External Node Designations
 * Node 1 -> Drain

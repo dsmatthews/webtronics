@@ -89,7 +89,7 @@ var webtronics={
                         "2n3906":[".inc models.lib"]
                     },
                     "nmosfet":{
-		      "2n7000":["inc 2n7000.mod"]
+		      "2n7000":["inc 2n7000.mod",".inc models.lib"]
 		    },
                     "phototrans":{},
                     "pmosfet":{}
@@ -102,7 +102,8 @@ var webtronics={
                     "diode":{
                         "1n4148":[".inc models.lib"],
                         "1n4007":[".inc models.lib"],
-                        "1n34a":[".inc models.lib"]
+                        "1n34a":[".inc models.lib"],
+			"1n5711":[".inc models.lib"]
                     },
                     "led":{},
                     "photodiode":{},
