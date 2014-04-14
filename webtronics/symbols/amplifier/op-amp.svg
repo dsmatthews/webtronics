@@ -32,7 +32,7 @@ all opamp models must be in this order
 		</wtx:analog>
     </wtx:pins>
     <wtx:id>u</wtx:id>
-    <wtx:type>xu</wtx:type>
+    <wtx:type>u</wtx:type>
     <wtx:name>op-amp</wtx:name>
     <wtx:category>amplifier</wtx:category>
     <wtx:value></wtx:value>
