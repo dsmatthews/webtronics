@@ -6,17 +6,18 @@
 //           also precalculate the size of the array needed.
 
 
-function openfile(Name){
+function openfile(Name,response){
 	var text;
 //console.log(Name);
 	new Ajax.Request(Name,{
 	method:'get',
-	asynchronous:false,
+	asynchronous:true,
 	contentType:"text/xml",
 	onSuccess: function(transport){
 		/*this overrides the mimetype to xml for ie9*/
 		//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-		text=transport.responseText;
+//		text=transport.responseText;
+		response(transport.responseText);
 //return transport.responseText;
 		},
 	onFailure: function(){ 
@@ -24,10 +25,11 @@ function openfile(Name){
 	},
 	onException: function(req,exception) {
 		console.log(exception);
+		console.log(req);
 		return true;
 		}, 
 	});
-	return text;
+//	return text;
 }
 
 function encode64(input) {

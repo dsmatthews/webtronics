@@ -653,33 +653,41 @@ Schematic.prototype.deleteSelection = function() {
 
 Schematic.prototype.createvalue=function(elem){
 /*create value text if attribute exists*/
-    try{
+/*the value contains
+ * id - the part id
+ *value -the part model or value
+ *label -the id of the label text
+ */
+
+  try{
     	var id=this.readwtx(elem,"id");
-	    var value=this.readwtx(elem,"value");
+	var value=this.readwtx(elem,"value");
         var label=this.readwtx(elem,"label");
 	}
     catch(e){console.log(e);}
+    var text=this.createtext("",'black',0,0-this.fontsize);
     if(id){
-		if($(label)){
-				$(label).parentNode.removeChild($(label));
-        }
-	    var text=this.createtext("",'black',0,0-this.fontsize);
-	    this.drawing.appendChild(text);
-
-        var tspan=this.createtspan(id,0,0);
-        text.appendChild(tspan);
-        var box;
-        if(value){
-            box=this.tracker(text);
-            var tspan=this.createtspan(value,-box.width,box.height);
-            text.appendChild(tspan);
-        }
-        box=this.tracker(text);
-        text.setAttribute('x',this.parseXY(elem).x-box.width);
-        text.setAttribute('y',this.parseXY(elem).y-box.height);
-	    text.id='value-'+id+"-"+createUUID();
-        this.writewtx(elem,"label",text.id);
-	}
+      var idspan=this.createtspan(id,0,0);
+      text.appendChild(idspan);
+    }
+    if(value){
+      this.drawing.appendChild(text);
+      var box=this.tracker(text);
+      var valuespan=this.createtspan(value,-box.width,box.height);
+      text.appendChild(valuespan);
+    }
+    if(label && $(label)){
+      this.drawing.removeChild(text);
+      $(label).innerHTML="";
+      $(label).appendChild(idspan);
+      $(label).appendChild(valuespan);
+    }
+    else{
+	text.id='value-'+id+"-"+createUUID();
+	this.writewtx(elem,"label",text.id);
+	text.setAttribute('x',this.parseXY(elem).x-box.width);
+	text.setAttribute('y',this.parseXY(elem).y-box.height);
+    }
 }
 
 
@@ -890,7 +898,7 @@ Schematic.prototype.dragSelection=function(x ,y){
 	/*if a part is selected also get label*/
 			if(this.selected[i].tagName=='g'){
                 var label=this.readwtx(this.selected[i],"label");
-                if($(label)){
+                if(label && $(label)){
     				floating.appendChild($(label));
                 }
 			}

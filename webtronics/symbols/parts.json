@@ -1,4 +1,5 @@
-{"parts":{
+{
+"parts":{
                 "amplifier":{
                     "op-amp":{
                         "lm324":[".inc lm324.mod"],

@@ -462,10 +462,42 @@ I want to preserve the css color for inverted diagrams in png
 	    $('webtronics_diagram_area').onselectstart = function() {return false;} 
 	    $('webtronics_side_bar').onselectstart = function() {return false;} 
 
-/*parts list*/
-	    webtronics.parts=openfile("symbols/parts.json").evalJSON(true).parts;
+/*asynchronous part loading */
+
+	    var loadparts={
+	    category:{},
+	    addpart:function(cat,partname) {
+		  openfile("symbols/"+cat+'/'+partname+'.svg',function(partsvg){
+		  var part=new Element("div",{"id":"webtronics_"+partname,'style':"display:none",'title':partname})
+					    .update(partsvg);
+			    
+		            Event.observe(part,'mousedown',function(e){
+			            webtronics.circuit.unselect();
+			            var element=Event.element(e);
+			            while(element.tagName!=="svg"){
+			            element=element.parentNode;
+			            }
+			            var group=element.firstChild;
+			            while(group.nodeType!==1||group.tagName!=="g"){
+				            group=group.nextSibling;
+			            }
+			            webtronics.circuit.getgroup(group);
+			            webtronics.setMode('webtronics_select','select','Selection');
+			
+		            });
+		            Event.observe(part,'mouseup',function(e){
+			            webtronics.circuit.deleteSelection();				
+		            });
+	            /*this might get the ipad working*/
+	            Event.observe(part, "onclick", void(0));
+		      $("webtronics_"+cat).insert(part);
+		});
+	    },
+	    addcategory:function(partlist){
+	      
+	    webtronics.parts = partlist.evalJSON(true).parts;  
 	    for (var cat in webtronics.parts){
-                var category=new Element("div",{"id":"webtronics_"+cat})
+                category=new Element("div",{"id":"webtronics_"+cat})
                                         .insert(new Element("p").update(cat)
                                                 .observe('click',function(e){
                                                         var menuitems=$$('#webtronics_parts_list>div>div');
@@ -485,33 +517,16 @@ I want to preserve the css color for inverted diagrams in png
                                                 }));
   
                 for(var partname in webtronics.parts[cat]){
-                    var part=new Element("div",{"id":"webtronics_"+partname,'style':"display:none",'title':partname})
-                                        .update(openfile("symbols/"+cat+'/'+partname+'.svg'));
-                       
-		            Event.observe(part,'mousedown',function(e){
-			            webtronics.circuit.unselect();
-			            var element=Event.element(e);
-			            while(element.tagName!=="svg"){
-			            element=element.parentNode;
-			            }
-			            var group=element.firstChild;
-			            while(group.nodeType!==1||group.tagName!=="g"){
-				            group=group.nextSibling;
-			            }
-			            webtronics.circuit.getgroup(group);
-			            webtronics.setMode('webtronics_select','select','Selection');
-			
-		            });
-		            Event.observe(part,'mouseup',function(e){
-			            webtronics.circuit.deleteSelection();				
-		            });
-	            /*this might get the ipad working*/
-		            Event.observe(part, "onclick", void(0));
-                    category.insert(part);
-                }                
+		  loadparts.addpart(cat,partname);
+		}                
                 $("webtronics_parts_list").insertBefore(category,$("webtronics_parts_list").firstChild);
 
-            };
+            }}
+	    }
+	    openfile("symbols/parts.json", loadparts.addcategory);
+	      
+	    
+	    
 /*chipmaker*/
     $("webtronics_hor_pins").insert(Element("option",{"value":0}).update(0));
     for(var i=1;i<50;i++){
@@ -583,17 +598,18 @@ I want to preserve the css color for inverted diagrams in png
                     for(var i=0;i<content.length;i++){
                         $("webtronics_netlist_text_div").removeChild(content[i]);
                     }
-			        $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(webtronics.circuit.createnetlist(),null));
-                    $("webtronics_netlist_text").style.display='block';
-                    webtronics.center($('webtronics_netlist_text'));
-                    webtronics.disablepage();
+                    webtronics.circuit.createnetlist(function(netlist){
+			        $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(netlist,null));
+				$("webtronics_netlist_text").style.display='block';
+				webtronics.center($('webtronics_netlist_text'));
+				webtronics.disablepage();});
 
                 });
 		    }
             if($('webtronics_run')){
 			    Event.observe($('webtronics_run'), 'click', function() {
 //                    webtronics.postspice(webtronics.circuit.createnetlist());
-		      webtronics.gnucapjs(webtronics.circuit.createnetlist());
+		      webtronics.circuit.createnetlist(webtronics.gnucapjs);
                 });
 
             }
@@ -631,7 +647,7 @@ I want to preserve the css color for inverted diagrams in png
 			    webtronics.enablepage();
                 var model=webtronics.circuit.selected[0];
                 webtronics.circuit.writewtx(model,"id",$('webtronics_part_id').value);
-	            webtronics.circuit.writewtx(model,"value",$('webtronics_part_value').value);
+	        webtronics.circuit.writewtx(model,"value",$('webtronics_part_value').value);
                 webtronics.circuit.writewtx(model,"model",$('webtronics_part_dir_value').value);
                 webtronics.circuit.createvalue(webtronics.circuit.selected[0]);
 		    });

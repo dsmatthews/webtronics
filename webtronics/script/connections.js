@@ -264,13 +264,6 @@ Schematic.prototype.mixedsignals=function(analogwires,digitalwires){
     return false;
 }
 
-/*return model file text*/
-Schematic.prototype.dumpmodel=function(model){
-  var name="../spice/"+ model.split(' ')[1];
-  var text= openfile(name);
-  return text;
-  
-}
 
 
 /* creates all netlist data from parts data*/
@@ -387,7 +380,7 @@ Schematic.prototype.getnodes=function(parts){
 
 }
 /* organizes data into netlist*/
-Schematic.prototype.createnetlist=function(){
+Schematic.prototype.createnetlist=function(responsefunc){
     
 	var parts=$$('#webtronics_drawing > g');
     if(parts.length<1)return "no parts found";
@@ -396,14 +389,43 @@ Schematic.prototype.createnetlist=function(){
 	this.connectwires(partswtx);
 	var spice=".title webtronics\n";
     var sections=this.getnodes(partswtx);
- /* 
-      if(sections.firstdir.length){
-		sections.firstdir=sections.firstdir.uniq();
-		for(var i=0;i<sections.firstdir.length;i++){
-			if(sections.firstdir[i]!="")spice=sections.firstdir[i]+"\n"+spice;
-		}
-	}
-*/
+
+//dump models into spice	
+    var modelloader={
+     modeltext:"",
+     modelcount:0,
+     responsecount:0,
+     download:function(name){
+	openfile( "../spice/"+ name.split(' ')[1],modelloader.responder);
+	modelloader.modelcount++;
+    },
+     responder:function(text){
+       
+       modelloader.modeltext+=text;
+       modelloader.responsecount++;
+       if(modelloader.responsecount==modelloader.modelcount){
+	 spice+=modelloader.modeltext; 
+	 if(sections.simulation.length){
+	  var command=".print tran"
+		  for(var i=0;i<sections.simulation.length;i++){
+			  if(sections.simulation[i]!="")spice+=sections.simulation[i]+"\n";
+		  }
+	  }
+	  if(sections.lastdir.length){
+		  sections.lastdir=sections.lastdir.uniq();
+		  for(var i=0;i<sections.lastdir.length;i++){
+			  if(sections.lastdir[i]!="")spice+=sections.lastdir[i]+"\n";
+		  }
+	  }
+
+	  spice=spice.concat(".end \n");	
+	  var connector=$$('#information > .namewire')
+	  for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
+
+	  responsefunc(spice.toLowerCase());
+      }       
+    }
+    }
 	if(sections.netlist.length){
         var command="";
 		for(var i=0;i<sections.netlist.length;i++){
@@ -417,34 +439,21 @@ Schematic.prototype.createnetlist=function(){
             if(command!="")spice+=command+'\n';
 		}
 	}
-//dump models into spice	
-      if(sections.firstdir.length){
+
+	if(sections.firstdir.length){
 		sections.firstdir=sections.firstdir.uniq();
 		for(var i=0;i<sections.firstdir.length;i++){
 			if(sections.firstdir[i]!=""){
-			  spice+=this.dumpmodel(sections.firstdir[i]);
+			  modelloader.download(sections.firstdir[i]);
 			}
 		}
 	}
-	if(sections.simulation.length){
-	var command=".print tran"
-		for(var i=0;i<sections.simulation.length;i++){
-			if(sections.simulation[i]!="")spice+=sections.simulation[i]+"\n";
-		}
-	}
-	if(sections.lastdir.length){
-		sections.lastdir=sections.lastdir.uniq();
-		for(var i=0;i<sections.lastdir.length;i++){
-			if(sections.lastdir[i]!="")spice+=sections.lastdir[i]+"\n";
-		}
-	}
 
-	spice=spice.concat(".end \n");	
-	var connector=$$('#information > .namewire')
-	for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 
-	return spice.toLowerCase();
+  
+}
 
+Schematic.prototype.finishnetlist=function(spice,sections,responder){
 }
 
 
