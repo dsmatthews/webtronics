@@ -594,11 +594,11 @@ I want to preserve the css color for inverted diagrams in png
 		    if($('webtronics_netlist')){
 		    Event.observe($('webtronics_netlist'), 'click', function() {
 
-                    var content=$$("#webtronics_netlist_text_div > *") 
-                    for(var i=0;i<content.length;i++){
-                        $("webtronics_netlist_text_div").removeChild(content[i]);
-                    }
                     webtronics.circuit.createnetlist(function(netlist){
+				var content=$$("#webtronics_netlist_text_div > *") 
+				for(var i=0;i<content.length;i++){
+				    $("webtronics_netlist_text_div").removeChild(content[i]);
+				}
 			        $("webtronics_netlist_text_div").insert(webtronics.formatnetlist(netlist,null));
 				$("webtronics_netlist_text").style.display='block';
 				webtronics.center($('webtronics_netlist_text'));
