@@ -383,9 +383,15 @@ Schematic.prototype.getnodes=function(parts){
 Schematic.prototype.createnetlist=function(responsefunc){
     
 	var parts=$$('#webtronics_drawing > g');
-    if(parts.length<1)spice+="no parts found\n";
+    if(parts.length<1){
+      responsefunc("no parts found\n");
+      return;
+    }
     var partswtx=this.sortnetlist(this.getwtxdata(parts));
-	if(partswtx[0].type.toLowerCase()!='gnd')spice+='no ground node';
+	if(partswtx[0].type.toLowerCase()!='gnd'){
+	  responsefunc('no ground node');
+	  return;
+	}
 	this.connectwires(partswtx);
 	var spice=".title webtronics\n";
     var sections=this.getnodes(partswtx);
