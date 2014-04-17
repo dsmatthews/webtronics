@@ -12,194 +12,7 @@ var webtronics={
 		Alist:/^(x|y|x1|y1|x2|y2|dx|dy|cx|cy|r|width|height|transform|d|id|class|fill|stroke|visibility|stroke-width|xmlns|xmlns:wtx|connects|partvalue|flippable|spice|index|font-size|font-weight|font-style|font-family)$/,
 		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:part|wtx:pins|wtx:analog|wtx:digital|wtx:node|wtx:id|wtx:type|wtx:name|wtx:category|wtx:value|wtx:label|wtx:spice|wtx:flip|wtx:model|metadata|)$/,
 /* .lib files contain spice .model devices .mod devices contain .subckt devices and the id must begin with x*/
-        parts:{
-                "amplifier":{
-                    "op-amp":{
-                        "lm324":[".inc lm324.mod"],
-                        "lm358":[".inc lm358.mod"],
-                        "741":[".inc ua741.mod",".inc lm741.mod"]
-                        }
-                },
-                "digital":{
-                    
-                    "adc_bridge":{
-                        "ideal_adc":[".inc digital.lib"]
-                        },
-                    "dac_bridge":{
-                        "ideal_dac":[".inc digital.lib"]
-                        },                    
-                    "source":{
-                        "ideal_10ns":[".inc dclock.mod"]
-                        },                
-                    "and":{
-                        "and1":[".inc digital.lib"]
-                        },
-                    "nand":{
-                        "nand1":[".inc digital.lib"]                        
-                        },
-                    "nor":{
-                        "nor1":[".inc digital.lib"]                        
-                        },
-                    "not":{
-                        "not1":[".inc digital.lib"]
-                          },
-                    "or":{
-                        "or1":[".inc digital.lib"]
-                        },
-                    "xnor":{
-                        "xnor":[".inc digital.lib"]                        
-                        },
-                    "xor":{
-                        "xor":[".inc digital.lib"]                        
-                        }
-                    },
-
-                "resistors":{
-                    "photo-resistor":{},
-                    "resistor":{
-                        "10":[""],
-                        "100":[""],
-                        "1.0K":[""],
-                        "10K":[""],
-                        "100K":[""],
-                        "1.0M":[""],
-                        "10M":[""]
-                    },
-
-                    "vari-resistor":{},
-                    "potentiometer":{},
-                    "testresistor":{
-                        "10":[""],
-                        "100":[""],
-                        "1.0K":[""],
-                        "10K":[""],
-                        "100K":[""],
-                        "1.0M":[""],
-                        "10M":[""]
-                    },
-                },
-                "transistors":{
-                    "njfet":{},
-                    "npn":{
-                        "2n3904":[".inc models.lib"],
-                        "2n2222":[".inc models.lib"]                    
-                    },
-                    "pjfet":{},
-                    "pnp":{
-                        "2n3906":[".inc models.lib"]
-                    },
-                    "nmosfet":{
-		      "2n7000":["inc 2n7000.mod",".inc models.lib"]
-		    },
-                    "phototrans":{},
-                    "pmosfet":{}
-                },
-                "audio":{
-                    "speaker":{}
-                },
-
-                "diodes":{
-                    "diode":{
-                        "1n4148":[".inc models.lib"],
-                        "1n4007":[".inc models.lib"],
-                        "1n34a":[".inc models.lib"],
-			"1n5711":[".inc models.lib"]
-                    },
-                    "led":{},
-                    "photodiode":{},
-                    "scr":{},
-                    "triac":{},
-                    "trigger":{},
-                    "zener":{}
-                },
-                "ic":{
-                    "3_pins":{},
-                    "4_pins":{},
-                    "5_pins":{}
-                },
-                "switches":{
-                    "ncpb":{},
-                    "nopb":{},
-                    "spst-relay":{},
-                    "spst-switch":{}
-                },
-                "capacitors":{
-                    "capacitor":{
-                        "1pf":[""],
-                        "10pf":[""],
-                        "100pf":[""],
-                        "1nf":[""],
-                        "10nf":[""],
-                        "100nf":[""],
-                        "1uf":[""]
-                    },
-                    "polar-cap":{},
-                    "varicap":{}
-                },
-                "frequency":{
-                    "crystal":{}
-                },
-                "inductors":{
-                    "coil":{
-		      "1h":[""],
-		      "100mh":[""],
-		      "10mh":[""],
-		      "1mh":[""],
-		      "100uh":[""],
-		      "10uh":[""],
-		      "100nh":[""],
-		      "10nh":[""],
-		      "1h":[""]
-		    },
-                    "tapcoil":{},
-                    "transformer":{}
-                },
-                "power":{
-                    "ac":{
-                        "SIN(0 5 1KHZ)":[""],
-                        "SIN(0 12 60HZ)":[""],
-                        "SIN(0 120 60HZ)":[""],
-                        "PWL(0 0 10ns 0 10ns 5 20ns 5)R=0":[""],
-                        "PULSE(−1 1 2NS 2NS 2NS 50NS 100NS )":[""],
-                        "SFFM( 0 1V 20K 5 1K)":[""],                    
-                        "AC 1 SIN":[".ac lin 20 100 200 ",]
-                    },
-                    "battery":{
-                        "dc 5v":[""],
-                        "dc 9v":[""],
-                        "dc 12v":[""]
-                    },
-                    "ground":{},
-                    "namewire":{}
-                },
-
-
-                "test":{
-/*
-                    "analysis":{
-                        "tran":[".TRAN 1NS 100NS",
-                                ".TRAN 1NS 1000NS 500NS",
-                                ".TRAN 10NS 1US UIC",
-                                ".TRAN 1ms 100ms"]
-                    },
-*/
-                    "scope":{
-                        "tran":[".TRAN 1NS 100NS",
-                                ".TRAN 1NS 1000NS 500NS",
-                                ".TRAN 10NS 1US UIC",
-                                ".TRAN 1ms 100ms"]
-                     }
-                }            
-
-        },
-        models:{
-            "ne555.mod":{
-                "image":"555.svg",
-                "code":"" 
-            }
-        },
-
-
+        parts:{},
 		docfromtext:function(txt){
 			var xmlDoc;
 			if (window.DOMParser){
@@ -428,8 +241,8 @@ var webtronics={
 			//this.setMode('webtronics_select','select','Selection');
 			input_box=confirm("Click OK to Clear the Drawing.");
 			if (input_box==true){
-                $('webtronics_diagram_area').removeChild($("webtronics_frame"));
-                var frame=new Element('iframe',{id:'webtronics_frame',src:'canvas/canvas.html'});
+                $('webtronics_diagram_area').removeChild($("webtronics_scope_display_frame"));
+                var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'canvas/canvas.html'});
                 $('webtronics_diagram_area').insert(frame);
                 Event.observe(frame,'load',function(){
                     var filename='Schematic.svg';
@@ -485,7 +298,7 @@ var webtronics={
 	  webtronics.spicenetlist=netlist;
 /*add a new frame */
 	  $('webtronics_scope_display_div').innerHTML='';
-          var frame=new Element('iframe',{id:'webtronics_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
+          var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
 	  $('webtronics_scope_display_div').insert(frame);
           $("webtronics_scope_display").style.display="block"
 	},
@@ -631,7 +444,7 @@ I want to preserve the css color for inverted diagrams in png
                 myLinks);
             $("webtronics_diagram_area").insert(contextmenu);
 /*add a new frame */
-            var frame=new Element('iframe',{id:'webtronics_frame',src:'canvas/canvas.html'});
+            var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'canvas/canvas.html'});
             $('webtronics_diagram_area').insert(frame);
             
             Event.observe(frame,'load',function(){
@@ -650,7 +463,8 @@ I want to preserve the css color for inverted diagrams in png
 	    $('webtronics_side_bar').onselectstart = function() {return false;} 
 
 /*parts list*/
-            for (var cat in webtronics.parts){
+	    webtronics.parts=openfile("symbols/parts.json").evalJSON(true).parts;
+	    for (var cat in webtronics.parts){
                 var category=new Element("div",{"id":"webtronics_"+cat})
                                         .insert(new Element("p").update(cat)
                                                 .observe('click',function(e){

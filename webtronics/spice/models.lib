@@ -14,6 +14,12 @@
 +               M=.20029 VJ=.3905 ISR=24.229E-9 NR=4.1695 FC=0.5 TT=0 XTI=2
 *               $
 
+.MODEL mmsd301t1 d
++IS=7.59492e-08 RS=4.93246 N=1.53455 EG=0.608881
++XTI=4 BV=30 IBV=1e-05 CJO=2.26925e-12
++VJ=0.4 M=0.260918 FC=0.5 TT=2.98638e-09
++KF=0 AF=1
+
 .model 2N3904   NPN(Is=6.734f Xti=3 Eg=1.11 Vaf=74.03 Bf=416.4 Ne=1.259
 +               Ise=6.734f Ikf=66.78m Xtb=1.5 Br=.7371 Nc=2 Isc=0 Ikr=0 Rc=1
 +               Cjc=3.638p Mjc=.3085 Vjc=.75 Fc=.5 Cje=4.493p Mje=.2593 Vje=.75

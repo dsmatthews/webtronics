@@ -9,9 +9,9 @@
                 <wtx:node index="2" x="60" y="20"/>
     </wtx:analog>
     </wtx:pins>
-    <wtx:id>v</wtx:id>
-    <wtx:type>v</wtx:type>
-    <wtx:name>ac</wtx:name>
+    <wtx:id>i</wtx:id>
+    <wtx:type>i</wtx:type>
+    <wtx:name>current</wtx:name>
     <wtx:category>power</wtx:category>
     <wtx:value></wtx:value>
     <wtx:label></wtx:label>
@@ -23,9 +23,9 @@
   <path id="path2816" fill="none" d="m50.381,19.923a20.203,19.698,0,1,1,-40.406,0,20.203,19.698,0,1,1,40.406,0z"/>
   <path id="path2818" d="M10,20,0,20"/>
   <path id="path2820" d="m50,20,10,0"/>
-  <path id="path2819" d="M15.763,19.492c10.699,23.004,16.424-16.073,27.966,0.169" stroke-width="1px" fill="none"/>
-<text x="0" y="20" id="text5025" font-size='12px' stroke-width='0px'>+</text>
-<text x="53" y="15" id="text5029" font-size='12px' stroke-width='0px'>_</text>
-
+  <path id="path2820" d="M20,20,40,20"/>
+  <path id="path2820" d="M35,15,40,20,35,25"/>
+  
+  
 </g>
 </svg>

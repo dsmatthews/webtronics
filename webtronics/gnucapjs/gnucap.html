@@ -5,23 +5,30 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
     <style>
-      #gnucap_scope_display_div{
-      
+    body{
+	margin: 0px;
+	border:0px;
+	padding:0px;
+	border-width: 0px;
 	background-color:#ffffff;
-	overflow:hidden;
-	width:320px;
-	height:240px;
-      }
-      #statusElement{
-      border-width:0;
-      padding:0;
-	width:100%;
-	height:100%;
+    }
+    #gnucap_scope_display_div{
+	margin: 0px;
+	border:0px;
+	padding:0px;
+	border-width: 0px;
+	background-color:#ffffff;
+	overflow:auto;
+	width:480px;
+	height:360px;
+	}
+      pre {white-space: pre-wrap;}
+      #gnucap_output{
       }
     </style>
     </head>
-  <body bgcolor="white" >
-  <div id="gnucap_scope_display_div" >Downloading...</div>
+  <body>
+  <div id="gnucap_scope_display_div"  >Downloading...</div>
     <script type='text/javascript'>
 
     var graph={
@@ -42,7 +49,10 @@
     var k=0;
     for(var i=0;i<samples.length;i++){
 // if first character is not a digit skip this line
-      //if(samples[i].match(/^\s*\d/)==null)continue;
+      if(samples[i].match(/^\s*\d+/)==null){
+	console.log("Skipping "+samples[i]);
+	continue;
+      }
       var s = samples[i].match(/\S+/g);
       if(s!=null){
         points[k]=[];
@@ -72,10 +82,16 @@
       }
       k++;
     }
+    if(points.length<10){
+      console.log("not enough points to graph");
+      return;
+    }
+      
     var svgNamespace = 'http://www.w3.org/2000/svg';
     colors=["red","blue","green","gold","hotpink","orange"];
-    var width=320;
-    var height=220;
+    var width=640;
+    var height=480;
+    var font=16;
     var graphG=document.createElementNS(svgNamespace, 'g');
 
     var min=points[0][1];
@@ -88,19 +104,19 @@
       }
     }
     if(isNaN(min)||isNaN(max))return;
-    var hsize=width/points.length;
-    var vsize=height/(max-min);
+    var hsize=(width-font)/points.length;
+    var vsize=(height-(font*3))/(max-min);
     for(var sample=1;sample<points[0].length;sample++){
       path=document.createElementNS(svgNamespace, "path");
       var line="";
       for(var time=0;time<points.length;time++){
-        var x=parseInt(hsize*time);
-        var y =parseInt(vsize * (max-points[time][sample]));
+        var x=parseInt(hsize*time)+font;
+        var y =parseInt(vsize * (max-points[time][sample]))+font;
         if(isNaN(x)||isNaN(y)){
           console.log(samples[time]);
         }
         if(time==0){
-          line += " M0 "+ y;
+          line += " M"+font+"  "+ y;
         }
         else{
           line += " L" + x + " " + y;
@@ -115,24 +131,26 @@
     var svgRoot=document.createElementNS(svgNamespace, "svg");
     svgRoot.setAttribute("xmlns",svgNamespace);
     svgRoot.setAttributeNS(null, 'width',width);
-    svgRoot.setAttributeNS(null, 'height',height+20);
-//add the text
-    for(var i=1;i<plots.length;i++){
-      svgRoot.appendChild(graph.createtext(plots[i],colors[i-1],0,i*12));
+    svgRoot.setAttributeNS(null, 'height',height);
+        
+
+    //add the text
+    for(var i=plots.length-2;i>0;i--){
+      svgRoot.appendChild(graph.createtext(i,font,colors[i-1],0,i*(font*2)));
     }
-    svgRoot.appendChild(graph.createtext("min="+min+" max="+max,"black",0,svgRoot.getAttribute('height')-12));
-    svgRoot.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],"black",0,svgRoot.getAttribute('height')));  
+    svgRoot.appendChild(graph.createtext("min="+min+" max="+max,font,"black",0,height-font));
+    svgRoot.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],font,"black",0,height));  
     svgRoot.appendChild(graphG);
     return svgRoot;
   },
-  createtext:function(str,color,x,y){
+  createtext:function(str,size,color,x,y){
           var svgNamespace = 'http://www.w3.org/2000/svg';
           var svg;
 
           svg = document.createElementNS(svgNamespace, 'text');
           svg.setAttributeNS(null, 'x', x);
           svg.setAttributeNS(null, 'y', y);
-          svg.setAttributeNS(null, 'font-size', 12);
+          svg.setAttributeNS(null, 'font-size', size);
           svg.setAttributeNS(null, 'fill', color);
           svg.setAttributeNS(null, 'stroke-width', '0px');
          
@@ -143,19 +161,24 @@
  }
       var simdata="";
       var statusElement = document.getElementById('gnucap_scope_display_div');
-      var outputtext = document.createElement("textarea");
+      var outputtext = document.createElement("pre");
+      outputtext.id="gnucap_output";
       var gnucapWorker = new Worker("gnucap-io.js");
       var newtext = "";
       var timer=undefined;
       gnucapWorker.onmessage = function (oEvent) {
 	if(simdata==""){
 	  statusElement.textContent="";
-	  outputtext.id="statusElement";
 	  statusElement.appendChild( outputtext );
 	}
 	if(oEvent.data=="SIMULATION COMPLETED"){
 	    var svg=graph.parsegnucap(simdata);
 	    if(svg!=undefined){
+/*scale the image*/		svg.setAttributeNS(null,'transform',"scale("+window.innerWidth/svg.getAttributeNS(null,'width')+","+window.innerHeight/svg.getAttributeNS(null,'height')+")");
+		svg.setAttributeNS(null, 'width',window.innerWidth);
+		svg.setAttributeNS(null, 'height',window.innerHeight);
+/*this element should not overflow but it does so I remove scrollbars*/
+	      statusElement.style.overflow="hidden";
 	      statusElement.innerHTML="";
 	      statusElement.appendChild(svg);
 	    }
@@ -168,16 +191,13 @@
 	else{
 	  simdata += oEvent.data;
 	  newtext+=oEvent.data;
-	  updatetext();
-	}
-      }
 //limit update rate
-      function updatetext(){
       	  if(timer==undefined)timer=setTimeout(function(){
-			      outputtext.value+=newtext;
-			      outputtext.scrollTop = outputtext.scrollHeight + outputtext.clientHeight;
+			      outputtext.innerHTML+=newtext;
+			      statusElement.scrollTop = statusElement.scrollHeight + statusElement.clientHeight;
 			      timer=undefined;
 			      newtext=""},500);
+	}
       }
       
       

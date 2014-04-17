@@ -31,6 +31,7 @@ Schematic.prototype.sortnetlist=function(list){
 	var B=[];
  	var C=[];
 	var D=[];
+	var I=[];
 	var J=[];
 	var K=[];
 	var L=[];
@@ -61,6 +62,9 @@ Schematic.prototype.sortnetlist=function(list){
 		}
 		else if(list[i].type=='d'){
 			D.push(list[i]);
+		}
+		else if(list[i].type=='i'){	
+			J.push(list[i]);
 		}
 		else if(list[i].type=='j'){	
 			J.push(list[i]);
@@ -104,13 +108,14 @@ Schematic.prototype.sortnetlist=function(list){
         var bpart=b.id.replace(b.type,"");
         if(!apart)apart=0;
         if(!bpart)bpart=0;
-        return (apart<bpart);
+        return (apart>bpart);
 	};
 	V.sort(sortfunction);
 	wire.sort(sortfunction);
 	B.sort(sortfunction);
  	C.sort(sortfunction);
 	D.sort(sortfunction);
+	I.sort(sortfunction);
 	J.sort(sortfunction);
 	K.sort(sortfunction);
 	L.sort(sortfunction);
@@ -121,15 +126,16 @@ Schematic.prototype.sortnetlist=function(list){
 	R.sort(sortfunction);
 	U.sort(sortfunction);
 	A.sort(sortfunction);
-	other.sort(sortfunction);
 
 	var newlist=[];
 	G.each(function(item){newlist.push(item)});		
+	G.reverse();
 	V.each(function(item){newlist.push(item)});		
 	wire.each(function(item){newlist.push(item)});		
 	B.each(function(item){newlist.push(item)});		
 	C.each(function(item){newlist.push(item)});		
 	D.each(function(item){newlist.push(item)});		
+	I.each(function(item){newlist.push(item)});		
 	J.each(function(item){newlist.push(item)});		
 	K.each(function(item){newlist.push(item)});		
 	L.each(function(item){newlist.push(item)});		

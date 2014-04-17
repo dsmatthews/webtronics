@@ -362,18 +362,25 @@ div#webtronics_context_menu .enabled:hover{
 }
 
 #webtronics_scope_display>*{
-float:left;
+  float:left;
 }
 
 div#webtronics_scope_display_div{
-  width:85%;
-  height:95%;
-  overflow: hide;
+  overflow:hidden;
+  width:480px;
+  height:360px;
+}
+#webtronics_scope_display_frame{
+  overflow:hidden;
+  width:480px;
+  height:360px;
+  border-color:#000000;
+  border-width: 2px;
 }
 
 div#webtronics_scope_display{
-  width:400px;
-  height:280px;
+  width:540px;
+  height:370px;
   overflow: hide;
 }
 
