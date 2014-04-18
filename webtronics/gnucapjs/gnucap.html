@@ -130,16 +130,17 @@
     }  
     var svgRoot=document.createElementNS(svgNamespace, "svg");
     svgRoot.setAttribute("xmlns",svgNamespace);
-    svgRoot.setAttributeNS(null, 'width',width);
-    svgRoot.setAttributeNS(null, 'height',height);
+    svgRoot.setAttributeNS(null, 'width',window.innerWidth);
+    svgRoot.setAttributeNS(null, 'height',window.innerHeight);
         
 
     //add the text
     for(var i=plots.length-2;i>0;i--){
-      svgRoot.appendChild(graph.createtext(i,font,colors[i-1],0,i*(font*2)));
+      graphG.appendChild(graph.createtext(i,font,colors[i-1],0,i*(font*2)));
     }
-    svgRoot.appendChild(graph.createtext("min="+min+" max="+max,font,"black",0,height-font));
-    svgRoot.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],font,"black",0,height));  
+    graphG.appendChild(graph.createtext("min="+min+" max="+max,font,"black",0,height-font));
+    graphG.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],font,"black",0,height));  
+    graphG.setAttributeNS(null,"transform","scale("+window.innerWidth/width+","+window.innerHeight/height+")");
     svgRoot.appendChild(graphG);
     return svgRoot;
   },
@@ -174,9 +175,8 @@
 	if(oEvent.data=="SIMULATION COMPLETED"){
 	    var svg=graph.parsegnucap(simdata);
 	    if(svg!=undefined){
-/*scale the image*/		svg.setAttributeNS(null,'transform',"scale("+window.innerWidth/svg.getAttributeNS(null,'width')+","+window.innerHeight/svg.getAttributeNS(null,'height')+")");
-		svg.setAttributeNS(null, 'width',window.innerWidth);
-		svg.setAttributeNS(null, 'height',window.innerHeight);
+/*scale the image*/		
+	      
 /*this element should not overflow but it does so I remove scrollbars*/
 	      statusElement.style.overflow="hidden";
 	      statusElement.innerHTML="";
