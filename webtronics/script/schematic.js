@@ -676,9 +676,12 @@ Schematic.prototype.createvalue=function(elem){
       var valuespan=this.createtspan(value,-box.width,box.height);
       text.appendChild(valuespan);
     }
-    if(label && $(label)){
+    if(label.length && $(label)){
       this.drawing.removeChild(text);
-      $(label).innerHTML="";
+/*remove all chilnodes*/
+      while ($(label).firstChild) {
+	$(label).removeChild($(label).firstChild);
+      }
       $(label).appendChild(idspan);
       $(label).appendChild(valuespan);
     }
