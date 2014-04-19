@@ -23,16 +23,16 @@
 	height:360px;
 	}
       pre {white-space: pre-wrap;}
-      #gnucap_output{
-      }
     </style>
     </head>
   <body>
   <div id="gnucap_scope_display_div"  >Downloading...</div>
-    <script type='text/javascript'>
+  <script type='text/javascript'>
 
     var graph={
-  parsegnucap:function(t){
+    width:640,
+    height:480,
+  gnucap2canvas:function(t){
   console.log(t);
   var points = [];
       try{      
@@ -87,12 +87,13 @@
       return;
     }
       
-    var svgNamespace = 'http://www.w3.org/2000/svg';
     colors=["red","blue","green","gold","hotpink","orange"];
-    var width=640;
-    var height=480;
     var font=16;
-    var graphG=document.createElementNS(svgNamespace, 'g');
+    var canvas=document.createElement('canvas'); 
+    canvas.setAttribute("width",window.innerWidth);
+    canvas.setAttribute("height",window.innerHeight);
+    var ctx=canvas.getContext("2d");
+    ctx.scale(window.innerWidth/graph.width,window.innerHeight/graph.height);
 
     var min=points[0][1];
     var max=points[0][1];
@@ -104,11 +105,10 @@
       }
     }
     if(isNaN(min)||isNaN(max))return;
-    var hsize=(width-font)/points.length;
-    var vsize=(height-(font*3))/(max-min);
+    var hsize=(graph.width-font)/points.length;
+    var vsize=(graph.height-(font*3))/(max-min);
     for(var sample=1;sample<points[0].length;sample++){
-      path=document.createElementNS(svgNamespace, "path");
-      var line="";
+      ctx.beginPath();
       for(var time=0;time<points.length;time++){
         var x=parseInt(hsize*time)+font;
         var y =parseInt(vsize * (max-points[time][sample]))+font;
@@ -116,49 +116,28 @@
           console.log(samples[time]);
         }
         if(time==0){
-          line += " M"+font+"  "+ y;
+	  ctx.moveTo(x,y);
         }
         else{
-          line += " L" + x + " " + y;
-        }
+	  ctx.lineTo(x,y);
+	}
       }
-      path.setAttributeNS(null,"d",line);              
-      path.setAttributeNS(null,"stroke",colors[sample-1]);
-      path.setAttributeNS(null,"stroke-width",1);
-      path.setAttributeNS(null,"fill","none");
-      graphG.appendChild(path);
+      ctx.strokeStyle=colors[sample-1];
+      ctx.linWidth=1;
+      ctx.stroke();
     }  
-    var svgRoot=document.createElementNS(svgNamespace, "svg");
-    svgRoot.setAttribute("xmlns",svgNamespace);
-    svgRoot.setAttributeNS(null, 'width',window.innerWidth);
-    svgRoot.setAttributeNS(null, 'height',window.innerHeight);
-        
 
     //add the text
     for(var i=plots.length-2;i>0;i--){
-      graphG.appendChild(graph.createtext(i,font,colors[i-1],0,i*(font*2)));
+      ctx.fillStyle = colors[i-1];
+      ctx.fillText(i.toString(),0,i*(font*2));
     }
-    graphG.appendChild(graph.createtext("min="+min+" max="+max,font,"black",0,height-font));
-    graphG.appendChild(graph.createtext("start="+points[0][0]+" stop="+points[points.length-1][0],font,"black",0,height));  
-    graphG.setAttributeNS(null,"transform","scale("+window.innerWidth/width+","+window.innerHeight/height+")");
-    svgRoot.appendChild(graphG);
-    return svgRoot;
-  },
-  createtext:function(str,size,color,x,y){
-          var svgNamespace = 'http://www.w3.org/2000/svg';
-          var svg;
+      ctx.fillStyle = "black";  //<======= here
+      ctx.fillText("min="+min+" max="+max,0,graph.height-font);
+      ctx.fillText("start="+points[0][0]+" stop="+points[points.length-1][0],0,graph.height);
+     return canvas;
 
-          svg = document.createElementNS(svgNamespace, 'text');
-          svg.setAttributeNS(null, 'x', x);
-          svg.setAttributeNS(null, 'y', y);
-          svg.setAttributeNS(null, 'font-size', size);
-          svg.setAttributeNS(null, 'fill', color);
-          svg.setAttributeNS(null, 'stroke-width', '0px');
-         
-          svg.appendChild(document.createTextNode(str));
-          return svg;
-  },
- 
+  },  
  }
       var simdata="";
       var statusElement = document.getElementById('gnucap_scope_display_div');
@@ -173,14 +152,15 @@
 	  statusElement.appendChild( outputtext );
 	}
 	if(oEvent.data=="SIMULATION COMPLETED"){
-	    var svg=graph.parsegnucap(simdata);
-	    if(svg!=undefined){
+	    var canvas=graph.gnucap2canvas(simdata);
+	    if(canvas!=undefined){
 /*scale the image*/		
 	      
 /*this element should not overflow but it does so I remove scrollbars*/
 	      statusElement.style.overflow="hidden";
 	      statusElement.innerHTML="";
-	      statusElement.appendChild(svg);
+/* i want the image png so people can share them*/	 
+	      statusElement.appendChild(canvas);
 	    }
 	    else{
 		newtext+="COULD NOT PARSE OUTPUT DATA";
