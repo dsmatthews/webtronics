@@ -14,22 +14,18 @@ function openfile(Name,response){
 	asynchronous:true,
 	contentType:"text/xml",
 	onSuccess: function(transport){
-		/*this overrides the mimetype to xml for ie9*/
-		//xmldoc=(new DOMParser()).parseFromString(transport.responseText,"text/xml");
-//		text=transport.responseText;
 		response(transport.responseText);
-//return transport.responseText;
 		},
 	onFailure: function(){ 
 		console.log('Could not load file...'); 
+		response("Could not load file...\n");
 	},
 	onException: function(req,exception) {
-		console.log(exception);
-		console.log(req);
+		alert("Could not find "+Name); 
 		return true;
 		}, 
 	});
-//	return text;
+  
 }
 
 function encode64(input) {

@@ -672,12 +672,12 @@ Schematic.prototype.createvalue=function(elem){
       }
 	if(id){
 	  var idspan=this.createtspan(id,0,0);
-	  text.appendChild(idspan);
+	  $(label).appendChild(idspan);
 	}
 	if(value){
-	  var box=this.tracker(text);
+	  var box=this.tracker($(label));
 	  var valuespan=this.createtspan(value,-box.width,box.height);
-	  text.appendChild(valuespan);
+	  $(label).appendChild(valuespan);
 	}
       $(label).appendChild(idspan);
       $(label).appendChild(valuespan);
