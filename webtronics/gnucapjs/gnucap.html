@@ -23,7 +23,10 @@
 	height:360px;
 	}
       pre {white-space: pre-wrap;}
-    </style>
+      canvas{
+      background-color:white;
+      }
+      </style>
     </head>
   <body>
   <div id="gnucap_scope_display_div"  >Downloading...</div>
@@ -88,12 +91,15 @@
     }
       
     colors=["red","blue","green","gold","hotpink","orange"];
-    var font=16;
+    var font=20;
     var canvas=document.createElement('canvas'); 
     canvas.setAttribute("width",window.innerWidth);
     canvas.setAttribute("height",window.innerHeight);
     var ctx=canvas.getContext("2d");
+/*I want to scale the graph so I can get more detailed information in it*/
     ctx.scale(window.innerWidth/graph.width,window.innerHeight/graph.height);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0,0,graph.width,graph.height);
 
     var min=points[0][1];
     var max=points[0][1];
@@ -128,12 +134,14 @@
     }  
 
     //add the text
+    ctx.font=font+"px Arial";
     for(var i=plots.length-2;i>0;i--){
+
       ctx.fillStyle = colors[i-1];
       ctx.fillText(i.toString(),0,i*(font*2));
     }
       ctx.fillStyle = "black";  //<======= here
-      ctx.fillText("min="+min+" max="+max,0,graph.height-font);
+      ctx.fillText("min="+min.toExponential()+" max="+max.toExponential(),0,graph.height-font);
       ctx.fillText("start="+points[0][0]+" stop="+points[points.length-1][0],0,graph.height);
      return canvas;
 

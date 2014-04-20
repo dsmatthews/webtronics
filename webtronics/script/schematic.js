@@ -665,31 +665,42 @@ Schematic.prototype.createvalue=function(elem){
         var label=this.readwtx(elem,"label");
 	}
     catch(e){console.log(e);}
-    var text=this.createtext("",'black',0,0-this.fontsize);
-    if(id){
-      var idspan=this.createtspan(id,0,0);
-      text.appendChild(idspan);
-    }
-    if(value){
-      this.drawing.appendChild(text);
-      var box=this.tracker(text);
-      var valuespan=this.createtspan(value,-box.width,box.height);
-      text.appendChild(valuespan);
-    }
     if(label.length && $(label)){
-      this.drawing.removeChild(text);
 /*remove all chilnodes*/
       while ($(label).firstChild) {
 	$(label).removeChild($(label).firstChild);
       }
+	if(id){
+	  var idspan=this.createtspan(id,0,0);
+	  text.appendChild(idspan);
+	}
+	if(value){
+	  var box=this.tracker(text);
+	  var valuespan=this.createtspan(value,-box.width,box.height);
+	  text.appendChild(valuespan);
+	}
       $(label).appendChild(idspan);
       $(label).appendChild(valuespan);
     }
     else{
-	text.id='value-'+id+"-"+createUUID();
-	this.writewtx(elem,"label",text.id);
-	text.setAttribute('x',this.parseXY(elem).x-box.width);
-	text.setAttribute('y',this.parseXY(elem).y-box.height);
+	var text=this.createtext("",'black',0,0-this.fontsize);
+	this.drawing.appendChild(text);
+	var box=this.tracker(text);
+	if(id||value){
+	  if(id){
+	    var idspan=this.createtspan(id,0,0);
+	    text.appendChild(idspan);
+	  }
+	  if(value){
+	    var box=this.tracker(text);
+	    var valuespan=this.createtspan(value,-box.width,box.height);
+	    text.appendChild(valuespan);
+	  }
+	  text.id='value-'+id+"-"+createUUID();
+	  this.writewtx(elem,"label",text.id);
+	  text.setAttribute('x',this.parseXY(elem).x-box.width);
+	  text.setAttribute('y',this.parseXY(elem).y-box.height);
+	}
     }
 }
 
