@@ -291,7 +291,7 @@ Schematic.prototype.getnodes=function(parts){
 	}
 	else{
 	  if(parts[i].model.match(/\.mod/i) && !parts[i].id.match(/^x/))parts[i].id="x"+parts[i].id;
-	  sections.firstdir.push(parts[i].model);
+	  if(parts[i].model.length)sections.firstdir.push(parts[i].model);
 	  
 	}
         var net={error:parts[i].error,partid:parts[i].id,pins:[],model:parts[i].value};
@@ -405,12 +405,8 @@ Schematic.prototype.createnetlist=function(responsefunc){
 	openfile( "../spice/"+ name.split(' ')[1],modelloader.responder);
 	modelloader.modelcount++;
     },
-     responder:function(text){
-       
-       modelloader.modeltext+=text;
-       modelloader.responsecount++;
-       if(modelloader.responsecount==modelloader.modelcount){
-	 spice+=modelloader.modeltext; 
+    finish:function(){
+      	 spice+=modelloader.modeltext; 
 	 if(sections.simulation.length){
 	  var command=".print tran"
 		  for(var i=0;i<sections.simulation.length;i++){
@@ -429,37 +425,43 @@ Schematic.prototype.createnetlist=function(responsefunc){
 	  for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 
 	  responsefunc(spice.toLowerCase());
+    },
+     responder:function(text){
+       modelloader.modeltext+=text;
+       modelloader.responsecount++;
+       if(modelloader.responsecount==modelloader.modelcount){
+	  modelloader.finish();
+	 
       }       
     }
     }
 	if(sections.netlist.length){
         var command="";
-		for(var i=0;i<sections.netlist.length;i++){
-            if(sections.netlist[i].error!=""){
-                spice+=sections.netlist[i].error+'\n';
-                continue;
-            }
-            command=sections.netlist[i].partid;
-            for(var j=0;j<sections.netlist[i].pins.length;j++)command+=" "+sections.netlist[i].pins[j];
-            command+=" "+sections.netlist[i].model;
-            if(command!="")spice+=command+'\n';
-		}
+	    for(var i=0;i<sections.netlist.length;i++){
+	      if(sections.netlist[i].error!=""){
+		  spice+=sections.netlist[i].error+'\n';
+		  continue;
+	      }
+	      command=sections.netlist[i].partid;
+	      for(var j=0;j<sections.netlist[i].pins.length;j++)command+=" "+sections.netlist[i].pins[j];
+	      command+=" "+sections.netlist[i].model;
+	      if(command!="")spice+=command+'\n';
+	    }
 	}
 
 	if(sections.firstdir.length){
-		sections.firstdir=sections.firstdir.uniq();
+	    sections.firstdir=sections.firstdir.uniq();
 		for(var i=0;i<sections.firstdir.length;i++){
-			if(sections.firstdir[i]!=""){
+			console.log(sections.firstdir[i]);
+			if(sections.firstdir[i].length){
 			  modelloader.download(sections.firstdir[i]);
 			}
 		}
 	}
+	else modelloader.finish();
 
 
   
-}
-
-Schematic.prototype.finishnetlist=function(spice,sections,responder){
 }
 
 
