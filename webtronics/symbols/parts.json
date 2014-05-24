@@ -1,6 +1,12 @@
 {
 "parts":{
-                "amplifier":{
+"ic":{
+ "3_pins":{},
+ "4_pins":{},
+ "5_pins":{}
+ },
+
+	      "amplifier":{
                     "op-amp":{
                         "lm324":[".inc lm324.mod"],
                         "lm358":[".inc lm358.mod"],
@@ -99,11 +105,6 @@
                     "trigger":{},
                     "zener":{}
                 },
-                "ic":{
-                    "3_pins":{},
-                    "4_pins":{},
-                    "5_pins":{}
-                },
                 "switches":{
                     "ncpb":{},
                     "nopb":{},
@@ -118,7 +119,9 @@
                         "1nf":[""],
                         "10nf":[""],
                         "100nf":[""],
-                        "1uf":[""]
+                        "1uf":[""],
+                        "10uf":[""],
+                        "100uf":[""]
                     },
                     "polar-cap":{},
                     "varicap":{}
@@ -179,6 +182,6 @@
                 }            
 },
 "models":{
-  "ne555":["ne555.mod"]
+  "555":["555.mod"]
   }
 }

@@ -13,6 +13,7 @@ var webtronics={
 		Elist:/^(path|circle|rect|line|text|g|tspan|svg|wtx:part|wtx:pins|wtx:analog|wtx:digital|wtx:node|wtx:id|wtx:type|wtx:name|wtx:category|wtx:value|wtx:label|wtx:spice|wtx:flip|wtx:model|metadata|)$/,
 /* .lib files contain spice .model devices .mod devices contain .subckt devices and the id must begin with x*/
         parts:{},
+	models:{},
 		docfromtext:function(txt){
 			var xmlDoc;
 			if (window.DOMParser){
@@ -521,7 +522,9 @@ I want to preserve the css color for inverted diagrams in png
 		}                
                 $("webtronics_parts_list").insertBefore(category,$("webtronics_parts_list").firstChild);
 
-            }}
+            }
+    	    webtronics.models = partlist.evalJSON(true).models;  
+	    }
 	    }
 	    openfile("symbols/parts.json", loadparts.addcategory);
 	      
@@ -706,9 +709,12 @@ I want to preserve the css color for inverted diagrams in png
                 $("webtronics_chips_box").insertBefore(div,$("webtronics_chips_box").firstChild);
                 $("webtronics_chip_spice").value=$('webtronics_chip_spice_select').value;
                 if($('webtronics_chip_spice_select').value!="none"){
-                    div.update(openfile("symbols/ic/"+webtronics.models[$('webtronics_chip_spice_select').value].image));
-                    var model=$("webtronics_chip_display").getElementsByTagName("g")[0];
-                    webtronics.circuit.writewtx(model,"model",".inc "+$('webtronics_chip_spice_select').value);
+		  openfile("symbols/predefined/"+$('webtronics_chip_spice_select').value+".svg",function(svg){
+		      div.update(svg);
+		      var model=$("webtronics_chip_display").getElementsByTagName("g")[0];
+		      webtronics.circuit.writewtx(model,"value",$('webtronics_chip_spice_select').value);
+		      webtronics.circuit.writewtx(model,"model",".inc "+webtronics.models[$('webtronics_chip_spice_select').value]);
+		  });
                 }
 		    });
 
