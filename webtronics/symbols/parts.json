@@ -10,9 +10,15 @@
                     "op-amp":{
                         "lm324":[".inc lm324.mod"],
                         "lm358":[".inc lm358.mod"],
-                        "741":[".inc ua741.mod",".inc lm741.mod"]
-                        }
-                },
+                        "741":[".inc ua741.mod",".inc lm741.mod"],
+			"tl084":[".inc tl084.mod"]
+                        },
+                    "inst-amp":{
+			"ina128":[".inc ina128.mod"],
+			"ad620a":[".inc ad620a.mod"],
+			"ad8221":[".inc ad8221.mod"]
+			}
+                 },
                 "digital":{
                     
                     "adc_bridge":{
