@@ -7,7 +7,7 @@
  
       Module = {
 	preRun: [function(){
-		  FS.writeFile("/temp",spicenetlist);
+	  FS.writeFile("/temp",spicenetlist);
 		 }],
         postRun:[function(){
 		  //console.log('test');
@@ -48,4 +48,5 @@
       // the passed-in data is available via e.data
 	importScripts("gnucap-ugly.js");
       }, false);
+      Module.TOTAL_MEMORY=67108864;
       Module.setStatus('Downloading...');
