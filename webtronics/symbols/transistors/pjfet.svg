@@ -10,8 +10,8 @@
             <wtx:node index="3" x="30" y="40" />
         </wtx:analog>
     </wtx:pins>
-    <wtx:id>q</wtx:id>
-    <wtx:type>q</wtx:type>
+    <wtx:id>j</wtx:id>
+    <wtx:type>j</wtx:type>
     <wtx:name>pjfet</wtx:name>
     <wtx:category>transistors</wtx:category>
     <wtx:value></wtx:value>

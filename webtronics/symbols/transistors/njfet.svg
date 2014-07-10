@@ -11,8 +11,8 @@
         </wtx:analog>
 
     </wtx:pins>
-    <wtx:id>q</wtx:id>
-    <wtx:type>q</wtx:type>
+    <wtx:id>j</wtx:id>
+    <wtx:type>j</wtx:type>
     <wtx:name>njfet</wtx:name>
     <wtx:category>transistors</wtx:category>
     <wtx:value></wtx:value>

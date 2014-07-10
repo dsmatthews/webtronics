@@ -78,7 +78,10 @@
                     }
                 },
                 "transistors":{
-                    "njfet":{},
+                    "njfet":{
+			"mpf102":[".inc models.lib"],
+			"2n3819":[".inc models.lib"]
+                    },
                     "npn":{
                         "2n3904":[".inc models.lib"],
                         "2n2222":[".inc models.lib"]                    

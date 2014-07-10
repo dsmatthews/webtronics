@@ -16,8 +16,21 @@
   DLP  90 91 DX
   DLN  92 90 DX
   DP    4  3 DX
-  EGND 99  0 POLY(2) (3,0) (4,0) 0 .5 .5
-  FB    7 99 POLY(5) VB VC VE VLP VLN 0 10.61E6 -10E6 10E6 10E6 -10E6
+*  EGND 99  0 POLY(2) (3,0) (4,0) 0 .5 .5
+*  FB    7 99 POLY(5) VB VC VE VLP VLN 0 10.61E6 -10E6 10E6 10E6 -10E6
+* POLY font rewritten to make it work under gnucap
+* egnd 99  0 poly(2) (3,0) (4,0) 0 .5 .5
+egnd1 99 98 3 0 .5
+egnd2 98 0 4 0 .5
+* POLY font rewritten to make it work under gnucap
+* fb    7 99 poly(5) vb vc ve vlp vln 0 10.61E6 -10E6 10E6 10E6 -10E6
+  fb1   7 99 vb 10.61E6
+  fb2   7 99 vc -10E6
+  fb3   7 99 ve 10E6
+  fb4   7 99 vlp 10E6
+  fb5   7 99 vln -10E6
+
+  
   GA 6  0 11 12 137.7E-6
   GCM 0  6 10 99 2.574E-9
   IEE  10  4 DC 10.16E-6
