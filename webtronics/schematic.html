@@ -128,28 +128,39 @@ properties form
 -->
 <div id="webtronics_properties_div" class='modal'>
 <form name="webtronics_properties_form">
-<input id="webtronics_part_id">part id<br>
+<fieldset>
+<legend>part id</legend>    
+<input id="webtronics_part_id"><br>
+</fieldset>
+<br>
 <fieldset>
 <legend>value or model</legend>    
 <input id="webtronics_part_value">
 <select id="webtronics_part_model">
-		<option value="">none</option>	
+<option value="">none</option>	
 </select>
 </fieldset>
-<br/>
+<br>
 <fieldset>
 <legend>spice directive</legend>    
 <input id="webtronics_part_dir_value">
 <select id="webtronics_part_dir_model">
-		<option value="">none</option>	
+<option value="">none</option>	
 </select>
-<!--**OPEN LOCAL SPICE MODELS EXPERIMENT<input id="webtronics_part_file" type="file"/>-->
-
 </fieldset>
-<br/>
+<br>
+<fieldset id="webtronics_print_dir_field">
+<legend>print directive</legend>    
+<input id="webtronics_print_dir_value"/>
+</fieldset>
+<!--**OPEN LOCAL SPICE MODELS EXPERIMENT<input id="webtronics_part_file" type="file"/>-->
+</form>
+<br>
+<div>
 <img id="webtronics_properties_ok" class="normal_button" src="./buttons/ok.png"> 
 <img id="webtronics_properties_cancel" class="normal_button" src="./buttons/cancel.png">
-</form>
+</div>
+
 </div>
 
 
@@ -197,7 +208,13 @@ simulation display
 -->
 <div id="webtronics_scope_display" class="modal" >
 <div id="webtronics_scope_display_div"></div>
-<img id="webtronics_scope_display_ok" class="normal_button" src="./buttons/cancel.png"> 
+<img id="webtronics_scope_display_ok" class="normal_button" src="./buttons/cancel.png">
+<form>
+<input id="webtronics_scope_output_log" type="radio" name="scope_output" >log<br>
+<input id="webtronics_scope_output_graph" type="radio" name="scope_output" value="graph">graph
+</form>
+<br>
+<div id="webtronics_scope_display_status"></div> 
 </div>
 
 </div>

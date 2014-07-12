@@ -1,11 +1,13 @@
 var webtronics={
-		circuit:null,
+	circuit:null,
         copy:null,
-		rightclickmenu:null,
+	rightclickmenu:null,
         title:null,
         description:null,
         file_id:null,
-        tabs:[],
+	scopestatus:null,
+	
+	tabs:[],
         mode:'',
 
 		Vlist:/\s*expression|\s*url|.*script/,
@@ -62,18 +64,18 @@ var webtronics={
 			$(button).className = 'pressed_button';
 
 			$('webtronics_status_bar').innerHTML = 'Mode: '+status;
-			$('webtronics_add_text').hide();
+			$('webtronics_add_text').style.display='none';
 			if(mode=='select'){
-				if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='visible';
+				if($('webtronics_context_menu'))$('webtronics_context_menu').style.display='block';
     		}
 			else if(mode=='line'){
-                if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='hidden';
+                if($('webtronics_context_menu'))$('webtronics_context_menu').style.display='none';
 				if(this.circuit.selected){
 					this.circuit.unselect();
 				}
 			}
 			else if(mode=='text'){
-				if($('webtronics_context_menu'))$('webtronics_context_menu').style.visibility='hidden';
+				if($('webtronics_context_menu'))$('webtronics_context_menu').style.display='none';
 			}
             $('webtronics_context_menu').style.display='none';
     		this.mode=mode;
@@ -105,10 +107,10 @@ var webtronics={
         },
 
 		disablepage:function(){
-            $("webtronics_disable").style.visibility="visible";
+            $("webtronics_disable").style.display="block";
 		},
         enablepage:function(){
-            $("webtronics_disable").style.visibility="hidden";
+            $("webtronics_disable").style.display="none";
         },
 
 		returnchip:function(){
@@ -117,7 +119,7 @@ var webtronics={
                 this.circuit.writewtx(this.circuit.selected[0],"id",this.circuit.getnextid(this.circuit.selected[0],0));
                 this.circuit.createvalue(this.circuit.selected[0]);
             }
-			$('webtronics_chips_box').hide();
+			$('webtronics_chips_box').style.display='none';
 			this.setMode('webtronics_select','select','Selection');
 		},
 	
@@ -132,7 +134,7 @@ var webtronics={
 			}
 			else if(c=="scope"){
 				this.getvalues(this.circuit.selected[0]);
-
+				$("webtronics_print_dir_field").style.display='block'
 			}
 			else {
 				this.getvalues(this.circuit.selected[0]);
@@ -143,7 +145,7 @@ var webtronics={
         	if(id!=""){$('webtronics_part_id').value=id;}
 			if(value!=""){$('webtronics_part_value').value=value;}
             $("webtronics_part_dir_value").value=this.circuit.readwtx(this.circuit.selected[0],'model');
-        
+	    
 			if(!this.circuit.readwtx(webtronics.circuit.selected[0],"value")){
 				$('webtronics_part_id').value=this.circuit.getnextid(this.circuit.selected[0],0);
 			}
@@ -217,6 +219,7 @@ var webtronics={
             file.click();
 			$('webtronics_file_menu').style.display='none';
             div.style.display='none';
+            
 		},
 
         saveuri:function(){
@@ -242,8 +245,8 @@ var webtronics={
 			//this.setMode('webtronics_select','select','Selection');
 			input_box=confirm("Click OK to Clear the Drawing.");
 			if (input_box==true){
-                $('webtronics_diagram_area').removeChild($("webtronics_scope_display_frame"));
-                var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'canvas/canvas.html'});
+                $('webtronics_diagram_area').removeChild($("webtronics_display_frame"));
+                var frame=new Element('iframe',{id:'webtronics_display_frame',src:'canvas/canvas.html'});
                 $('webtronics_diagram_area').insert(frame);
                 Event.observe(frame,'load',function(){
                     var filename='Schematic.svg';
@@ -299,7 +302,8 @@ var webtronics={
 	  webtronics.spicenetlist=netlist;
 /*add a new frame */
 	  $('webtronics_scope_display_div').innerHTML='';
-          var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
+	  $("webtronics_scope_output_graph").checked=true;
+	  var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
 	  $('webtronics_scope_display_div').insert(frame);
           $("webtronics_scope_display").style.display="block"
 	},
@@ -371,7 +375,7 @@ I want to preserve the css color for inverted diagrams in png
             if($("webtronics_canvas")){
                 $("webtronics_canvas").parentNode.removeChild($("webtronics_canvas"));
             }
-            var canvas=new Element('canvas',{'id':'webtronics_canvas','width':svgsize.width+10+'px','height':svgsize.height+10+'px',style:"visibility:hidden"});
+            var canvas=new Element('canvas',{'id':'webtronics_canvas','width':svgsize.width+10+'px','height':svgsize.height+10+'px',style:"display:none"});
             $("webtronics_image").insert(canvas);
             var ctx=$("webtronics_canvas").getContext("2d");
 	        $('webtronics_image').style.display = "block";
@@ -448,7 +452,7 @@ I want to preserve the css color for inverted diagrams in png
                 myLinks);
             $("webtronics_diagram_area").insert(contextmenu);
 /*add a new frame */
-            var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'canvas/canvas.html'});
+            var frame=new Element('iframe',{id:'webtronics_display_frame',src:'canvas/canvas.html'});
             $('webtronics_diagram_area').insert(frame);
             
             Event.observe(frame,'load',function(){
@@ -651,7 +655,8 @@ I want to preserve the css color for inverted diagrams in png
 
     
 	    if($('webtronics_properties_ok'))Event.observe($('webtronics_properties_ok'), 'click', function() {
-			    $('webtronics_properties_div').hide();
+			    $("webtronics_print_dir_field").style.display="none";
+			    $('webtronics_properties_div').style.display='none';
 			    webtronics.enablepage();
                 var model=webtronics.circuit.selected[0];
                 webtronics.circuit.writewtx(model,"id",$('webtronics_part_id').value);
@@ -661,7 +666,8 @@ I want to preserve the css color for inverted diagrams in png
 		    });
 
 		    if($('webtronics_properties_cancel'))Event.observe($('webtronics_properties_cancel'), 'click', function() {
-			    $('webtronics_properties_div').hide();
+			    $("webtronics_print_dir_field").style.display="none";
+			    $('webtronics_properties_div').style.display='none';
 			    webtronics.enablepage();
             });
 
@@ -704,7 +710,7 @@ I want to preserve the css color for inverted diagrams in png
             if($("webtronics_image_ok")){
        		    Event.observe($('webtronics_image_ok'), 'click', function() {
 			        webtronics.enablepage();
-			        $('webtronics_image').hide();
+			        $('webtronics_image').style.display='none';
 			        webtronics.setMode('webtronics_select','select','Selection');
 		        });
         
@@ -748,43 +754,48 @@ I want to preserve the css color for inverted diagrams in png
 		    });
 		    Event.observe($('webtronics_chip_cancel'), 'click', function() {
 			    webtronics.enablepage();
-			    $('webtronics_chips_box').hide();
+			    $('webtronics_chips_box').style.display='none';
 			    webtronics.setMode('webtronics_select','select','Selection');
 		    });
     /*text add events*/
 		    if($("webtronics_text_ok")){
 			    Event.observe($('webtronics_text_ok'), 'click', function() {
 				    webtronics.circuit.addtext($('webtronics_comment').value);
-				    $('webtronics_add_text').hide();
+				    $('webtronics_add_text').style.display='none';
 				    webtronics.setMode('webtronics_select','select','Selection');
 			    });
 		    }
 		    if($("webtronics_text_cancel")){
 			    Event.observe($('webtronics_text_cancel'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
-				    $('webtronics_add_text').hide();
+				    $('webtronics_add_text').style.display='none';
 			    });
 		    }
    /*netlist text events*/
             if($("webtronics_netlist_text_ok")){
 			    Event.observe($('webtronics_netlist_text_ok'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
-				    $('webtronics_netlist_text').hide();
+				    $('webtronics_netlist_text').style.display='none';
                     webtronics.enablepage();
 			    });
             }  
             if($("webtronics_netlist_text_run")){
 			    Event.observe($('webtronics_netlist_text_run'), 'click', function() {
 				    webtronics.gnucapjs($("webtronics_netlist_text_area").value);
-				    //$('webtronics_netlist_text').hide();
+				    //$('webtronics_netlist_text').style.visibility='none';
 				    //webtronics.enablepage();
 			    });
             }  
      /*scope events*/
            if($("webtronics_scope_display")){
-			    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
+	      this.scopestatus=$("webtronics_scope_display_status");
+	      $("webtronics_scope_output_graph").checked=true;
+	      Event.observe($("webtronics_scope_output_graph"),'click',function(){$("webtronics_scope_display_frame").contentWindow.displaygraph()});
+	      Event.observe($("webtronics_scope_output_log"),'click', function(){$("webtronics_scope_display_frame").contentWindow.displaylog()});
+		
+	      Event.observe($('webtronics_scope_display_ok'), 'click', function() {
 				    webtronics.setMode('webtronics_select','select','Selection');
-				    $('webtronics_scope_display').hide();
+				    $('webtronics_scope_display').style.display='none';
 				    $('webtronics_scope_display_div').innerHTML="";
 				    //                    webtronics.enablepage();
                 });
@@ -807,12 +818,12 @@ I want to preserve the css color for inverted diagrams in png
 
     /*text open events*/
 		    Event.observe($('webtronics_open_text_ok'), 'click', function() {
-			    $('webtronics_open_text').hide();
+			    $('webtronics_open_text').style.display='none';
 		    });
 		    Event.observe($('webtronics_open_text_cancel'), 'click', function() {
 			    webtronics.setMode('webtronics_select','select','Selection');
 
-			    $('webtronics_open_text').hide();
+			    $('webtronics_open_text').style.display='none';
 		    });
 
 	

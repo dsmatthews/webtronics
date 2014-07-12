@@ -33,10 +33,27 @@
   <script type='text/javascript'>
 
     var graph={
+ //drawing context 
     width:640,
     height:480,
-  gnucap2canvas:function(t){
-  console.log(t);
+    grid:80,
+    drawgrid:function(c){
+    ctx=c.getContext("2d");
+    
+    for(var h=graph.grid;h<graph.height;h+=graph.grid){
+      ctx.moveTo(0,h);
+      ctx.lineTo(graph.width,h);
+    }
+    for(var v=graph.grid;v<graph.width;v+=graph.grid){
+      ctx.moveTo(v,0);
+      ctx.lineTo(v,graph.height);
+    }
+    ctx.strokeStyle="grey";
+    ctx.linWidth=.1;
+    ctx.stroke();
+
+    },
+  parsegnucap:function(t){
   var points = [];
       try{      
 	var text = t.split(/(#Time|#Freq).*\n/);
@@ -46,14 +63,12 @@
         var samples=text.split('\n');
         }
         catch(e){
-	console.log("could not parse output");
         return;
         }
     var k=0;
     for(var i=0;i<samples.length;i++){
 // if first character is not a digit skip this line
       if(samples[i].match(/^\s*\d+/)==null){
-	console.log("Skipping "+samples[i]);
 	continue;
       }
       var s = samples[i].match(/\S+/g);
@@ -86,18 +101,16 @@
       k++;
     }
     if(points.length<10){
-      console.log("not enough points to graph");
-      return;
+      return undefined;
     }
-      
+    return points;
+  },
+  gnucap2canvas:function(points,canvas){
     colors=["red","blue","green","gold","hotpink","orange"];
     var font=20;
-    var canvas=document.createElement('canvas'); 
-    canvas.setAttribute("width",window.innerWidth);
-    canvas.setAttribute("height",window.innerHeight);
-    var ctx=canvas.getContext("2d");
+    ctx=canvas.getContext("2d");
 /*I want to scale the graph so I can get more detailed information in it*/
-    ctx.scale(window.innerWidth/graph.width,window.innerHeight/graph.height);
+    ctx.setTransform(window.innerWidth/graph.width,0,0,window.innerHeight/graph.height,0,0);
     ctx.fillStyle = "white";
     ctx.fillRect(0,0,graph.width,graph.height);
 
@@ -135,60 +148,78 @@
 
     //add the text
     ctx.font=font+"px Arial";
-    for(var i=plots.length-2;i>0;i--){
+    for(var i=points[0].length-1;i>0;i--){
 
       ctx.fillStyle = colors[i-1];
       ctx.fillText(i.toString(),0,i*(font*2));
     }
       ctx.fillStyle = "black";  //<======= here
-      ctx.fillText("min="+min.toExponential()+" max="+max.toExponential(),0,graph.height-font);
-      ctx.fillText("start="+points[0][0]+" stop="+points[points.length-1][0],0,graph.height);
-     return canvas;
-
+      ctx.fillText("start = "+min.toExponential()+" grid = "+((max-min)/graph.grid).toExponential(),0,graph.height-font);
+      ctx.fillText("start="+points[0][0].toExponential()+" grid = "+((points[points.length-1][0]-points[0][0])/graph.grid).toExponential()+" / div",0,graph.height);
   },  
  }
+
+ 
+ 
+ 
+ 
       var simdata="";
+      var scopestatus=parent.webtronics.scopestatus; 
+      var outputtype="graph";
+      var canvas=document.createElement('canvas'); 
       var statusElement = document.getElementById('gnucap_scope_display_div');
+      statusElement.style.overflow="hidden";
+      statusElement.innerHTML="";
+      canvas.setAttribute("width",window.innerWidth);
+      canvas.setAttribute("height",window.innerHeight);
+      statusElement.appendChild(canvas);
       var outputtext = document.createElement("pre");
       outputtext.id="gnucap_output";
       var gnucapWorker = new Worker("gnucap-io.js");
       var newtext = "";
       var timer=undefined;
-      gnucapWorker.onmessage = function (oEvent) {
-	if(simdata==""){
-	  statusElement.textContent="";
-	  statusElement.appendChild( outputtext );
-	}
-	if(oEvent.data=="SIMULATION COMPLETED"){
-	    var canvas=graph.gnucap2canvas(simdata);
-	    if(canvas!=undefined){
-/*scale the image*/		
-	      
-/*this element should not overflow but it does so I remove scrollbars*/
-	      statusElement.style.overflow="hidden";
-	      statusElement.innerHTML="";
-/* i want the image png so people can share them*/	 
-	      statusElement.appendChild(canvas);
-	    }
-	    else{
-		newtext+="COULD NOT PARSE OUTPUT DATA";
-		updatetext();
 
-		}
-	}
-	else{
-	  simdata += oEvent.data;
-	  newtext+=oEvent.data;
-//limit update rate
-      	  if(timer==undefined)timer=setTimeout(function(){
-			      outputtext.innerHTML+=newtext;
-			      statusElement.scrollTop = statusElement.scrollHeight + statusElement.clientHeight;
-			      timer=undefined;
-			      newtext=""},500);
-	}
+      function displaylog(){
+	statusElement.removeChild(canvas);
+	statusElement.appendChild(outputtext);
+	statusElement.style.overflow="auto";
+	statusElement.scrollTop = statusElement.scrollHeight + statusElement.clientHeight;
+      }
+
+      function displaygraph(){
+	statusElement.removeChild(outputtext);
+	statusElement.appendChild(canvas);
+	statusElement.style.overflow="hidden";
       }
       
       
+      gnucapWorker.onmessage = function (oEvent) {
+	if(oEvent.data=="SIMULATION COMPLETED"){
+	  scopestatus.innerHTML="   SIMULATION COMPLETED";
+	}
+	else{
+	  newtext+=oEvent.data
+	  if(timer==undefined)timer=setTimeout(function(){
+			      simdata+=newtext;
+			      outputtext.innerHTML+=newtext;
+			      console.log(newtext);
+			      var data=graph.parsegnucap(simdata)
+			      if(data!=undefined){
+				graph.gnucap2canvas(data,canvas);
+				graph.drawgrid(canvas);
+				
+				}
+			      timer=undefined;
+			      newtext=""},500);
+	    }
+	}
+      
+      
+		  
+		  //limit update rate
+	
+      
+      scopestatus.innerHTML="   SIMULATION IN PROGRESS  ";
       var spicenetlist= parent.webtronics.spicenetlist;
       gnucapWorker.postMessage(spicenetlist); // start the worker.
 

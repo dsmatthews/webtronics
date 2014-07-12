@@ -10,7 +10,6 @@
 	  FS.writeFile("/temp",spicenetlist);
 		 }],
         postRun:[function(){
-		  //console.log('test');
 		 }],
 	arguments:["-b","/temp"],
         print:function(text) {

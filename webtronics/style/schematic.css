@@ -222,7 +222,7 @@ div#webtronics_toolbar{
 
 /*popups*/
 div.modal{
-	display:none; 
+	display:none;
 	position:absolute; 
 	left:200px; 
 	top:10px; 
@@ -231,6 +231,12 @@ div.modal{
 	background-color:inherit; 
 	padding: 5px;
 }
+
+
+#webtronics_properties_div>*{
+clear:left;
+}
+
 #webtronics_chips_box>*{
 float:left;
 }
@@ -299,7 +305,10 @@ float:left;
     overflow: auto;
   } 
 
-
+#webtronics_print_dir_field{
+    display:none;
+    clear:right;
+}
 
 div#webtronics_status_bar{
 	float:left;
@@ -311,7 +320,7 @@ div#webtronics_status_bar{
 	-ms-user-select:none;
 }
 div#webtronics_disable{
-    visibility:hidden;
+    display:none;
 	position:absolute;
 	left:0;
 	top:0;
@@ -383,4 +392,12 @@ div#webtronics_scope_display{
   height:370px;
   overflow: hide;
 }
-
+div#webtronics_scope_status_bar{
+	float:left;
+	 width:100%;
+	 height:auto ;
+	 background-color:inherit;
+ 	-moz-user-select:none;
+	-webkit-user-select:none;
+	-ms-user-select:none;
+}

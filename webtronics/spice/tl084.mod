@@ -24,7 +24,7 @@
 
 
   EGND 99  98 3 0 .5
-  EGND 99  0 4 0 .5
+  EGND 98  0 4 0 .5
   FB    7 99  VB 4.715E6 
   FB    7 99  VC -5E6 
   FB    7 99  VE 5E6 
