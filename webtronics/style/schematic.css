@@ -389,7 +389,7 @@ div#webtronics_scope_display_div{
 
 div#webtronics_scope_display{
   width:540px;
-  height:370px;
+  height:auto;
   overflow: hide;
 }
 div#webtronics_scope_status_bar{

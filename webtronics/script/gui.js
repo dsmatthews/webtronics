@@ -6,6 +6,7 @@ var webtronics={
         description:null,
         file_id:null,
 	scopestatus:null,
+	scopedata:null,
 	
 	tabs:[],
         mode:'',
@@ -788,7 +789,9 @@ I want to preserve the css color for inverted diagrams in png
             }  
      /*scope events*/
            if($("webtronics_scope_display")){
-	      this.scopestatus=$("webtronics_scope_display_status");
+	      this.scopestatus=$("webtronics_scope_status");
+	      this.scopedata=$("webtronics_scope_data");
+	      
 	      $("webtronics_scope_output_graph").checked=true;
 	      Event.observe($("webtronics_scope_output_graph"),'click',function(){$("webtronics_scope_display_frame").contentWindow.displaygraph()});
 	      Event.observe($("webtronics_scope_output_log"),'click', function(){$("webtronics_scope_display_frame").contentWindow.displaylog()});

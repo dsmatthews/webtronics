@@ -18,7 +18,8 @@
 	padding:0px;
 	border-width: 0px;
 	background-color:#ffffff;
-	overflow:auto;
+	border-style:none;
+	overflow:none;
 	width:480px;
 	height:360px;
 	}
@@ -37,6 +38,7 @@
     width:640,
     height:480,
     grid:80,
+    infotext:"",
     drawgrid:function(c){
     ctx=c.getContext("2d");
     
@@ -124,13 +126,13 @@
       }
     }
     if(isNaN(min)||isNaN(max))return;
-    var hsize=(graph.width-font)/points.length;
-    var vsize=(graph.height-(font*3))/(max-min);
+    var hsize=graph.width/points.length;
+    var vsize=graph.height/(max-min)-1;
     for(var sample=1;sample<points[0].length;sample++){
       ctx.beginPath();
       for(var time=0;time<points.length;time++){
-        var x=parseInt(hsize*time)+font;
-        var y =parseInt(vsize * (max-points[time][sample]))+font;
+        var x=parseInt(hsize*time);
+        var y =parseInt(vsize * (max-points[time][sample]));
         if(isNaN(x)||isNaN(y)){
           console.log(samples[time]);
         }
@@ -146,16 +148,10 @@
       ctx.stroke();
     }  
 
-    //add the text
-    ctx.font=font+"px Arial";
-    for(var i=points[0].length-1;i>0;i--){
-
-      ctx.fillStyle = colors[i-1];
-      ctx.fillText(i.toString(),0,i*(font*2));
-    }
-      ctx.fillStyle = "black";  //<======= here
-      ctx.fillText("start = "+min.toExponential()+" grid = "+((max-min)/graph.grid).toExponential(),0,graph.height-font);
-      ctx.fillText("start="+points[0][0].toExponential()+" grid = "+((points[points.length-1][0]-points[0][0])/graph.grid).toExponential()+" / div",0,graph.height);
+      console.log(points);
+      graph.infotext = "vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.width/graph.grid)).toExponential()+"\n";
+      graph.infotext +="hstart  = " + points[0][0].toExponential()+ " grid = "+points[points.length-1][0]/(graph.width/graph.grid);
+      
   },  
  }
 
@@ -164,15 +160,20 @@
  
  
       var simdata="";
-      var scopestatus=parent.webtronics.scopestatus; 
       var outputtype="graph";
       var canvas=document.createElement('canvas'); 
-      var statusElement = document.getElementById('gnucap_scope_display_div');
-      statusElement.style.overflow="hidden";
-      statusElement.innerHTML="";
+ //status element from parent
+      var webtronicsstatus=parent.webtronics.scopestatus; 
+      var webtronicsdata=parent.webtronics.scopedata; 
+      
+      
+      
+      var displayElement = document.getElementById('gnucap_scope_display_div');
+      displayElement.style.overflow="hidden";
+      displayElement.innerHTML="";
       canvas.setAttribute("width",window.innerWidth);
       canvas.setAttribute("height",window.innerHeight);
-      statusElement.appendChild(canvas);
+      displayElement.appendChild(canvas);
       var outputtext = document.createElement("pre");
       outputtext.id="gnucap_output";
       var gnucapWorker = new Worker("gnucap-io.js");
@@ -180,22 +181,22 @@
       var timer=undefined;
 
       function displaylog(){
-	statusElement.removeChild(canvas);
-	statusElement.appendChild(outputtext);
-	statusElement.style.overflow="auto";
-	statusElement.scrollTop = statusElement.scrollHeight + statusElement.clientHeight;
+	displayElement.removeChild(canvas);
+	displayElement.appendChild(outputtext);
+	displayElement.style.overflow="auto";
+	displayElement.scrollTop = displayElement.scrollHeight + displayElement.clientHeight;
       }
 
       function displaygraph(){
-	statusElement.removeChild(outputtext);
-	statusElement.appendChild(canvas);
-	statusElement.style.overflow="hidden";
+	displayElement.removeChild(outputtext);
+	displayElement.appendChild(canvas);
+	displayElement.style.overflow="hidden";
       }
       
       
       gnucapWorker.onmessage = function (oEvent) {
 	if(oEvent.data=="SIMULATION COMPLETED"){
-	  scopestatus.innerHTML="   SIMULATION COMPLETED";
+	  webtronicsstatus.innerHTML="   SIMULATION COMPLETED";
 	}
 	else{
 	  newtext+=oEvent.data
@@ -207,7 +208,7 @@
 			      if(data!=undefined){
 				graph.gnucap2canvas(data,canvas);
 				graph.drawgrid(canvas);
-				
+				webtronicsdata.innerHTML=graph.infotext;
 				}
 			      timer=undefined;
 			      newtext=""},500);
@@ -219,7 +220,7 @@
 		  //limit update rate
 	
       
-      scopestatus.innerHTML="   SIMULATION IN PROGRESS  ";
+      webtronicsstatus.innerHTML="   SIMULATION IN PROGRESS  ";
       var spicenetlist= parent.webtronics.spicenetlist;
       gnucapWorker.postMessage(spicenetlist); // start the worker.
 
