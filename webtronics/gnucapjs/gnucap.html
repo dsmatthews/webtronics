@@ -149,7 +149,7 @@
     }  
 
       console.log(points);
-      graph.infotext = "vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.width/graph.grid)).toExponential()+"\n";
+      graph.infotext = "vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential()+"\n";
       graph.infotext +="hstart  = " + points[0][0].toExponential()+ " grid = "+points[points.length-1][0]/(graph.width/graph.grid);
       
   },  
