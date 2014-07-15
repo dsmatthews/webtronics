@@ -38,6 +38,7 @@
     width:640,
     height:480,
     grid:80,
+    colors:["red","blue","green","gold","hotpink","orange"],
     infotext:"",
     drawgrid:function(c){
     ctx=c.getContext("2d");
@@ -105,10 +106,11 @@
     if(points.length<10){
       return undefined;
     }
+    graph.infotext="";
+    for(var i=0 ; i< plots.length-1;i++)graph.infotext+="<font color="+graph.colors[i]+">"+plots[i+1]+" </font>" 
     return points;
   },
   gnucap2canvas:function(points,canvas){
-    colors=["red","blue","green","gold","hotpink","orange"];
     var font=20;
     ctx=canvas.getContext("2d");
 /*I want to scale the graph so I can get more detailed information in it*/
@@ -126,7 +128,7 @@
       }
     }
     if(isNaN(min)||isNaN(max))return;
-    var hsize=graph.width/points.length;
+    var hsize=graph.width/(points.length-1);
     var vsize=graph.height/(max-min)-1;
     for(var sample=1;sample<points[0].length;sample++){
       ctx.beginPath();
@@ -143,13 +145,12 @@
 	  ctx.lineTo(x,y);
 	}
       }
-      ctx.strokeStyle=colors[sample-1];
+      ctx.strokeStyle=graph.colors[sample-1];
       ctx.linWidth=1;
       ctx.stroke();
     }  
-
-      console.log(points);
-      graph.infotext = "vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential()+"\n";
+      
+      graph.infotext += "<br>vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential()+"<br>";
       graph.infotext +="hstart  = " + points[0][0].toExponential()+ " grid = "+points[points.length-1][0]/(graph.width/graph.grid);
       
   },  
@@ -190,6 +191,7 @@
       function displaygraph(){
 	displayElement.removeChild(outputtext);
 	displayElement.appendChild(canvas);
+	displayElement.scrollTop=0;
 	displayElement.style.overflow="hidden";
       }
       

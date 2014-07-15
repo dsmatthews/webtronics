@@ -18,6 +18,7 @@
     <wtx:spice></wtx:spice>
     <wtx:flip></wtx:flip>
     <wtx:model></wtx:model>
+    <wtx:measure></wtx:measure>
 </wtx:part>
 </metadata>
   <path id="path2193" d="M0,20h10"/>
