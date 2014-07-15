@@ -307,6 +307,8 @@ var webtronics={
     /*add a new frame */
     $('webtronics_scope_display_div').innerHTML='';
     $("webtronics_scope_output_graph").checked=true;
+    $("webtronics_scope_status").innerHTML="DOWNLOADING GNUCAP";
+
     var frame=new Element('iframe',{id:'webtronics_scope_display_frame',src:'gnucapjs/gnucap.html',width:"100%",height:"100%"});
     $('webtronics_scope_display_div').insert(frame);
     $("webtronics_scope_display").style.display="block"
