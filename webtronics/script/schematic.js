@@ -144,7 +144,6 @@ Schematic.prototype.addhistory=function(){
     // pass in the target node, as well as the observer options
    this.changeobserver.observe(this.drawing, config);
 
-   console.log("redo " + this.redolist.length +" " + this.undolist.length);
 }
 
 
@@ -168,7 +167,6 @@ if(this.redolist.length){
     this.changeobserver.observe(this.drawing, config);
     this.showallconnects();
 }
- console.log("redo "+this.redolist.length +" " + this.undolist.length);
   
 }
 
@@ -218,7 +216,7 @@ Schematic.prototype.updateinfo=function(mutations){
   
   
   if(update){
-    console.log("updating");
+//    console.log("updating");
     if(!this.drag)this.addhistory();
     this.hideconnects();
     this.showallconnects();
