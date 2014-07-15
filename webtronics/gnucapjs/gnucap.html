@@ -207,6 +207,7 @@
 	else{
 	  newtext+=oEvent.data
 	  if(timer==undefined)timer=setTimeout(function(){
+			      if(!simdata.length)webtronicsstatus.innerHTML="   SIMULATION IN PROGRESS  ";
 			      simdata+=newtext;
 			      outputtext.innerHTML+=newtext;
 			      //console.log(newtext);
@@ -226,7 +227,6 @@
 		  //limit update rate
 	
       
-      webtronicsstatus.innerHTML="   SIMULATION IN PROGRESS  ";
       var spicenetlist= parent.webtronics.spicenetlist;
       gnucapWorker.postMessage(spicenetlist); // start the worker.
 
