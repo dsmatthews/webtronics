@@ -57,6 +57,7 @@
 
     },
   parsegnucap:function(t){
+//this part separates the intro from the 
   var points = [];
       try{      
 	var text = t.split(/(#Time|#Freq).*\n/);
@@ -154,7 +155,7 @@
       ctx.stroke();
     }  
       
-      graph.infotext += "<br>vstart  = " + min.toExponential()+ " grid = "+((max-min)/graph.grid).toExponential()+"<br>";
+      graph.infotext += "<br>vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential()+"<br>";
       graph.infotext +="hstart  = " + points[0][0].toExponential()+ " grid = "+points[points.length-1][0]/(graph.width/graph.grid);
       
   },  
