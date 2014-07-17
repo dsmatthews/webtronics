@@ -62,11 +62,11 @@ function Schematic(elem) {
   this.mode = 'select';
   /*array of nodes*/
   this.selected = [];
-  this.wirenodes=[];
-  /*selecting rectangle*/
+  //this.wirenodes=[];
   this.undolist=[];
   this.redolist=[];
   this.drag=0;	
+  /*selecting rectangle*/
   this.selectionRect = { x:0, y:0, width:0, height: 0 };
   this.mouseDown={x:0,y:0};
   //	this.viewoffset={x:0,y:0};

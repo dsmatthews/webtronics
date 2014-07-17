@@ -324,7 +324,7 @@ Schematic.prototype.followwires=function(wires,pin){
   if(wires==null)wires=[];
   var points=[];
   points.push(pin);	
-  var lines =$$('#webtronics_drawing > line, #information > .namewire');
+  var lines =$$('#webtronics_drawing > line, #information > .webtronics_namewire_connector');
   for(var i =0 ;i<lines.length;i++){
     var point1={x:lines[i].getAttribute('x1')-0,y:lines[i].getAttribute('y1')-0};
     var point2={x:lines[i].getAttribute('x2')-0,y:lines[i].getAttribute('y2')-0};
@@ -485,7 +485,7 @@ Schematic.prototype.createnetlist=function(responsefunc){
       }
       
       spice=spice.concat(".end \n");	
-      var connector=$$('#information > .namewire')
+      var connector=$$('#information > .webtronics_namewire_connector')
       for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
       
       responsefunc(spice.toLowerCase());
@@ -617,7 +617,7 @@ Schematic.prototype.showallconnects=function(){
 
 Schematic.prototype.hideconnects=function(){
   
-  var connector=$$('#information .schematic_connector,#information .namewire')
+  var connector=$$('#information .schematic_connector,#information .webtronics_namewire_connector')
   for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 }
 
