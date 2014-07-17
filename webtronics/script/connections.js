@@ -160,7 +160,7 @@ Schematic.prototype.connectnamewires=function(list){
       for(var j=i;j<list.length;j++){
 	if( (list[i]!=list[j]) && ((list[i].id==list[j].id) || (list[i].type=="gnd" && list[j].type=="gnd"))   ){
 	  var line= this.createline('yellow',1,list[i]['analogpins'][0]['x'],list[i]['analogpins'][0]['y'],list[j]['analogpins'][0]['x'],list[j]['analogpins'][0]['y']);
-	  line.setAttributeNS(null,'class','namewire');
+	  line.setAttributeNS(null,'class','webtronics_namewire_connector');
 	  this.info.appendChild(line);
 	  //console.log(line);            
 	  break; 
