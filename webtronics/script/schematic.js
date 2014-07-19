@@ -1014,6 +1014,7 @@ Schematic.prototype.dropSelection=function(){
 
 
 Schematic.prototype.onMouseUp = function(event) {
+//  if(this.mode=="line")return;
   if(event.isLeftClick(event)){
     //        console.log('mouseup');
     /*hide the menu*/

@@ -272,7 +272,7 @@ var webtronics={
     Event.observe(this.circuit.container,'contextmenu',function(e){
       $('webtronics_context_menu').style.top=Event.pointerY(e)+'px';                        
       $('webtronics_context_menu').style.left=Event.pointerX(e)+'px';                        
-      $('webtronics_context_menu').style.display='block';                        
+      if(this.circuit.mode =="select")$('webtronics_context_menu').style.display='block';                        
       if(this.circuit.selected.length===1&& this.circuit.selected[0].tagName==='g'){
 	$$('div#webtronics_context_menu [title=Properties]')[0].className='enabled';
       }
