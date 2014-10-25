@@ -822,10 +822,8 @@ Schematic.prototype.wireevents=function(svg){
 	      this.changeobserver.disconnect();
 	      var connect=true;
 	      var dots=$$("#webtronics_drawing > circle");
-	      console.log(dots);
 	      dots.each(function(dot){if(dot.getAttribute("cx")==data[1] &&  dot.getAttribute("cy")==data[2])connect=false;});
 	      if(connect){
-		console.log("writing dot");
 		this.drawing.appendChild(this.createdot('black',data[1],data[2],3));
 	      }
 //check if there is aalready a dot
