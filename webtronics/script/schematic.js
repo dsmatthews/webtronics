@@ -122,11 +122,10 @@ if(this.undolist.length > 1){
     else if(this.drawing.getAttribute('class')=='inv')this.drawing.removeAttribute('class');
     this.drawing.setAttribute('transform',this.background.getAttribute('transform'));
 
-    // configuration of the observer:
-    var config = { attributes: true, childList: true, characterData: true ,subtree:true};
-    // pass in the target node, as well as the observer options
-    this.changeobserver.observe(this.drawing, config);
     this.addconnects();
+    // configuration of the observer:
+    // pass in the target node, as well as the observer options
+    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 
     
 }
@@ -140,9 +139,7 @@ Schematic.prototype.addhistory=function(){
    this.changeobserver.disconnect();
    this.undolist.push(this.drawing.cloneNode(true));
     // configuration of the observer:
-    var config = { attributes: true, childList: true, characterData: true ,subtree:true};
-    // pass in the target node, as well as the observer options
-   this.changeobserver.observe(this.drawing, config);
+    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 
 }
 
@@ -164,8 +161,8 @@ if(this.redolist.length){
     // configuration of the observer:
     var config = { attributes: true, childList: true, characterData: true ,subtree:true};
     // pass in the target node, as well as the observer options
-    this.changeobserver.observe(this.drawing, config);
     this.addconnects();
+    this.changeobserver.observe(this.drawing, config);
 }
   
 }
@@ -783,7 +780,6 @@ Schematic.prototype.realPosition=function(x,y){
 Schematic.prototype.wiresegment=function(){
       if($('templine1')){
 	/*create line*/
-	
 	var x1=$('templine1').getAttributeNS(null,'x1');
 	var y1=$('templine1').getAttributeNS(null,'y1');
 	var x2=$('templine1').getAttributeNS(null,'x2');
@@ -808,7 +804,6 @@ Schematic.prototype.wiresegment=function(){
 /*mousedown event handler*/
 Schematic.prototype.onMouseDown = function(event){
   if(!this.drag){
-     this.changeobserver.disconnect();
 
     var real=this.realPosition(Event.pointerX(event),Event.pointerY(event));
     this.mouseDown.x = Math.round(real.x/this.grid) * this.grid;
@@ -865,9 +860,6 @@ Schematic.prototype.onMouseDown = function(event){
       }
       
     }
-    var config = { attributes: true, childList: true, characterData: true ,subtree:true};
-    // pass in the target node, as well as the observer options
-    this.changeobserver.observe(this.drawing, config);
 
     
   }

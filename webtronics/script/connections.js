@@ -643,6 +643,7 @@ Schematic.prototype.addconnects=function(){
 	Event.observe(circle,"mousedown",function(){
 	  var data = $A(arguments);
 	  data.shift();							
+	  this.changeobserver.disconnect();
 	  if(this.mode=='select'){
 	    parent.webtronics.setMode('line','Wire');
 	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
@@ -651,9 +652,12 @@ Schematic.prototype.addconnects=function(){
 	    this.info.appendChild(svg);
 	  }
 	  else{
-	    parent.webtronics.setMode('select','Selection');
 	    this.wiresegment();
 	    this.remove($("templine1"));
+	    this.addhistory();
+	    this.addconnects();
+	    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
+	    parent.webtronics.setMode('select','Selection');
 	  }
 	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
     }
@@ -684,6 +688,7 @@ Schematic.prototype.addconnects=function(){
 	Event.observe(rect,"mousedown",function(){
 	  var data = $A(arguments);
 	  data.shift();							
+	  this.changeobserver.disconnect();
 	  if(this.mode=='select'){
 	    parent.webtronics.setMode('line','Wire');
 	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
@@ -692,9 +697,12 @@ Schematic.prototype.addconnects=function(){
 	    this.info.appendChild(svg);
 	  }
 	  else{
-	    parent.webtronics.setMode('select','Selection');
 	    this.wiresegment();
 	    this.remove($("templine1"));
+	    this.addhistory();
+	    this.addconnects();
+	    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
+	    parent.webtronics.setMode('select','Selection');
 	  }
 	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
 	
@@ -717,6 +725,8 @@ Schematic.prototype.addconnects=function(){
 
 
 Schematic.prototype.connect =function(line,x,y){
+
+  
 
     var x1=line.getAttributeNS(null,"x1")-0;                       
     var x2=line.getAttributeNS(null,"x2")-0;                       
@@ -804,8 +814,8 @@ Schematic.prototype.wireevents=function(svg){
 	    Event.observe(circle,"mousedown",function(){
 	      var data = $A(arguments);
 	      data.shift();
+		this.changeobserver.disconnect();
 	      this.drawing.appendChild(this.createdot('black',data[1],data[2],3));
-
 	      this.connect(data[0],data[1],data[2]);
 	
 	      if(this.mode=='select'){
@@ -816,11 +826,14 @@ Schematic.prototype.wireevents=function(svg){
 		this.info.appendChild(svg);
 	      }
 	      else{
+		this.addhistory();
+		this.addconnects();
+		this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 		parent.webtronics.setMode('select','Selection');
 	      }
+
 	      var connector=$$('#information > .webtronics_schematic_wire_connector');
 	      for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
-			  
 	    }.bindAsEventListener(this,data[0],x,y));
 	  }
 	    this.info.appendChild(circle);
