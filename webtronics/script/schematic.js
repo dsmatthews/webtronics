@@ -126,10 +126,11 @@ if(this.undolist.length > 1){
     var config = { attributes: true, childList: true, characterData: true ,subtree:true};
     // pass in the target node, as well as the observer options
     this.changeobserver.observe(this.drawing, config);
-  
+    this.addconnects();
+
+    
 }
   
- console.log("redo " + this.redolist.length +" " + this.undolist.length);
   
 }
 
@@ -164,6 +165,7 @@ if(this.redolist.length){
     var config = { attributes: true, childList: true, characterData: true ,subtree:true};
     // pass in the target node, as well as the observer options
     this.changeobserver.observe(this.drawing, config);
+    this.addconnects();
 }
   
 }
