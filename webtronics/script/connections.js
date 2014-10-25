@@ -239,7 +239,7 @@ Schematic.prototype.getwtxdata=function(parts){
       //sort nodes int correct order
       part.analogpins.sort(function(a,b){if (a.name > b.name)return 1;if (a.name < b.name)return -1;return 0;});
     }
-    catch(e){part.error="wtx:analog wtx:node not found";}
+    catch(e){}
     
     try{
       var category=this.getwtxtagname(parts[i],"digital")[0];
@@ -358,8 +358,11 @@ Schematic.prototype.numberwires=function(parts){
       if (analogpoints.length==0 ){
 	var wire=this.followwires(null,{x:parts[i].analogpins[0]['x'],y:parts[i].analogpins[0]['y']});
 	analogpoints.push(wire);
+//add this node to thelist of digital wires
+	digitalpoints.push(wire);
       }
       parts[i].analogpins[0]["node"]=0;
+//      parts[i].digitalpins[0]["node"]=0;
       continue;
     }
     if(parts[i].analogpins!=undefined){
@@ -377,8 +380,8 @@ Schematic.prototype.numberwires=function(parts){
     }
     //digital node numbering loop
     
-    if(parts[i].digitalgpins!=undefined){
-      for(var j=0;j<parts[i].digitalgpins.length;j++){
+    if(parts[i].digitalpins!=undefined){
+      for(var j=0;j<parts[i].digitalpins.length;j++){
 	var wire=this.followwires(null,{x:parts[i].digitalpins[j]['x'],y:parts[i].digitalpins[j]['y']});
 	var found=this.getconnected(digitalpoints,wire);
 	if(found<0){
@@ -401,8 +404,8 @@ Schematic.prototype.numberwires=function(parts){
 Schematic.prototype.getnodes=function(parts){
   var sections={netlist:[],firstdir:[],simulation:[],lastdir:[]};    
   
-  if(this.numberwires(parts))return {firstdir:[],netlist:[{error:"pin is both analog and digital"}],lastdir:[],plot:[]};
-  
+  //if(this.numberwires(parts))return {firstdir:[],netlist:[{error:"pin is both analog and digital"}],lastdir:[],plot:[]};
+  this.numberwires(parts);
   for(var i=0;i<parts.length; i++){
     //    if(parts[i].type=="wire")continue;
     // check what type of simulation to use
@@ -508,8 +511,13 @@ Schematic.prototype.createnetlist=function(responsefunc){
 	continue;
       }
       command=sections.netlist[i].partid;
-      for(var j=0;j<sections.netlist[i].pins['analog'].length;j++)command += " " + sections.netlist[i].pins['analog'][j]['node'];
-      
+      var pins=[];
+      for(var j=0;j<sections.netlist[i].pins['analog'].length;j++)pins.push(sections.netlist[i].pins['analog'][j]);
+      for(var j=0;j<sections.netlist[i].pins['digital'].length;j++)pins.push(sections.netlist[i].pins['digital'][j]);
+      pins.sort(function(a,b){return a.index > b.index? 1:a.index < b.index?-1:0;})
+//      console.log(pins);
+      for(var j=0;j<pins.length;j++)command += " "+pins[j].node;
+
       command+=" "+sections.netlist[i].model;
       if(command!="")spice+=command+'\n';
     }
@@ -532,20 +540,6 @@ Schematic.prototype.createnetlist=function(responsefunc){
 
 
 
-Schematic.prototype.addconnects=function(elem,pin){
-  var pins=this.getconnects(elem);
-  var str;
-  if(!pins){
-    str=pin.x+','+pin.y;
-    elem.setAttribute('connects',str);
-  }
-  else {
-    str=this.writeconnects(pins);
-    str+=';'+pin.x+','+pin.y;
-    elem.setAttribute('connects',str);
-  }
-  
-}
 
 
 Schematic.prototype.writeconnects=function(pins){
@@ -596,30 +590,246 @@ Schematic.prototype.getnodenumber=function(name, leg){
   return -1
 }
 
-Schematic.prototype.showallconnects=function(){
-  if(this.connections){	
-    var parts=this.getwtxdata($$('#webtronics_drawing > g'));
-    this.connectnamewires(parts);
-    for(var i=0 ;i<parts.length;i++){
-      if(parts[i].analogpins!=undefined)for(var j=0;j<parts[i].analogpins.length;j++){
-	  var circle=this.createdot('red',parts[i].analogpins[j].x,parts[i].analogpins[j].y);
-	  circle.setAttribute('class',"schematic_connector");
-	  this.info.appendChild(circle);
-      }
-      if(parts[i].digitalgpins!=undefined)for(var j=0;j<parts[i].digitalgpins.length;j++){
-  	  var rect=this.createrect('green',100,parts[i].digitalpins[j].x-3,parts[i].digitalpins[j].y-3,6,6);
-	  circle.setAttribute('class',"schematic_connector");
-	  this.info.appendChild(circle);
-      }
-    }
+Schematic.prototype.showconnects=function(elem,pin){
+  var connector=$$('#information > .schematic_connector ,#information > .webtronics_namewire_connector')
+  for(var i=0;i<connector.length;i++){
+	connector[i].setAttribute('visibility','visible');
   }
 }
 
 Schematic.prototype.hideconnects=function(){
+  var connector=$$('#information > .schematic_connector,#information > .webtronics_namewire_connector')
+  for(var i=0;i<connector.length;i++){
+	connector[i].setAttribute('visibility','hidden');
+  }
+}
+
+Schematic.prototype.removeconnects=function(){
   
-  var connector=$$('#information .schematic_connector,#information .webtronics_namewire_connector')
+  var connector=$$('#information > .schematic_connector,#information > .webtronics_namewire_connector,#information > .webtronics_schematic_wire_eventline ')
   for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
 }
+
+  
+Schematic.prototype.addconnects=function(){
+ this.changeobserver.disconnect();
+
+  this.removeconnects();
+  var parts=this.getwtxdata($$('#webtronics_drawing > g'));
+  this.connectnamewires(parts);
+  for(var i=0 ;i<parts.length;i++){
+    if(parts[i].analogpins!=undefined)for(var j=0;j<parts[i].analogpins.length;j++){
+	var circle=this.createdot('red',parts[i].analogpins[j].x,parts[i].analogpins[j].y,4);
+	circle.setAttributeNS(null, 'fill-opacity', .35);
+	circle.setAttribute('class',"schematic_connector");
+	circle.setAttribute("pointer-events","all");
+	circle.setAttribute('visibility','hidden');
+	this.info.appendChild(circle);
+
+	Event.observe(circle,"mouseover",function(){
+	  var data = $A(arguments);
+	  data.shift();							
+	  data[0].setAttribute('visibility','visible');
+	}.bindAsEventListener(this,circle));
+
+	Event.observe(circle,"mouseout",function(){
+	  if(!this.connections){
+	    var data = $A(arguments);
+	    data.shift();							
+	    data[0].setAttribute('visibility','hidden');
+	  }
+	}.bindAsEventListener(this,circle));
+
+	Event.observe(circle,"mousedown",function(){
+	  var data = $A(arguments);
+	  data.shift();							
+	  if(this.mode=='select'){
+	    parent.webtronics.setMode('line','Wire');
+	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
+	    svg.id = 'templine1';
+	    svg.setAttributeNS(null,'stroke-dasharray','3,2');
+	    this.info.appendChild(svg);
+	  }
+	  else{
+	    parent.webtronics.setMode('select','Selection');
+	    this.wiresegment();
+	    this.remove($("templine1"));
+	  }
+	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
+    }
+    
+    
+    if(parts[i].digitalpins!=undefined)for(var j=0;j<parts[i].digitalpins.length;j++){
+	var rect=this.createrect('red',100,parts[i].digitalpins[j].x-3,parts[i].digitalpins[j].y-3,6,6);
+	circle.setAttributeNS(null, 'fill-opacity', .35);
+	rect.setAttribute('class',"schematic_connector");
+	circle.setAttribute("pointer-events","all");
+	circle.setAttribute("visibility","hidden");
+	this.info.appendChild(rect);
+
+	Event.observe(rect,"mouseover",function(){
+	  var data = $A(arguments);
+	  data.shift();							
+	  data[0].setAttribute('visibility','visible');
+	}.bindAsEventListener(this,circle));
+
+	Event.observe(rect,"mouseout",function(){
+	  if(!this.connections){
+	    var data = $A(arguments);
+	    data.shift();
+	    data[0].setAttribute('visibility','hidden');
+	  }
+	}.bindAsEventListener(this,circle));
+
+	Event.observe(rect,"mousedown",function(){
+	  var data = $A(arguments);
+	  data.shift();							
+	  if(this.mode=='select'){
+	    parent.webtronics.setMode('line','Wire');
+	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
+	    svg.id = 'templine1';
+	    svg.setAttributeNS(null,'stroke-dasharray','3,2');
+	    this.info.appendChild(svg);
+	  }
+	  else{
+	    parent.webtronics.setMode('select','Selection');
+	    this.wiresegment();
+	    this.remove($("templine1"));
+	  }
+	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
+	
+    }
+  }
+
+  var lines=$$("#webtronics_drawing > line");
+  for(var i=0;i<lines.length;i++){
+    this.wireevents(lines[i]);
+    
+    
+  }
+  this.hideconnects();  
+  var config = { attributes: true, childList: true, characterData: true ,subtree:true};
+    // pass in the target node, as well as the observer options
+  this.changeobserver.observe(this.drawing, config);
+
+  
+}
+
+
+Schematic.prototype.connect =function(line,x,y){
+
+    var x1=line.getAttributeNS(null,"x1")-0;                       
+    var x2=line.getAttributeNS(null,"x2")-0;                       
+    var y1=line.getAttributeNS(null,"y1")-0;                       
+    var y2=line.getAttributeNS(null,"y2")-0;                       
+    this.remove(line);
+    this.wireevents(this.createline('black',2,x1,y1,x,y));
+    this.wireevents(this.createline('black',2,x,y,x2,y2));
+
+    if($('templine1')){  
+      x1=$('templine1').getAttributeNS(null,'x1');
+      y1=$('templine1').getAttributeNS(null,'y1');
+      x2=$('templine1').getAttributeNS(null,'x2');
+      y2=$('templine1').getAttributeNS(null,'y2');
+      var svg=this.createline('black',2, x1, y1,x2, y2);
+      this.wireevents(svg);
+      this.drawing.appendChild(svg)
+    }
+    if($("templine2")){
+      x1=$('templine2').getAttributeNS(null,'x1');
+      y1=$('templine2').getAttributeNS(null,'y1');
+      x2=$('templine2').getAttributeNS(null,'x2');
+      y2=$('templine2').getAttributeNS(null,'y2');
+      var svg=this.createline('black',2, x1, y1,x2, y2);
+      this.wireevents(svg);
+      this.drawing.appendChild(svg)
+    }
+
+    this.remove($('templine1'));
+  
+  
+}
+
+
+
+Schematic.prototype.wireevents=function(svg){
+	this.drawing.appendChild(svg);
+	
+	var x1=svg.getAttributeNS(null,'x1');
+	var y1=svg.getAttributeNS(null,'y1');
+	var x2=svg.getAttributeNS(null,'x2');
+	var y2=svg.getAttributeNS(null,'y2');
+
+
+//	extra wide line to help capture events
+	var eventline = this.createline('blue',4, x1, y1,x2,y2);
+	eventline.setAttribute('class',"webtronics_schematic_wire_eventline");
+	eventline.setAttribute("pointer-events","all");
+	eventline.setAttribute('visibility','hidden');
+ 	this.info.appendChild(eventline);
+	
+  //line to make connections
+	Event.observe(eventline,"mouseover",function(e){
+	    var connector=$$('#information > .webtronics_schematic_wire_connector');
+	    for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
+	    if(!this.drag){
+
+	    var real=this.realPosition(Event.pointerX(e),Event.pointerY(e));
+	    x = Math.round(real.x/this.grid) * this.grid;
+	    y =Math.round(real.y/this.grid) * this.grid;
+	    var data = $A(arguments);
+	    data.shift();
+	    var circle=this.createdot('red',x,y,5);
+	    circle.setAttribute('class',"webtronics_schematic_wire_connector");
+	    circle.setAttribute("pointer-events","all");
+	    circle.setAttributeNS(null, 'fill-opacity', .35);
+	    circle.setAttribute('visibility','hidden');
+
+
+
+	    Event.observe(circle,"mouseout",function(){
+		  var data = $A(arguments);
+		  data.shift();							
+		  data[0].parentNode.removeChild(data[0]);
+	    }.bindAsEventListener(this,circle));
+
+/*this makes sure dots are not shown when not moused over*/
+
+	    Event.observe(circle,"mouseover",function(){
+		  var data = $A(arguments);
+		  data.shift();							
+		  data[0].setAttribute('visibility','visible');
+	    }.bindAsEventListener(this,circle));
+	    
+	    Event.observe(circle,"mousedown",function(){
+	      var data = $A(arguments);
+	      data.shift();
+	      this.drawing.appendChild(this.createdot('black',data[1],data[2],3));
+
+	      this.connect(data[0],data[1],data[2]);
+	
+	      if(this.mode=='select'){
+		parent.webtronics.setMode('line','Wire');
+		var svg = this.createline('blue',2, data[1], data[2], data[1], data[2]);
+		svg.id = 'templine1';
+		svg.setAttributeNS(null,'stroke-dasharray','3,2');
+		this.info.appendChild(svg);
+	      }
+	      else{
+		parent.webtronics.setMode('select','Selection');
+	      }
+	      var connector=$$('#information > .webtronics_schematic_wire_connector');
+	      for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
+			  
+	    }.bindAsEventListener(this,data[0],x,y));
+	  }
+	    this.info.appendChild(circle);
+	  
+	}.bindAsEventListener(this,svg));
+
+ 
+}
+
 
 
 

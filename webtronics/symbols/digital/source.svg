@@ -4,9 +4,9 @@
 <metadata class="part" >
     <wtx:part xmlns:wtx="http://code.google.com/p/webtronics" >
         <wtx:pins>
-        <wtx:digital>
-            <wtx:node index="1" x="50" y="10" />
-        </wtx:digital>
+        <wtx:analog>
+            <wtx:node index="1" x="50" y="10" ></wtx:node>
+        </wtx:analog>
 
     </wtx:pins>
     <wtx:id>clock</wtx:id>

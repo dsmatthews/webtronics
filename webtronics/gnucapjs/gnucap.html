@@ -126,15 +126,15 @@
     var min=points[0][1];
     var max=points[0][1];
   //calculate max and min height
-    for(var i=0;i<points.length;i++){
-      for(var j=1;j < points[i].length;j++){
-        min=Math.min(min,points[i][j]);
-        max=Math.max(max,points[i][j]);
+    for(var sample=1;sample<points[0].length;sample++){
+      for(var time=0;time < points.length;time++){
+        min=Math.min(min,points[time][sample]);
+        max=Math.max(max,points[time][sample]);
       }
     }
     if(isNaN(min)||isNaN(max))return;
-    var hsize=graph.width/(points.length-1);
-    var vsize=graph.height/(max-min)-1;
+    var hsize=((graph.width-4)/points.length);
+    var vsize=((graph.height-4)/(max-min));
     for(var sample=1;sample<points[0].length;sample++){
       ctx.beginPath();
       for(var time=0;time<points.length;time++){
@@ -155,8 +155,8 @@
       ctx.stroke();
     }  
       
-      graph.infotext += "<br>vstart  = " + min.toExponential()+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential()+"<br>";
-      graph.infotext +="hstart  = " + points[0][0].toExponential()+ " grid = "+points[points.length-1][0]/(graph.width/graph.grid);
+      graph.infotext += "<br>vstart  = " + min.toExponential(4)+ " grid = "+((max-min)/(graph.height/graph.grid)).toExponential(4)+"<br>";
+      graph.infotext +="hstart  = " + points[0][0].toExponential(4)+ " grid = "+(points[points.length-1][0]/(graph.width/graph.grid)).toExponential(4);
       
   },  
  }

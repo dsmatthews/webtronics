@@ -28,10 +28,11 @@
                         "ideal_dac":[".inc digital.lib"]
                         },                    
                     "source":{
-                        "ideal_10ns":[".inc dclock.mod"]
+			"clk":[".inc dsource.mod"]
                         },                
                     "and":{
-                        "and1":[".inc digital.lib"]
+			"and(rise = 0.5e-9 fall = 0.3e-9)":[],
+			"and1":[".inc digital.lib"]
                         },
                     "nand":{
                         "nand1":[".inc digital.lib"]                        
@@ -40,7 +41,7 @@
                         "nor1":[".inc digital.lib"]                        
                         },
                     "not":{
-                        "not1":[".inc digital.lib"]
+                        "inv1":[".inc digital.lib"]
                           },
                     "or":{
                         "or1":[".inc digital.lib"]
@@ -84,14 +85,20 @@
                     },
                     "npn":{
                         "2n3904":[".inc models.lib"],
-                        "2n2222":[".inc models.lib"]                    
-                    },
+                        "2n2222":[".inc models.lib"],                    
+                        "2n3055":[".inc models.lib"]                    
+    
+                        },
                     "pjfet":{},
                     "pnp":{
-                        "2n3906":[".inc models.lib"]
+                        "2n3906":[".inc models.lib"],
+                        "2n2907":[".inc models.lib"]
                     },
                     "nmosfet":{
-		      "2n7000":[".inc 2n7000.mod",".inc models.lib"]
+		      "2n7000":[".inc 2n7000.mod"],
+		      "irf150":[".inc irf150.mod"],
+		      "irf530":[".inc irf530.mod"],
+		      "irfz44n":[".inc irfz44n.mod"]
 		    },
                     "phototrans":{},
                     "pmosfet":{}

@@ -54,15 +54,8 @@ var webtronics={
   },
   
   
-  
-  setMode:function(button,mode, status){
+  setMode:function(mode, status){
     
-    var imgs = $$('.pressed_button');
-    
-    for (var i=0; i<imgs.length; i++) {
-      imgs[i].className = 'normal_button';
-    }
-    $(button).className = 'pressed_button';
     
     $('webtronics_status_bar').innerHTML = 'Mode: '+status;
     $('webtronics_add_text').style.display='none';
@@ -79,8 +72,7 @@ var webtronics={
       if($('webtronics_context_menu'))$('webtronics_context_menu').style.display='none';
     }
     $('webtronics_context_menu').style.display='none';
-    this.mode=mode;
-    this.circuit.mode=this.mode;
+    this.circuit.mode=mode;
     
   },
   
@@ -121,7 +113,7 @@ var webtronics={
       this.circuit.createvalue(this.circuit.selected[0]);
     }
     $('webtronics_chips_box').style.display='none';
-    this.setMode('webtronics_select','select','Selection');
+    this.setMode('select','Selection');
   },
   
   openProperties:function(){
@@ -265,7 +257,7 @@ var webtronics={
   
   attachframe:function(filename,frame){
     this.circuit=frame.contentWindow.circuit;
-    this.setMode('webtronics_select','select', 'Selection');    
+    this.setMode('select', 'Selection');    
     //            this.circuit.mode=this.mode;
     
     /*attach the menu*/
@@ -279,7 +271,6 @@ var webtronics={
       else {
 	$$('div#webtronics_context_menu [title=Properties]')[0].className='disabled';
       }
-      
       Event.stop(e);
     }.bind(this));
     Event.observe(this.circuit.container,'click',function(e){
@@ -496,7 +487,7 @@ console.log(exception);
 			  group=group.nextSibling;
 			}
 			webtronics.circuit.getgroup(group);
-			webtronics.setMode('webtronics_select','select','Selection');
+			webtronics.setMode('select','Selection');
 			
 		      });
 		      Event.observe(part,'mouseup',function(e){
@@ -565,23 +556,30 @@ console.log(exception);
 		  });
 		  Event.observe($('webtronics_chips_open'), 'click', function() {
 		    webtronics.circuit.clearinfo();
-		    webtronics.setMode('webtronics_chips_open','select','Selection');
+		    webtronics.setMode('select','Selection');
 		    chipmaker.openmaker();
 		    $('webtronics_chips_box').style.display = "block";
 		    webtronics.center($('webtronics_chips_box'));
 		    webtronics.disablepage();
 		  });
-		  Event.observe($('webtronics_select'), 'click', function() {
+		  if($("webtronics_select"))Event.observe($('webtronics_select'), 'click', function() {
 		    webtronics.circuit.clearinfo();
-		    webtronics.setMode('webtronics_select','select', 'Selection');
+		    webtronics.setMode('select', 'Selection');
 		  });
-		  Event.observe($('webtronics_wire'), 'click', function() {
+		  if($("webtronics_wire"))Event.observe($('webtronics_wire'), 'click', function() {
 		    webtronics.circuit.clearinfo();
-		    webtronics.setMode('webtronics_wire','line','Wire');
+		    webtronics.setMode('line','Wire');
 		  });
 		  Event.observe($('webtronics_text'), 'click', function() {
 		    webtronics.circuit.clearinfo();
-		    webtronics.setMode('webtronics_text','text', 'Text');
+		    if(button.className=='pressed_button'){
+		      button.className = 'normal_button';
+		      webtronics.setMode('text', 'Text');
+		    }
+		    else {
+		      button.className = 'pressed_button';
+		      webtronics.setMode('select', 'Selection');
+		    }
 		    
 		  });
 		  if($('webtronics_undo')){
@@ -719,7 +717,7 @@ console.log(exception);
 		    Event.observe($('webtronics_image_ok'), 'click', function() {
 		      webtronics.enablepage();
 		      $('webtronics_image').style.display='none';
-		      webtronics.setMode('webtronics_select','select','Selection');
+		      webtronics.setMode('select','Selection');
 		    });
 		    
 		    
@@ -763,26 +761,26 @@ console.log(exception);
 		  Event.observe($('webtronics_chip_cancel'), 'click', function() {
 		    webtronics.enablepage();
 		    $('webtronics_chips_box').style.display='none';
-		    webtronics.setMode('webtronics_select','select','Selection');
+		    webtronics.setMode('select','Selection');
 		  });
 		  /*text add events*/
 		  if($("webtronics_text_ok")){
 		    Event.observe($('webtronics_text_ok'), 'click', function() {
 		      webtronics.circuit.addtext($('webtronics_comment').value);
 		      $('webtronics_add_text').style.display='none';
-		      webtronics.setMode('webtronics_select','select','Selection');
+		      webtronics.setMode('select','Selection');
 		    });
 		  }
 		  if($("webtronics_text_cancel")){
 		    Event.observe($('webtronics_text_cancel'), 'click', function() {
-		      webtronics.setMode('webtronics_select','select','Selection');
+		      webtronics.setMode('select','Selection');
 		      $('webtronics_add_text').style.display='none';
 		    });
 		  }
 		  /*netlist text events*/
 		  if($("webtronics_netlist_text_ok")){
 		    Event.observe($('webtronics_netlist_text_ok'), 'click', function() {
-		      webtronics.setMode('webtronics_select','select','Selection');
+		      webtronics.setMode('select','Selection');
 		      $('webtronics_netlist_text').style.display='none';
 		      webtronics.enablepage();
 		    });
@@ -804,7 +802,7 @@ console.log(exception);
 		    Event.observe($("webtronics_scope_output_log"),'click', function(){$("webtronics_scope_display_frame").contentWindow.displaylog()});
 		    
 		    Event.observe($('webtronics_scope_display_ok'), 'click', function() {
-		      webtronics.setMode('webtronics_select','select','Selection');
+		      webtronics.setMode('select','Selection');
 		      $('webtronics_scope_display').style.display='none';
 		      $('webtronics_scope_display_div').innerHTML="";
 		      //                    webtronics.enablepage();
@@ -831,7 +829,7 @@ console.log(exception);
 		    $('webtronics_open_text').style.display='none';
 		  });
 		  Event.observe($('webtronics_open_text_cancel'), 'click', function() {
-		    webtronics.setMode('webtronics_select','select','Selection');
+		    webtronics.setMode('select','Selection');
 		    
 		    $('webtronics_open_text').style.display='none';
 		  });

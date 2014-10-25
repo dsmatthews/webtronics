@@ -20,9 +20,9 @@
         </wtx:digital>
 
     </wtx:pins>
-    <wtx:id>not</wtx:id>
+    <wtx:id>inv</wtx:id>
 
-    <wtx:type>not</wtx:type>
+    <wtx:type>inv</wtx:type>
     <wtx:name>not</wtx:name>
     <wtx:category>digital</wtx:category>
     <wtx:flip></wtx:flip>

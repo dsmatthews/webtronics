@@ -58,7 +58,7 @@ Schematic.prototype.createrect = function(color,opacity,x, y,width,height){
 }
 
 
-Schematic.prototype.createdot =function(lineColor,x,y){
+Schematic.prototype.createdot =function(lineColor,x,y,radius){
 
   var svg;
 
@@ -66,7 +66,7 @@ Schematic.prototype.createdot =function(lineColor,x,y){
   svg = this.container.ownerDocument.createElementNS(this.svgNs, 'circle');
   svg.setAttributeNS(null, 'cx', x);
   svg.setAttributeNS(null, 'cy', y);
-  svg.setAttributeNS(null, 'r', 3 );
+  svg.setAttributeNS(null, 'r', radius );
 
   if (lineColor.length == 0)
     lineColor = 'none';

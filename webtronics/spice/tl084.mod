@@ -20,16 +20,14 @@
 
 ** POLY font rewritten to make it work under gnucap
 *  EGND 99  0 POLY(2) (3,0) (4,0) 0 .5 .5
+  EGND1 99  98 3 0 .5
+  EGND2 98  0 4 0 .5
 *  FB    7 99 POLY(5) VB VC VE VLP VLN 0 4.715E6 -5E6 5E6 5E6 -5E6
-
-
-  EGND 99  98 3 0 .5
-  EGND 98  0 4 0 .5
-  FB    7 99  VB 4.715E6 
-  FB    7 99  VC -5E6 
-  FB    7 99  VE 5E6 
-  FB    7 99  VLP 5E6 
-  FB    7 99  VLN -5E6
+  FB1    7 99  VB 4.715E6 
+  FB2    7 99  VC -5E6 
+  FB3    7 99  VE 5E6 
+  FB4    7 99  VLP 5E6 
+  FB5    7 99  VLN -5E6
   
   GA    6  0 11 12 282.8E-6
   GCM   0  6 10 99 8.942E-9
