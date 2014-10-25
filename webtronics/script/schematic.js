@@ -855,7 +855,7 @@ Schematic.prototype.onMouseDown = function(event){
 	  else{
 	    addtext.hide();
 	  }	
-	  parent.webtronics.setMode('select','Selection');
+//	  parent.webtronics.setMode('select','Selection');
 	}
       }
       

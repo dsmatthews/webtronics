@@ -572,13 +572,13 @@ console.log(exception);
 		  });
 		  Event.observe($('webtronics_text'), 'click', function() {
 		    webtronics.circuit.clearinfo();
-		    if(button.className=='pressed_button'){
-		      button.className = 'normal_button';
-		      webtronics.setMode('text', 'Text');
+		    if($('webtronics_text').className=='pressed_button'){
+		      $('webtronics_text').className = 'normal_button';
+		      webtronics.setMode('select', 'Selection');
 		    }
 		    else {
-		      button.className = 'pressed_button';
-		      webtronics.setMode('select', 'Selection');
+		      $('webtronics_text').className = 'pressed_button';
+		      webtronics.setMode('text', 'Text');
 		    }
 		    
 		  });
