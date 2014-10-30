@@ -62,6 +62,8 @@ function Schematic(elem) {
   this.mode = 'select';
   /*array of nodes*/
   this.selected = [];
+  /* parts to delete*/
+  this.garbage = [];
   //this.wirenodes=[];
   this.undolist=[];
   this.redolist=[];
@@ -658,7 +660,7 @@ Schematic.prototype.getMarkup=function(){
 
 
 Schematic.prototype.deleteSelection = function() {
-  this.drag=0;
+  this.drag=false;
   if(!this.selected.length)return; 
   /*delete selected nodes*/  
   for(var i=this.selected.length;i>0;i--){
@@ -755,17 +757,95 @@ Schematic.prototype.unselect = function() {
 }
 
 
+Schematic.prototype.getpins=function(part){
+  var pins=[];
+    var nodes = this.getwtxtagname(part,"node");
+    var matrix=this.parseMatrix(part);
+    for(var j=0;j<nodes.length;j++){
+      var point = this.matrixxform( {x:this.getwtxattribute(nodes[j],"x"),y:this.getwtxattribute(nodes[j],"y")},matrix);
+      pins.push({x:point.x,y:point.y}) ;
+    }
+  return pins;
+}
 
+
+
+
+
+Schematic.prototype.gettrash=function(garbage,pin){
+  var connected=[];
+  var nextpin=undefined;
+  var lines =$$('#webtronics_drawing > line');
+  lines.forEach(function(l){
+    var p1={x:l.getAttribute('x1')-0,y:l.getAttribute('y1')-0};
+    var p2={x:l.getAttribute('x2')-0,y:l.getAttribute('y2')-0};
+    if(garbage.indexOf(l)<0){
+      if(this.ispoint(p1,pin)){
+	nextpin=p2;
+	connected.push(l);
+      }
+      else if(this.ispoint(p2,pin)){
+	nextpin=p1;
+	connected.push(l);
+      }
+    }
+  }.bind(this));
+  if(connected.length <2){
+    garbage=garbage.concat(connected);
+    if(nextpin!=undefined)garbage=this.gettrash(garbage,nextpin);
+  }
+
+  return garbage;
+}
+/*
+//check if selection rectangle overlaps part
+Schematic.prototype.getPart=function(){
+  var parts=$$("#webtronics_drawing > g");
+  parts.forEach(function(p){
+    var rect=this.tracker(p);
+    if(rectsIntersect(this.selectionRect,rect)){
+ 	this.select(p);  
+    }
+  }.bind(this));
+
+  this.garbage=[];
+  this.selected.forEach(function(p){
+    var pins=this.getpins(p);
+      pins.forEach(function(n){
+	 var wires=[];
+	 wires=this.gettrash(wires,n);
+	 for(var i=0;i<wires.length;i++){
+	   var rect=this.tracker(wires[i]);
+	   if(!rectInside(this.selectionRect,rect)){
+	     this.garbage=this.garbage.concat(wires);
+	     break;
+	   }
+	 }
+      }.bind(this));
+  }.bind(this));
+  var parts=$$("#webtronics_drawing > circle,#webtronics_drawing > text ,#webtronics_drawing > line");
+  parts.forEach(function(p){
+    var rect=this.tracker(p);
+    if(this.garbage.indexOf(p)<0){
+    if(rectsIntersect(rect,this.selectionRect)){
+	this.select(p);  
+    }
+    }
+    
+  }.bind(this));
+
+}
+*/
 
 /*check if selection rectangle overlaps part*/
 Schematic.prototype.getPart=function(){
-  var parts=$$("#webtronics_drawing>*");
-  for(var i=0;i<parts.length;i++){
-    var rect=this.tracker(parts[i]);
-    if(rectsIntersect(rect,this.selectionRect)){
-      this.select(parts[i]);               
+  var parts=$$("#webtronics_drawing > *");
+  parts.forEach(function(p){
+    var rect=this.tracker(p);
+    if(rectsIntersect(this.selectionRect,rect)){
+ 	this.select(p);  
     }
-  }
+  }.bind(this));
 }
 
 
@@ -827,12 +907,15 @@ Schematic.prototype.onMouseDown = function(event){
 	if(this.selection)this.remove(this.selection);
 	this.selection = this.createrect('blue',0.35,real.x,real.y,0,0);
 	this.info.appendChild(this.selection);
-	if(this.mode=='select'){
-	  for(var i=0;i<this.selected.length;i++){
-	    if(rectsIntersect(this.selectionRect,this.tracker(this.selected[i])))this.drag=1;
+	for(var i=0;i<this.selected.length;i++){
+	  if(rectsIntersect(this.selectionRect,this.tracker(this.selected[i]))){
+	    this.garbage.each( function(p){ this.remove(p);}.bind(this));
+	    this.drag=true;
 	  }
-	  if(!this.drag)this.unselect();
 	  
+	}
+	if(!this.drag){
+	  this.unselect();
 	}
       }
     }
@@ -873,22 +956,30 @@ Schematic.prototype.onMouseDown = function(event){
 Schematic.prototype.dragSelection=function(x ,y){
   var floating=$('schematic_floating');
   if(!floating){
+    var parts=[];
     floating = document.createElementNS(this.svgNs, 'g');
     for(var i=0;i<this.selected.length;i++){
-      floating.appendChild(this.selected[i]);
+      parts.push(this.selected[i]);
+ 
       /*if a part is selected also get label*/
       if(this.selected[i].tagName=='g'){
 	var label=this.readwtx(this.selected[i],"label");
 	if(label && $(label)){
-	  floating.appendChild($(label));
+	  parts.push($(label));
 	}
       }
     }
     
+    this.removeTracker();
+    parts.forEach(function(s){
+      this.showTracker(s);
+      floating.appendChild(s);}.bind(this)
+    );
     var tracked=$$('.schematic_tracker');
     for(var i=0;i<tracked.length;i++)floating.appendChild(tracked[i]);
     floating.setAttributeNS(null, 'id', 'schematic_floating');
     this.info.appendChild(floating);
+//      remove lines that are not inside selection
   }
   floating.setAttributeNS(null,'transform','matrix(1,0,0,1,'+x+','+y+')');
   
@@ -960,7 +1051,7 @@ Schematic.prototype.onMouseUp = function(event) {
 //     if(menu){
 //       menu.style.display='none';        
 //     }
-    this.drag=0;
+    this.drag=false;
     if(this.mode=='select'){
       var floating=$('schematic_floating');
       if(floating){
@@ -990,9 +1081,9 @@ Schematic.prototype.onMouseUp = function(event) {
     if(menu){
       menu.style.display='none';        
     }
+    this.remove($("templine1"));	
+    this.remove($("templine2"))
     parent.webtronics.setMode('select','Selection');
-	this.remove($("templine1"));	
-	this.remove($("templine2"))
   }
   
 }
@@ -1011,6 +1102,8 @@ Schematic.prototype.onMouseMove = function(event) {
       mouseAt.x = Math.round(real.x / this.grid) * this.grid;
       mouseAt.y =Math.round(real.y / this.grid) * this.grid;
       this.dragSelection(mouseAt.x-this.mouseDown.x,mouseAt.y-this.mouseDown.y);
+
+      
     }
     else{
       if (this.selection) {
@@ -1259,10 +1352,14 @@ function rectsIntersect(r1, r2) {
   ((r2.width>0)?(r2.x+r2.width):(r2.x)) > ((r1.width>0)?(r1.x):(r1.x+r1.width)) &&
   ((r2.height>0)?(r2.y):(r2.y+r2.height)) < ((r1.height>0)?(r1.y+r1.height):(r1.y)) &&
   ((r2.height>0)?(r2.y+r2.height):(r2.y)) > ((r1.height>0)?(r1.y):(r1.y+r1.height));
-  
-  
 };
 
+function rectInside(r1 ,r2){
+//is r2 inside r1 
+  return  r1.x<r2.x && r1.y< r2.y && r1.x+r1.width > r2.x+r2.width && r1.y+r1.height >r2.y+r2.height;
+  
+  
+}
 
 
 

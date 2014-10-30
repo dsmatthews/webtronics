@@ -1,16 +1,3 @@
-Schematic.prototype.getconnects=function(elem){
-  var pins=[];    
-  var nodes=this.getwtxtagname(elem,"node");
-  var matrix=this.parseMatrix(elem);
-  var pin=this.svgRoot.createSVGPoint();
-  for(var i=0;i<nodes.length;i++){
-    pin.x=this.getwtxattribute(nodes[i],"x");
-    pin.y=this.getwtxattribute(nodes[i],"y");
-    pin = pin.matrixTransform(matrix);
-    pins[i]={x:Math.round(pin.x),y:Math.round(pin.y)};
-  }
-  return pins;
-}
 
 Schematic.prototype.matrixxform=function(point,matrix){
   var pin=this.svgRoot.createSVGPoint();
@@ -170,19 +157,6 @@ Schematic.prototype.connectnamewires=function(list){
   }
 }
 
-/* test if wires are connected anywhere*/
-Schematic.prototype.getconnected=function(wirelist,wire){
-  for(var i=0;i<wirelist.length;i++){
-    for(var j=0;j<wirelist[i].length;j++){
-      for(var k=0;k<wire.length;k++){
-	if(this.ispoint(wirelist[i][j],wire[k])){
-	  return i;
-	}
-      }
-    }
-  }
-  return -1;
-}
 /*check for vectors and convert them*/
 Schematic.prototype.tovector=function(pin,nodenumber){
   var v ="";   
@@ -552,18 +526,29 @@ Schematic.prototype.writeconnects=function(pins){
   return str.join(';'); 
 }
 
-Schematic.prototype.isconnect=function(pin,radius,x,y){
-  return ((pin.x+radius)>x)&&((pin.x-radius)<x)&&
-  ((pin.y+radius)>y)&&((pin.y-radius)<y);
+
+Schematic.prototype.getconnects=function(elem){
+    var pins=[];    
+      var nodes = this.getwtxtagname(elem,"node");
+      for(var j=0;j<nodes.length;j++){
+//	console.log(nodes[j]);
+//	console.log(this.parseMatrix(elem));
+	var point = this.matrixxform( {x:this.getwtxattribute(nodes[j],"x"),y:this.getwtxattribute(nodes[j],"y")},this.parseMatrix(elem));
+	pins.push({x:point.x,y:point.y}) ;
+      }
+      //sort nodes int correct order
+  return pins;
 }
 
+Schematic.prototype.isconnect=function(pin,radius,x,y){
+  return (Math.abs(pin.x-x)<3)&&(Math.abs(pin.y-y)<3); 
+}
 
-Schematic.prototype.isconnects=function(radius,x,y){
+Schematic.prototype.isconnects=function(parts,radius,x,y){
   
-  var parts=this.drawing.childNodes;
   for(var i=0; i<parts.length; i++){
-    if(parts[i].tagName=='g'){
-      var pins=this.getconnects(parts[i]);
+    if(parts[i].tagName =='g'){
+     var pins=this.getconnects(parts[i]);
       if(pins){
 	for(var j=0;j<pins.length;j++){
 	  if(this.isconnect(pins[j],radius,x,y)){
@@ -643,7 +628,6 @@ Schematic.prototype.addconnects=function(){
 	Event.observe(circle,"mousedown",function(){
 	  var data = $A(arguments);
 	  data.shift();							
-	  this.changeobserver.disconnect();
 	  if(this.mode=='select'){
 	    parent.webtronics.setMode('line','Wire');
 	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
@@ -656,9 +640,6 @@ Schematic.prototype.addconnects=function(){
 	    this.wiresegment();
 	    
 	    this.remove($("templine1"));
-	    this.addhistory();
-	    this.addconnects();
-	    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 	    parent.webtronics.setMode('select','Selection');
 	  }
 	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
@@ -667,10 +648,10 @@ Schematic.prototype.addconnects=function(){
     
     if(parts[i].digitalpins!=undefined)for(var j=0;j<parts[i].digitalpins.length;j++){
 	var rect=this.createrect('red',100,parts[i].digitalpins[j].x-3,parts[i].digitalpins[j].y-3,6,6);
-	circle.setAttributeNS(null, 'fill-opacity', .35);
+	rect.setAttributeNS(null, 'fill-opacity', .35);
 	rect.setAttribute('class',"schematic_connector");
-	circle.setAttribute("pointer-events","all");
-	circle.setAttribute("visibility","hidden");
+	rect.setAttribute("pointer-events","all");
+	rect.setAttribute("visibility","hidden");
 	this.info.appendChild(rect);
 
 	Event.observe(rect,"mouseover",function(){
@@ -690,7 +671,6 @@ Schematic.prototype.addconnects=function(){
 	Event.observe(rect,"mousedown",function(){
 	  var data = $A(arguments);
 	  data.shift();							
-	  this.changeobserver.disconnect();
 	  if(this.mode=='select'){
 	    parent.webtronics.setMode('line','Wire');
 	    var svg = this.createline('blue',2, data[0], data[1], data[0], data[1]);
@@ -701,12 +681,7 @@ Schematic.prototype.addconnects=function(){
 	  else{
 	    this.wiresegment();
 	    this.wiresegment();
-
-
 	    this.remove($("templine1"));
-	    this.addhistory();
-	    this.addconnects();
-	    this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 	    parent.webtronics.setMode('select','Selection');
 	  }
 	}.bindAsEventListener(this,parts[i].analogpins[j].x,parts[i].analogpins[j].y));
@@ -716,14 +691,16 @@ Schematic.prototype.addconnects=function(){
 
   var lines=$$("#webtronics_drawing > line");
   for(var i=0;i<lines.length;i++){
-    this.wireevents(lines[i]);
-    
+//clean up lines while i'm at it    
+    if(lines[i].getAttributeNS(null,'x1')==lines[i].getAttributeNS(null,'x2') && lines[i].getAttributeNS(null,'y1')==lines[i].getAttributeNS(null,'y2'))
+      this.remove(lines[i]);
+
+    else this.wireevents(lines[i]);
+
     
   }
   this.hideconnects();  
-  var config = { attributes: true, childList: true, characterData: true ,subtree:true};
-    // pass in the target node, as well as the observer options
-  this.changeobserver.observe(this.drawing, config);
+  this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 
   
 }
@@ -761,6 +738,7 @@ Schematic.prototype.connect =function(line,x,y){
     }
 
     this.remove($('templine1'));
+    this.remove($('templine2'));
   
   
 }
@@ -819,7 +797,6 @@ Schematic.prototype.wireevents=function(svg){
 	    Event.observe(circle,"mousedown",function(){
 	      var data = $A(arguments);
 	      data.shift();
-	      this.changeobserver.disconnect();
 	      var connect=true;
 	      var dots=$$("#webtronics_drawing > circle");
 	      dots.each(function(dot){if(dot.getAttribute("cx")==data[1] &&  dot.getAttribute("cy")==data[2])connect=false;});
@@ -837,9 +814,6 @@ Schematic.prototype.wireevents=function(svg){
 		this.info.appendChild(svg);
 	      }
 	      else{
-		this.addhistory();
-		this.addconnects();
-		this.changeobserver.observe(this.drawing, { attributes: true, childList: true, characterData: true ,subtree:true});
 		parent.webtronics.setMode('select','Selection');
 	      }
 
