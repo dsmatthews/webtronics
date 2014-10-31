@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html manifest="webtronics.appcache" >
+<head>
 <title>Webtronix schematic editor.</title>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="style/schematic.css" type="text/css">
@@ -18,19 +19,19 @@
 toolbar
 -->
 	<div id="webtronics_toolbar">
-            <img id='webtronics_file' title="file menu" src="./buttons/openmenu.png">
+            <img id='webtronics_file' title="file menu" src="buttons/openmenu.png">
 			<fieldset>	
 				<legend>Circuit</legend>
-				<img id="webtronics_netlist" class="normal_button" title="view the netlist" src="./buttons/netlist.png">
-				<img id="webtronics_run" class="normal_button" title="run spice" src="./buttons/run.png">
-				<img id="webtronics_chips_open" class="normal_button" title="make chips" src="./buttons/icbut.png">
-				<img id="webtronics_delete" class="normal_button" title="Delete selected shape" src="./buttons/delete.png">
-				<img id="webtronics_text" class="normal_button" title="add text" src="./buttons/text.png">
+				<img id="webtronics_netlist" class="normal_button" title="view the netlist" src="buttons/netlist.png">
+				<img id="webtronics_run" class="normal_button" title="run spice" src="buttons/run.png">
+				<img id="webtronics_chips_open" class="normal_button" title="make chips" src="buttons/icbut.png">
+				<img id="webtronics_delete" class="normal_button" title="Delete selected shape" src="buttons/delete.png">
+				<img id="webtronics_text" class="normal_button" title="add text" src="buttons/text.png">
 			</fieldset>
 			<fieldset>
 				<legend>History</legend>			
-				<img id="webtronics_undo" class="normal_button" title="undo last action" src="./buttons/undo.png">
-				<img id="webtronics_redo" class="normal_button" title="redo last action" src="./buttons/redo.png">
+				<img id="webtronics_undo" class="normal_button" title="undo last action" src="buttons/undo.png">
+				<img id="webtronics_redo" class="normal_button" title="redo last action" src="buttons/redo.png">
 			</fieldset>
 			<fieldset>
 				<legend>Settings</legend>			
@@ -107,8 +108,8 @@ make chips
             </select>
          </fieldset>
     </form>
-    <img id="webtronics_chip_ok" class="normal_button" src="./buttons/ok.png">
-    <img id="webtronics_chip_cancel" class="normal_button" src="./buttons/cancel.png">
+    <img id="webtronics_chip_ok" class="normal_button" src="buttons/ok.png">
+    <img id="webtronics_chip_cancel" class="normal_button" src="buttons/cancel.png">
 </div>
 
 <!--
@@ -152,8 +153,8 @@ properties form
 </form>
 <br>
 <div>
-<img id="webtronics_properties_ok" class="normal_button" src="./buttons/ok.png"> 
-<img id="webtronics_properties_cancel" class="normal_button" src="./buttons/cancel.png">
+<img id="webtronics_properties_ok" class="normal_button" src="buttons/ok.png"> 
+<img id="webtronics_properties_cancel" class="normal_button" src="buttons/cancel.png">
 </div>
 
 </div>
@@ -165,14 +166,14 @@ add code text
 
 <div id="webtronics_open_text" class='modal'>
 <textarea cols="50" rows="4" id="webtronics_svg_code"></textarea>
-<img id="webtronics_open_text_ok" src="./buttons/ok.png"> 
-<img id="webtronics_open_text_cancel" src="./buttons/cancel.png">
+<img id="webtronics_open_text_ok" src="buttons/ok.png"> 
+<img id="webtronics_open_text_cancel" src="buttons/cancel.png">
 </div>
 <!--
 image display
 -->
 <div id ="webtronics_image" class="modal">
-<img id="webtronics_image_ok" class="normal_button" src="./buttons/cancel.png">  Right click image to save 
+<img id="webtronics_image_ok" class="normal_button" src="buttons/cancel.png">  Right click image to save 
 <br>
 <div id='webtronics_image_div' >
 <img id="webtronics_image_save" >
@@ -194,8 +195,8 @@ netlist display
   
 * represents missing value
 </pre>
-<img id="webtronics_netlist_text_run" class="normal_button" src="./buttons/run.png"> 
-<img id="webtronics_netlist_text_ok" class="normal_button" src="./buttons/cancel.png"> 
+<img id="webtronics_netlist_text_run" class="normal_button" src="buttons/run.png"> 
+<img id="webtronics_netlist_text_ok" class="normal_button" src="buttons/cancel.png"> 
 </div>
 
 <!--
@@ -203,7 +204,7 @@ simulation display
 -->
 <div id="webtronics_scope_display" class="modal" >
 <div id="webtronics_scope_display_div"></div>
-<img id="webtronics_scope_display_ok" class="normal_button" src="./buttons/cancel.png">
+<img id="webtronics_scope_display_ok" class="normal_button" src="buttons/cancel.png">
 <form>
 <input id="webtronics_scope_output_log" type="radio" name="scope_output" >log<br>
 <input id="webtronics_scope_output_graph" type="radio" name="scope_output" value="graph">graph

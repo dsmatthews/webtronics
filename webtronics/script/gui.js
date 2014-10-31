@@ -395,6 +395,7 @@ console.log(exception);
 	window.console = {};
 	window.console.log = function(){};
       }
+      
       webtronics.setsize();
       //	    $('webtronics_scope_display_iframe').src="";
       var menu;
