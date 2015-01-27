@@ -376,7 +376,7 @@ Schematic.prototype.numberwires=function(parts){
 
 /* creates all netlist data from parts data*/
 Schematic.prototype.getnodes=function(parts){
-  var sections={netlist:[],firstdir:[],simulation:[],lastdir:[]};    
+  var sections={netlist:[],coupling:[],firstdir:[],simulation:[],lastdir:[]};    
   
   //if(this.numberwires(parts))return {firstdir:[],netlist:[{error:"pin is both analog and digital"}],lastdir:[],plot:[]};
   this.numberwires(parts);
@@ -405,6 +405,11 @@ Schematic.prototype.getnodes=function(parts){
 	  sections.simulation.push(parts[i].model);
 	}
       }
+      else if(parts[i].type=="l"){
+	if(parts[i].model.length){
+	    sections.coupling.push(parts[i].model);  
+	}
+      }
       else{
 	if(parts[i].model.match(/\.mod/i) && !parts[i].id.match(/^x/))parts[i].id="x"+parts[i].id;
 	if(parts[i].model.length)sections.firstdir.push(parts[i].model);
@@ -416,6 +421,7 @@ Schematic.prototype.getnodes=function(parts){
     }
     
   }
+  
   return sections;
 }
 
@@ -462,7 +468,6 @@ Schematic.prototype.createnetlist=function(responsefunc){
 	}
       }
       
-      spice=spice.concat(".end \n");	
       var connector=$$('#information > .webtronics_namewire_connector')
       for(var i=0;i<connector.length;i++)connector[i].parentNode.removeChild(connector[i]);
       
@@ -474,6 +479,7 @@ Schematic.prototype.createnetlist=function(responsefunc){
       modelloader.responsecount++;
       if(modelloader.responsecount==modelloader.modelcount){
 	modelloader.finish();
+	spice=spice.concat(".end \n");	
 	
       }       
     }
@@ -498,6 +504,12 @@ Schematic.prototype.createnetlist=function(responsefunc){
     }
   }
   
+  if(sections.coupling.length){
+    for(var i=0;i<sections.coupling.length;i++){
+      spice+=sections.coupling+'\n';
+    }
+  }
+  
   if(sections.firstdir.length){
     sections.firstdir=sections.firstdir.uniq();
     
@@ -506,13 +518,7 @@ Schematic.prototype.createnetlist=function(responsefunc){
       
       if(sections.firstdir[i].length){
 	var directive=sections.firstdir[i].split(' ');
-	if(directive[0]==".inc"){
-	  modelloader.download(directive[1]);
-	}
-	else{
-	  spice+=sections.firstdir[i];
-	}
-	    
+	modelloader.download(directive[1]);
       }
     }
   }
