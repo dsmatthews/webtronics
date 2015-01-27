@@ -231,11 +231,27 @@ div.modal{
 	background-color:inherit; 
 	padding: 5px;
 }
-
-
-#webtronics_properties_div>*{
-clear:left;
+div.modal>*{
+ float:left; 
 }
+#webtronics_properties_buttons{
+  clear:left;
+}
+
+#webtronics_netlist_buttons{
+  clear:left;
+}
+
+
+.webtronics_help{
+	float:right;
+	border-style: solid; 
+	border-color:#000000;
+	background-color:#000000;
+	color:#ffffff;
+	padding: 5px;
+}
+
 
 #webtronics_chips_box>*{
 float:left;

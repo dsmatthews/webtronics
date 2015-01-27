@@ -20,7 +20,7 @@
     </wtx:pins>
     <wtx:id>r</wtx:id>
     <wtx:type>r</wtx:type>
-    <wtx:name>testresistor</wtx:name>
+    <wtx:name>resistor</wtx:name>
     <wtx:category>resistors</wtx:category>
     <wtx:value></wtx:value>
     <wtx:label></wtx:label>

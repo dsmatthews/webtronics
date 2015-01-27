@@ -444,7 +444,8 @@ Schematic.prototype.createnetlist=function(responsefunc){
     modelcount:0,
     responsecount:0,
     download:function(name){
-      openfile( "../spice/"+ name.split(' ')[1],modelloader.responder);
+
+      openfile( "../spice/"+ name,modelloader.responder);
       modelloader.modelcount++;
     },
     finish:function(){
@@ -499,10 +500,19 @@ Schematic.prototype.createnetlist=function(responsefunc){
   
   if(sections.firstdir.length){
     sections.firstdir=sections.firstdir.uniq();
+    
     for(var i=0;i<sections.firstdir.length;i++){
 //      console.log(sections.firstdir[i]);
+      
       if(sections.firstdir[i].length){
-	modelloader.download(sections.firstdir[i]);
+	var directive=sections.firstdir[i].split(' ');
+	if(directive[0]==".inc"){
+	  modelloader.download(directive[1]);
+	}
+	else{
+	  spice+=sections.firstdir[i];
+	}
+	    
       }
     }
   }

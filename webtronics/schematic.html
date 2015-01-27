@@ -151,11 +151,17 @@ properties form
 </fieldset>
 <!--**OPEN LOCAL SPICE MODELS EXPERIMENT<input id="webtronics_part_file" type="file"/>-->
 </form>
-<br>
-<div>
+<div class="webtronics_help">
+spice:
+<pre id="webtronics_part_help">
+</pre>
+</div>
+
+<div id="webtronics_properties_buttons">
 <img id="webtronics_properties_ok" class="normal_button" src="buttons/ok.png"> 
 <img id="webtronics_properties_cancel" class="normal_button" src="buttons/cancel.png">
 </div>
+
 
 </div>
 
@@ -186,17 +192,21 @@ netlist display
 
 <div id="webtronics_netlist_text" class='modal'>
 <div id="webtronics_netlist_text_div" ></div>
+<div class="webtronics_help" >
 <pre>
-	d1 0 1 1n4148
-        | | |   |
-  part id | |   model/value 
-          | |
-      leg 1 leg 2          
-  
-* represents missing value
+convergence:
+
+increase or decrease step size
+or try adding
+
+.options dampstrategy=2
+
 </pre>
+</div>
+<div id="webtronics_netlist_buttons">
 <img id="webtronics_netlist_text_run" class="normal_button" src="buttons/run.png"> 
 <img id="webtronics_netlist_text_ok" class="normal_button" src="buttons/cancel.png"> 
+</div>
 </div>
 
 <!--

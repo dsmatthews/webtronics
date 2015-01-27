@@ -87,9 +87,12 @@ var webtronics={
     var part=this.circuit.readwtx(elem,"name");
     var cat=this.circuit.readwtx(elem,"category");
     if(cat){    
-      for(var c in webtronics.parts[cat][part]){
+      for(var c in webtronics.parts[cat][part].values){
 	$("webtronics_part_model").insert(new Element("option",{"value":c}).update(c));
       }
+    $("webtronics_part_help").innerHTML=webtronics.parts[cat][part].help;
+
+      
     }
   },
   
@@ -501,7 +504,7 @@ console.log(exception);
 		  },
 		  addcategory:function(partlist){
 		    
-		    webtronics.parts = partlist.evalJSON(true).parts;  
+		    webtronics.parts = JSON.parse(partlist).parts;  
 		    for (var cat in webtronics.parts){
 		      category=new Element("div",{"id":"webtronics_"+cat})
 		      .insert(new Element("p").update(cat)
@@ -684,8 +687,8 @@ console.log(exception);
 		    if($('webtronics_part_model').value){
 		      $("webtronics_part_dir_model").options.length=0;
 		      $("webtronics_part_dir_model").appendChild(new Element("option",{"value":""}).update("none"));
-		      for(var i=0;i<webtronics.parts[cat][part][$('webtronics_part_model').value].length;i++){
-			$("webtronics_part_dir_model").insert(new Element("option",{"value":webtronics.parts[cat][part][$('webtronics_part_model').value][i]}).update(webtronics.parts[cat][part][$('webtronics_part_model').value][i]));
+		      for(var i=0;i<webtronics.parts[cat][part].values[$('webtronics_part_model').value].length;i++){
+			$("webtronics_part_dir_model").insert(new Element("option",{"value":webtronics.parts[cat][part].values[$('webtronics_part_model').value][i]}).update(webtronics.parts[cat][part].values[$('webtronics_part_model').value][i]));
 		      }
 		    }
 		    $('webtronics_part_value').value=$("webtronics_part_model").options[$("webtronics_part_model").selectedIndex].value;
